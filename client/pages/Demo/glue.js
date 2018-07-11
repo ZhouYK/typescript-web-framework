@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { createGlue } from '../../tools/destruct/createGlue';
-import { gluePair } from '../../tools/destruct/gluePair';
+import { createGlue, gluePair } from '../../tools/destruct';
 
 let demo;
 const personActionCreator = data => data;

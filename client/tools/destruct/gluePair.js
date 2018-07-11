@@ -6,7 +6,7 @@ import { forPurposeKey, forPurposeValue } from './contants';
  * @param reducerFnc
  * @returns {function(): {action: *, reducer: *}}
  */
-export const gluePair = (actionCreator, reducerFnc) => {
+const gluePair = (actionCreator, reducerFnc) => {
   const gf = function* () {
     let errorMsg = '';
     if (typeof actionCreator !== 'function') {

@@ -1,7 +1,7 @@
 import { getType } from './getType';
 import { forPurposeKey, forPurposeValue } from './contants';
 
-export const createGlue = obj => (defaultValue) => {
+const createGlue = obj => (defaultValue) => {
   if (getType(defaultValue) !== '[object Object]') throw new Error('请传入默认值对象');
   if (getType(obj) !== '[object Object]') throw new Error('请传入结构对象');
   const defualtKeys = Object.keys(defaultValue);

@@ -172,6 +172,8 @@ export const destruct = ({ dispatch }) => {
   return deriveActionsAndReducers;
 };
 
+export { default as createGlue } from './createGlue';
+export { default as gluePair } from './gluePair';
 export default {
   destruct,
 };
