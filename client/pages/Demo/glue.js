@@ -34,4 +34,6 @@ const demoDefaultValue = {
   },
 };
 demo = createGlue(demoStructure)(demoDefaultValue);
+// 如果该glue被嵌套复用了，则应该返回一个gule creator
+// demo = () => createGlue(demoStructure)(demoDefaultValue);
 export default demo;
