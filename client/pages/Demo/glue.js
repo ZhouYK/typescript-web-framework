@@ -1,9 +1,14 @@
 import axios from 'axios';
-import { createGlue, gluePair } from '../../tools/destruct';
+import { createGlue, gluePair } from 'redux-glue';
 
 let demo;
 const personActionCreator = data => data;
-const personReducer = (state, ac) => ({ ...state, ...ac.data });
+const personReducer = (state = { title: '默认值' }, ac) => {
+  if (ac) {
+    return { ...state, ...ac.data };
+  }
+  return state;
+};
 const asyncGetPerson = info => () => axios({
   url: './mapping.json',
   method: 'get',
@@ -27,13 +32,7 @@ const demoStructure = {
   person: gluePair(personActionCreator, personReducer),
   asyncGetPerson,
 };
-// demo的默认数据格式，要求每一个节点都必须有默认值
-const demoDefaultValue = {
-  person: {
-    title: '',
-  },
-};
-demo = createGlue(demoStructure)(demoDefaultValue);
+demo = createGlue(demoStructure);
 // 如果该glue被嵌套复用了，则应该返回一个gule creator
 // demo = () => createGlue(demoStructure)(demoDefaultValue);
 export default demo;
