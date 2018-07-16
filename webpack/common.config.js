@@ -10,18 +10,22 @@ import { vendorPath } from './webpack.config.dll.babel';
 export const contentPath = path.resolve(__dirname, '../dist');
 // 这里可以路径前一个名称作为页面区分
 const entry = {
-  index: ['babel-polyfill', './client/index.jsx'],
+  index: ['babel-polyfill', './client/index.tsx'],
 };
 const rules = [{
   enforce: 'pre',
-  test: /\.(jsx?)|(tsx?)$/,
-  exclude: /node_modules/,
-  use: ['eslint-loader'],
-}, {
-  enforce: 'pre',
-  test: /\.js?$/,
+  test: /\.(tsx?)|(jsx?)$/,
   exclude: /node_modules/,
   use: ['source-map-loader'],
+}, {
+  test: /\.tsx?$/,
+  exclude: /node_modules/,
+  use: ['babel-loader', {
+    loader: 'ts-loader',
+    options: {
+      transpileOnly: true,
+    },
+  }],
 }, {
   test: /\.jsx?$/,
   exclude: /node_modules/,

@@ -2,9 +2,7 @@
 .DS_Store/
 .git/
 node_modules/
-dist/js
-dist/css
-dist/image
-dist/*.html
-dist/*.json
+dist/*
+!dist/dll
+ts-build
 package-lock.json
