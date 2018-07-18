@@ -10,7 +10,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import demoAction from './glue';
 import './index.less';
-class Demo extends PureComponent {
+class DemoClass extends PureComponent {
     constructor(props) {
         super(props);
         this.onClick = () => __awaiter(this, void 0, void 0, function* () {
@@ -51,5 +51,5 @@ const mapStateToProps = (state) => {
         person,
     };
 };
-export default connect(mapStateToProps)(Demo);
+export default connect(mapStateToProps)(DemoClass);
 //# sourceMappingURL=index.jsx.map

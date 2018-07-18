@@ -2,12 +2,12 @@ import React, { PureComponent, RefObject } from 'react';
 import { State } from '../../reducers/reducers';
 import { connect } from 'react-redux';
 import demoAction from './glue';
-import { Person } from './demo';
+import { Demo } from './demo';
 import './index.less';
 
-class Demo extends PureComponent<Person> {
+class DemoClass extends PureComponent<Demo> {
   ref: RefObject<any>;
-  constructor(props: Person) {
+  constructor(props: Demo) {
     super(props);
     this.ref = React.createRef();
   }
@@ -52,4 +52,4 @@ const mapStateToProps = (state: State) => {
     person,
   };
 };
-export default connect(mapStateToProps)(Demo);
+export default connect(mapStateToProps)(DemoClass);
