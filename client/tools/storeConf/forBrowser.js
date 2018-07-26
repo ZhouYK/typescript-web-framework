@@ -6,15 +6,10 @@ import { applyMiddleware, combineReducers } from 'redux';
 import { createBrowserHistory } from 'history';
 import { middleware } from './common';
 import configureStore from '../configure/store';
-
-
 const store = (reducers, history) => {
-  const middlewares = middleware.concat(routerMiddleware(history));
-  return configureStore(
-    combineReducers(reducers),
-    {},
-    applyMiddleware(...middlewares),
-  );
+    const middlewares = middleware.concat(routerMiddleware(history));
+    return configureStore(combineReducers(reducers), {}, applyMiddleware(...middlewares));
 };
-export const historyConf = options => createBrowserHistory(options);
+export const historyConf = (options) => createBrowserHistory(options);
 export default store;
+//# sourceMappingURL=forBrowser.js.map

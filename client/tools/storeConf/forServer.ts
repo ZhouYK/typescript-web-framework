@@ -4,6 +4,10 @@
 import { applyMiddleware, combineReducers } from 'redux';
 import { middleware } from './common';
 import configureStore from '../configure/store';
-const store = (reducers) => configureStore(combineReducers(reducers), {}, applyMiddleware(...middleware));
+
+const store = (reducers: {}) => configureStore(
+  combineReducers(reducers),
+  {},
+  applyMiddleware(...middleware),
+);
 export default store;
-//# sourceMappingURL=forServer.js.map

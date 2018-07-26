@@ -1,10 +1,12 @@
 import storeFactory, { historyConf } from '../tools/storeConf/forBrowser';
+
 export const history = historyConf({
-    basename: '',
+  basename: '', // 根据需要添加，默认为空串
 });
+
 const defaultReducers = {
-    router: () => ({}),
+  router: () => ({}),
 };
 const store = storeFactory(defaultReducers, history);
+
 export default store;
-//# sourceMappingURL=index.jsx.map

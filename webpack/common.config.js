@@ -13,14 +13,18 @@ const entry = {
 };
 const rules = [{
   enforce: 'pre',
-  test: /\.(jsx?)|(tsx?)$/,
-  exclude: /node_modules/,
-  use: ['eslint-loader'],
-}, {
-  enforce: 'pre',
-  test: /\.js?$/,
+  test: /\.(tsx?)|(jsx?)$/,
   exclude: /node_modules/,
   use: ['source-map-loader'],
+}, {
+  test: /\.tsx?$/,
+  exclude: /node_modules/,
+  use: ['babel-loader', {
+    loader: 'ts-loader',
+    options: {
+      transpileOnly: true,
+    },
+  }],
 }, {
   test: /\.jsx?$/,
   exclude: /node_modules/,
