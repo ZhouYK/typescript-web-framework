@@ -5,7 +5,7 @@
     <meta http-equiv="x-ua-compatible" content="IE=edge,Chrome=1" />
     <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no"/>
     <meta name="format-detection" content="telephone=no"/>
-    <title><%= htmlWebpackPlugin.options.title %></title>
+    <title><%= title %></title>
     <script>
       /*
   # 按照宽高比例设定html字体, width=device-width initial-scale=1版
@@ -79,6 +79,6 @@
 </head>
 <body>
     <div id="bd"></div>
-    <script src="./dll/vendors.dll.js"></script>
+    <script src="<%= vendor %>"></script>
 </body>
 </html>

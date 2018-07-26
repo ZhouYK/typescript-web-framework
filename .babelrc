@@ -2,7 +2,7 @@
   "presets": [
     "react",
     ["env", {
-//      "modules": false,
+      "modules": "commonjs",
       "targets": {
         "chrome": 48,
         "ie": 9,
@@ -10,8 +10,8 @@
           "> 1%",
           "last 5 versions"
         ]
-      },
-      "useBuiltIns": "entry"
+      }
+      //      "useBuiltIns": "entry"
     }]
   ],
   "plugins": [
@@ -19,10 +19,11 @@
     "syntax-dynamic-import", // 不解析动态加载标识符 import()
     "transform-object-rest-spread", // 支持对象 rest
     "syntax-async-functions", // 支持async await
-    [
-      "import", {
-        "libraryName": "antd", "style": true
-      }
-    ]
+    ["transform-runtime", {
+      "helpers": true,
+      "polyfill": true,
+      "regenerator": true,
+      "moduleName": "babel-runtime"
+    }] // polyfill
   ]
 }
