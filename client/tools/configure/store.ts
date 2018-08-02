@@ -1,4 +1,4 @@
-import { ConfigStore } from './config';
+import { ConfigStore } from 'index';
 let configureStore: ConfigStore;
 if (process.env.NODE_ENV === 'development') {
   configureStore = require('./store.local').default;

@@ -3,7 +3,6 @@
  */
 import path from 'path';
 import webpack from 'webpack';
-
 import { vendorPath } from './webpack.config.dll.babel';
 
 export const contentPath = path.resolve(__dirname, '../dist');
@@ -16,12 +15,13 @@ const rules = [{
   test: /\.(tsx?)|(jsx?)$/,
   exclude: /node_modules/,
   use: ['source-map-loader'],
-}, {
+}, /* {
   enforce: 'pre',
   test: /\.jsx?$/,
   exclude: /node_modules/,
   use: ['eslint-loader'],
-}, {
+}, */
+{
   test: /\.tsx?$/,
   exclude: /node_modules/,
   use: ['babel-loader', {

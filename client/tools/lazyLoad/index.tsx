@@ -1,10 +1,7 @@
-import React, { ComponentClass } from 'react';
 import Loadable from 'react-loadable';
-
-const loadingComponent = (Loading: ComponentClass) => (props: {}) => <Loading {...props} />;
-
-export default (prefix: string, Loading: ComponentClass) => (path: string) => Loadable({
+import { Loader, LoaderProps } from "index";
+export default (prefix: string, Loading: Loader<LoaderProps>) => (path: string) => Loadable({
   loader: () => import(`../../pages/${prefix}${path}`),
-  loading: loadingComponent(Loading),
-  timeout: 10000,
+  loading: Loading,
+  timeout: 10000
 });

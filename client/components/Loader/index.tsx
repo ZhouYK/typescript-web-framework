@@ -1,12 +1,10 @@
 import React from 'react';
+import { Loader, LoaderProps } from 'index';
 import './index.less';
 
-interface LoadConfig {
-  text: string
-}
-const Loading = (config: LoadConfig = { text: '加载中' }) => (
+const Loading: Loader<LoaderProps> = () => (
   <div className="loader-container">
-    {config.text}
+    加载中...
   </div>
 );
 

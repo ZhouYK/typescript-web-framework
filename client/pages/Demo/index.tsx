@@ -1,13 +1,19 @@
 import React, { PureComponent, RefObject } from 'react';
+import { Action } from "glue-redux";
 import { State } from '../../reducers/reducers';
 import { connect } from 'react-redux';
 import demoAction from './glue';
-import { Demo } from './demo';
 import './index.less';
 
-class DemoClass extends PureComponent<Demo> {
+interface Person {
+  title: string;
+}
+interface Props {
+  person: Person;
+}
+class DemoClass extends PureComponent<Props> {
   ref: RefObject<any>;
-  constructor(props: Demo) {
+  constructor(props: Props) {
     super(props);
     this.ref = React.createRef();
   }
@@ -16,7 +22,7 @@ class DemoClass extends PureComponent<Demo> {
     const { value } = this.ref.current;
     const ac = await demoAction.asyncGetPerson({
       title: value,
-    }).then((action) => {
+    }).then((action: Action) => {
       console.log('返回的action：', action);
       return action;
     });

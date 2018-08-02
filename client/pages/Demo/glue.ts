@@ -1,10 +1,7 @@
 import axios from 'axios';
-import { createGlue, gluePair } from 'glue-redux';
+import {createGlue, Glue, gluePair} from 'glue-redux';
 
-let demo: {
-  person: (info: {}) => {type: string, data: any},
-  asyncGetPerson: (info: {}) => Promise<any>,
-};
+let demo: Glue;
 const personActionCreator = (data: any) => data;
 const personReducer = (state = { title: '默认值' }, ac: any) => {
   if (ac) {
