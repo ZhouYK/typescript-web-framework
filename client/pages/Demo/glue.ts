@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { createGlue, gluePair } from 'redux-glue';
+import { createGlue, gluePair } from 'glue-redux';
 
 let demo: {
   person: (info: {}) => {type: string, data: any},

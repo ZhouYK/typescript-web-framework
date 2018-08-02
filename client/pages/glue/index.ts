@@ -1,4 +1,4 @@
-import { destruct } from 'redux-glue';
+import { destruct } from 'glue-redux';
 import demo from '../Demo/glue';
 import store from '../../store/index';
 

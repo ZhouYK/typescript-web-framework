@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { createGlue, gluePair } from 'redux-glue';
+import { createGlue, gluePair } from 'glue-redux';
 let demo;
 const personActionCreator = (data) => data;
 const personReducer = (state = { title: '默认值' }, ac) => {
