@@ -1,9 +1,9 @@
 import React, { PureComponent, RefObject } from 'react';
 import { Action } from "glue-redux";
-import { State } from '../../reducers/reducers';
 import { connect } from 'react-redux';
 import demoAction from './glue';
 import './index.less';
+import {State} from "index";
 
 interface Person {
   title: string;

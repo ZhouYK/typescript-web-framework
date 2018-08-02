@@ -8,3 +8,7 @@ export interface LoaderProps extends LoadingComponentProps{
 }
 
 export type ConfigStore = (reducers: Reducer<{}>, initialState: {}, enhancer: StoreEnhancer<{}>) => Store<{}>;
+
+export interface State {
+  [index: string]: any;
+}
