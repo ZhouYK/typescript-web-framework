@@ -1,4 +1,4 @@
-# 移动端默认以width：750的设计稿为准，在此之下 1rem = 100px
+typescript-web-framework
 # 如何开始?
 <pre>
   npm install
