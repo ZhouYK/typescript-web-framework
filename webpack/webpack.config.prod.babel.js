@@ -6,12 +6,16 @@ import OptimizeCssPlugin from 'optimize-css-assets-webpack-plugin';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
 import UglifyjsWebpackPlugin from 'uglifyjs-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import commonConfig, { contentPath } from './common.config';
-import packageObj from '../package.json';
+import SpeedMeasurePlugin from 'speed-measure-webpack-plugin';
+import HappyPack from 'happypack';
 
-const getConfig = publicPath => ({
-  mode: 'production',
-  devtool: 'source-map',
+import commonConfig, { contentPath } from './common.config';
+const smp = new SpeedMeasurePlugin();
+
+const nodeEnv = 'production';
+const getConfig = (publicPath, env) => (smp.wrap({
+  mode: nodeEnv,
+  devtool: 'false',
   entry: commonConfig.entry,
   output: Object.assign({}, commonConfig.output, {
     path: contentPath,
@@ -22,16 +26,7 @@ const getConfig = publicPath => ({
       test: /\.less$/,
       use: [{
         loader: MiniCssExtractPlugin.loader,
-      }, {
-        loader: 'css-loader',
-      }, {
-        loader: 'postcss-loader',
-      }, {
-        loader: 'less-loader',
-        options: {
-          javascriptEnabled: true,
-        },
-      }],
+      }, 'happypack/loader?id=styles'],
     }, {
       test: /\.css$/,
       use: [{
@@ -80,23 +75,48 @@ const getConfig = publicPath => ({
         parallel: true,
         // Enable file caching
         cache: true,
-        sourceMap: true,
+        sourceMap: false,
       }),
-      new OptimizeCssPlugin(),
+      new OptimizeCssPlugin({
+        cssProcessorOptions: {
+          discardComments: { removeAll: true },
+          // 避免 cssnano 重新计算 z-index
+          safe: true,
+        },
+      }),
     ],
     namedModules: true,
     occurrenceOrder: false,
   },
   resolve: commonConfig.resolve,
   plugins: [
+    new HappyPack({
+      id: 'styles',
+      threads: 2,
+      loaders: [{
+        loader: 'css-loader',
+      }, {
+        loader: 'postcss-loader',
+      }, {
+        loader: 'less-loader',
+        options: {
+          javascriptEnabled: true,
+        },
+      }],
+    }),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production'),
+      'process.env.NODE_ENV': JSON.stringify(nodeEnv),
+      'process.env.JENKINS_ENV': JSON.stringify(env),
     }),
     new CleanWebpackPlugin(['dist'], {
       root: path.resolve(__dirname, '../'),
       exclude: ['dll'],
       verbose: true,
       dry: false,
+    }),
+    new webpack.DllReferencePlugin({
+      context: path.join(__dirname, '..'),
+      manifest: require(path.join(__dirname, `../dist/dll/${nodeEnv}/vendors.manifest.json`)),
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[hash:8].css',
@@ -105,7 +125,7 @@ const getConfig = publicPath => ({
       fileName: 'mapping.json',
       publicPath,
       seed: {
-        title: packageObj.name,
+        title: '后台管理系统',
       },
     }),
     new HtmlWebpackPlugin({
@@ -113,11 +133,13 @@ const getConfig = publicPath => ({
       filename: 'index.html',
       templateParameters: {
         vendor: `${publicPath}dll/vendors.dll.js`,
-        title: packageObj.name,
+        title: '中后台管理系统',
+        favicon: 'html/favicon.ico'
       },
       inject: true,
     }),
     ...commonConfig.plugins,
   ],
-});
+  stats: 'minimal'
+}));
 export default getConfig;

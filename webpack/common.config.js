@@ -11,35 +11,17 @@ const entry = {
   index: ['./client/index.jsx'],
 };
 const rules = [{
-  enforce: 'pre',
-  test: /\.(tsx?)|(jsx?)$/,
-  exclude: /node_modules/,
-  use: ['source-map-loader'],
-}, /* {
-  enforce: 'pre',
-  test: /\.jsx?$/,
-  exclude: /node_modules/,
-  use: ['eslint-loader'],
-}, */
-{
   test: /\.tsx?$/,
   exclude: /node_modules/,
   use: ['babel-loader', {
     loader: 'ts-loader',
     options: {
       transpileOnly: true,
+      cacheDirectory: true,
     },
   }],
-}, {
-  test: /\.jsx?$/,
-  exclude: /node_modules/,
-  use: ['babel-loader'],
 }];
 const plugins = [
-  new webpack.DllReferencePlugin({
-    context: __dirname,
-    manifest: require(`${vendorPath}/vendors.manifest.json`),
-  }),
 ];
 const config = {
   entry,
@@ -53,10 +35,14 @@ const config = {
     rules,
   },
   resolve: {
+    alias: {
+      $tools: path.resolve(__dirname, '../client/tools/'),
+      $utils: path.resolve(__dirname, '../client/utils/'),
+    },
     mainFiles: ['index.web', 'index'],
     modules: [
-      'node_modules',
-      path.resolve(__dirname, 'client'),
+      path.resolve(__dirname, '../node_modules'),
+      path.resolve(__dirname, '../client'),
     ],
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
   },
