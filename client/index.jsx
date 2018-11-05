@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { combineReducers } from 'redux';
-import Root from './topContainer/Root/index';
-import App from './App/index';
+import Root from './top/Root/index';
+import App from './top/App/index';
 import reducers from './reducers/index';
 import store, { history } from './store/index';
 store.replaceReducer(combineReducers(reducers));
