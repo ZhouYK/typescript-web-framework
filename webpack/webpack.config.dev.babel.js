@@ -10,7 +10,7 @@ const publicPath = '/'; // 可自定义
 const entry = Object.assign({}, commonConfig.entry);
 const config = {
   devtool: 'eval-source-map',
-  mode: 'development',
+  mode: nodeEnv,
   entry,
   target: commonConfig.target,
   output: Object.assign({}, commonConfig.output, {
@@ -18,21 +18,7 @@ const config = {
     publicPath,
   }),
   module: {
-    rules: [
-      {
-        test: /\.ts$/,
-        enforce: 'pre',
-        use: [
-          {
-            loader: 'tslint-loader',
-            options: {
-              emitErrors: true,
-              failOnHint: true,
-            }
-          }
-        ]
-      },
-      {
+    rules: [{
         test: /\.less$/,
         use: [
           'style-loader',
@@ -70,7 +56,6 @@ const config = {
     compress: true,
   },
   plugins: [
-    new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(nodeEnv),
@@ -95,6 +80,7 @@ const config = {
         title: packageObj.name,
       },
       inject: true,
+      favicon: 'html/favicon.ico'
     }),
     ...commonConfig.plugins,
   ],

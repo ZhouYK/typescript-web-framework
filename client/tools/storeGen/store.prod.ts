@@ -1,12 +1,10 @@
 /**
  * Created by ink on 2018/4/9.
  */
-import { createStore } from 'redux';
-import { ConfigStore } from 'index';
+import { Reducer, StoreEnhancer, createStore } from 'redux';
 
-let configureStore: ConfigStore;
-configureStore = (reducers, initialState = {}, enhancer) => {
+const genStore = (reducers: Reducer<any>, initialState = {}, enhancer: StoreEnhancer<any>) => {
   const store = createStore(reducers, initialState, enhancer);
   return store;
-}
-export default configureStore;
+};
+export default genStore;

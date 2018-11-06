@@ -1,11 +1,9 @@
 /**
  * Created by ink on 2018/4/9.
  */
-import { createStore, compose, StoreEnhancer } from 'redux';
-import { ConfigStore } from 'index';
+import { createStore, compose, StoreEnhancer, Reducer } from 'redux';
 import DevTools from '../devTools/index';
-let configureStore: ConfigStore;
-configureStore = (reducers, initialState = {}, enhancer) => {
+const genStore = (reducers: Reducer<any>, initialState = {}, enhancer: StoreEnhancer<any>) => {
   const innerEnhancer: StoreEnhancer<{}> = compose(
     enhancer,
     DevTools().instrument(),
@@ -13,4 +11,4 @@ configureStore = (reducers, initialState = {}, enhancer) => {
   const store = createStore(reducers, initialState, innerEnhancer);
   return store;
 };
-export default configureStore;
+export default genStore;

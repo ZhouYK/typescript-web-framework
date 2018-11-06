@@ -1,8 +1,12 @@
-import { ConfigStore } from 'index';
-let configureStore: ConfigStore;
-if (process.env.NODE_ENV === 'development') {
-  configureStore = require('./store.local').default;
-} else {
-  configureStore = require('./store.prod').default;
+import { Reducer, Store, StoreEnhancer } from 'redux';
+
+interface GenStore {
+  (reducers: Reducer<any>, initialState: {}, enhancer: StoreEnhancer<any>): Store<any>;
 }
-export default configureStore;
+let genStore: GenStore;
+if (process.env.NODE_ENV === 'development') {
+  genStore = require('./store.local').default;
+} else {
+  genStore = require('./store.prod').default;
+}
+export default genStore;

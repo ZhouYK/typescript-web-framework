@@ -11,6 +11,18 @@ const entry = {
   index: ['./client/index.tsx'],
 };
 const rules = [{
+  test: /\.ts$/,
+  enforce: 'pre',
+  use: [
+    {
+      loader: 'tslint-loader',
+      options: {
+        emitErrors: true,
+        failOnHint: true,
+      }
+    }
+  ]
+},{
   test: /\.tsx?$/,
   exclude: /node_modules/,
   use: [{
@@ -24,15 +36,6 @@ const rules = [{
       transpileOnly: true
     },
   }],
-}, {
-  test: /\.jsx?$/,
-  exclude: /node_modules/,
-  use: [{
-    loader: 'babel-loader',
-    options: {
-      cacheDirectory: true
-    }
-  }]
 }];
 const plugins = [
 ];

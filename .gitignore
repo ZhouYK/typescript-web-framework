@@ -7,3 +7,4 @@ dist/*
 !dist/dll
 ts-build
 package-lock.json
+client/**/*.js

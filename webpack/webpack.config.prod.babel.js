@@ -15,7 +15,7 @@ const smp = new SpeedMeasurePlugin();
 const nodeEnv = 'production';
 const getConfig = (publicPath, env) => (smp.wrap({
   mode: nodeEnv,
-  devtool: 'false',
+  devtool: 'cheap-source-map',
   entry: commonConfig.entry,
   output: Object.assign({}, commonConfig.output, {
     path: contentPath,
@@ -85,8 +85,6 @@ const getConfig = (publicPath, env) => (smp.wrap({
         },
       }),
     ],
-    namedModules: true,
-    occurrenceOrder: false,
   },
   resolve: commonConfig.resolve,
   plugins: [
@@ -132,11 +130,11 @@ const getConfig = (publicPath, env) => (smp.wrap({
       template: './html/index.html',
       filename: 'index.html',
       templateParameters: {
-        vendor: `${publicPath}dll/vendors.dll.js`,
-        title: '中后台管理系统',
-        favicon: 'html/favicon.ico'
+        vendor: `${publicPath}dll/${nodeEnv}/vendors.dll.js`,
+        title: '中后台管理系统'
       },
       inject: true,
+      favicon: 'html/favicon.ico'
     }),
     ...commonConfig.plugins,
   ],
