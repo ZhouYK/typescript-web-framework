@@ -1,10 +1,7 @@
 import React, { PureComponent, RefObject } from 'react';
-import { Action } from 'glue-redux';
-import { connect } from 'react-redux';
-import demoAction from './glue';
+import { connect } from '../../store';
+import demoAction from '../models/demo';
 import './index.less';
-import { State } from 'index';
-import { Fnc } from './glue';
 
 interface Person {
   title: string;
@@ -21,13 +18,7 @@ class DemoClass extends PureComponent<Props> {
 
   onClick = async () => {
     const { value } = this.ref.current;
-    const ac = await (demoAction.asyncGetPerson as Fnc<Promise<any>>)({
-      title: value,
-    }).then((action: Action) => {
-      console.log('返回的action：', action);
-      return action;
-    });
-    console.log('awaite 后获取到的数据：', ac);
+    demoAction.person({title: value});
   }
 
   render() {
@@ -51,12 +42,4 @@ class DemoClass extends PureComponent<Props> {
     );
   }
 }
-
-const mapStateToProps = (state: State) => {
-  const { demo } = state;
-  const { person } = demo;
-  return {
-    person,
-  };
-};
-export default connect(mapStateToProps)(DemoClass);
+export default connect(demoAction)(DemoClass);

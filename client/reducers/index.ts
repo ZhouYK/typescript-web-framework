@@ -1,8 +1,8 @@
 import { routerReducer } from 'react-router-redux';
-import reducers from '../pages/glue/index';
+import models from '../pages/models';
 
-const reducer = {
+const reducers = {
   router: routerReducer,
-  ...reducers,
+  ...models,
 };
-export default reducer;
+export default reducers;

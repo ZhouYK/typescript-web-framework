@@ -1,10 +1,8 @@
 import { ConnectedRouter } from 'react-router-redux';
-import { Provider } from 'react-redux';
-import React, { ComponentClass, ErrorInfo, ReactNode, StatelessComponent } from 'react';
-import { Store } from 'redux';
-import { History } from 'history';
+import React, { ComponentType, ErrorInfo, ReactNode, }  from 'react';
+import { store, history } from '../../store';
 
-let RealContent: StatelessComponent<{component: ComponentClass}>;
+let RealContent: ComponentType<{component: ComponentType}>;
 if (process.env.NODE_ENV === 'development') {
   RealContent = require('./Local').default;
 } else {
@@ -23,19 +21,15 @@ class ErrorCatch extends React.Component<EcProps> {
   }
 }
 interface RootProps {
-  store: Store<Object>;
-  history: History;
-  component: ComponentClass;
+  component: ComponentType;
 }
 const Root = (props: RootProps) => {
-  const { store, history, component } = props;
+  const { component } = props;
   return (
     <ErrorCatch>
-      <Provider store={store}>
-        <ConnectedRouter history={history}>
-          <RealContent component={component} />
-        </ConnectedRouter>
-      </Provider>
+      <ConnectedRouter store={store} history={history}>
+        <RealContent component={component} />
+      </ConnectedRouter>
     </ErrorCatch>
   );
 };

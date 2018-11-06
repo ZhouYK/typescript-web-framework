@@ -8,9 +8,9 @@ let configureStore: ConfigStore;
 configureStore = (reducers, initialState = {}, enhancer) => {
   const innerEnhancer: StoreEnhancer<{}> = compose(
     enhancer,
-    DevTools.instrument(),
+    DevTools().instrument(),
   );
   const store = createStore(reducers, initialState, innerEnhancer);
   return store;
-}
+};
 export default configureStore;

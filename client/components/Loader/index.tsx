@@ -1,8 +1,8 @@
-import React from 'react';
-import { Loader, LoaderProps } from 'index';
+import React, { ComponentType } from 'react';
 import './index.less';
+import LoadingComponentProps = LoadableExport.LoadingComponentProps;
 
-const Loading: Loader<LoaderProps> = () => (
+const Loading: ComponentType<LoadingComponentProps> = () => (
   <div className="loader-container">
     加载中...
   </div>

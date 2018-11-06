@@ -8,18 +8,31 @@ import { vendorPath } from './webpack.config.dll.babel';
 export const contentPath = path.resolve(__dirname, '../dist');
 // 这里可以路径前一个名称作为页面区分
 const entry = {
-  index: ['./client/index.jsx'],
+  index: ['./client/index.tsx'],
 };
 const rules = [{
   test: /\.tsx?$/,
   exclude: /node_modules/,
-  use: ['babel-loader', {
+  use: [{
+    loader: 'babel-loader',
+    options: {
+      cacheDirectory: true
+    }
+  }, {
     loader: 'ts-loader',
     options: {
-      transpileOnly: true,
-      cacheDirectory: true,
+      transpileOnly: true
     },
   }],
+}, {
+  test: /\.jsx?$/,
+  exclude: /node_modules/,
+  use: [{
+    loader: 'babel-loader',
+    options: {
+      cacheDirectory: true
+    }
+  }]
 }];
 const plugins = [
 ];
