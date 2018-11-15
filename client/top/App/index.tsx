@@ -1,16 +1,15 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, Suspense, lazy } from 'react';
 import { Route } from 'react-router-dom';
-import load from '../../tools/lazyLoad/index';
-import Loader from '../../components/Loader/index';
+import Loader from '../../components/Loader';
 import 'normalize.css';
 
-const lazyLoad = load('', Loader);
-
-const Demo = lazyLoad('Demo');
+const Demo = lazy(() => import('../../pages/Demo'));
 
 const App = () => (
   <Fragment>
-    <Route path="*" component={Demo} />
+    <Suspense fallback={<Loader/>}>
+      <Route path="*" component={Demo} />
+    </Suspense>
   </Fragment>
 );
 export default App;

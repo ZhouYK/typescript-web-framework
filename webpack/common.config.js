@@ -11,18 +11,6 @@ const entry = {
   index: ['./client/index.tsx'],
 };
 const rules = [{
-  test: /\.ts$/,
-  enforce: 'pre',
-  use: [
-    {
-      loader: 'tslint-loader',
-      options: {
-        emitErrors: true,
-        failOnHint: true,
-      }
-    }
-  ]
-},{
   test: /\.tsx?$/,
   exclude: /node_modules/,
   use: [{

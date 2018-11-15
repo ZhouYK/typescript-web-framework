@@ -1,12 +1,13 @@
 /**
  * Created by ink on 2018/4/10.
  */
-import { applyMiddleware, combineReducers } from 'redux';
+import { applyMiddleware, Reducer } from 'redux';
 import { middleware } from './common';
 import genStore from '../storeGen/store';
 
-const store = (reducers: {}) => genStore(
-  combineReducers(reducers),
+const defaultReducer = () => ({});
+const store = (reducers: Reducer<any> = defaultReducer) => genStore(
+  reducers,
   {},
   applyMiddleware(...middleware),
 );

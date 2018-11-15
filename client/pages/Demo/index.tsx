@@ -1,6 +1,6 @@
 import React, { PureComponent, RefObject } from 'react';
 import { connect } from '../../store';
-import demoAction from '../models/demo';
+import demoModel from '../models/demo';
 import './index.less';
 
 interface Person {
@@ -18,7 +18,7 @@ class DemoClass extends PureComponent<Props> {
 
   onClick = async () => {
     const { value } = this.ref.current;
-    demoAction.person({title: value});
+    demoModel.person({title: value});
   }
 
   render() {
@@ -42,4 +42,4 @@ class DemoClass extends PureComponent<Props> {
     );
   }
 }
-export default connect(demoAction)(DemoClass);
+export default connect(demoModel)(DemoClass);

@@ -2,17 +2,16 @@
  * Created by ink on 2018/4/9.
  */
 
-import React, { Fragment, StatelessComponent } from 'react';
+import React, { Fragment, ReactElement, StatelessComponent } from 'react';
 import DevTools from '../../tools/devTools/index';
 import { store } from '../../store';
 
 const DT = DevTools();
 
-const Content: StatelessComponent<{ component: StatelessComponent }> = (props) => {
-  const { component: CustomerContent } = props;
+const Content: StatelessComponent<{ children: ReactElement<any> }> = (props) => {
   return (
     <Fragment>
-      <CustomerContent />
+      {props.children}
       <DT store={store} />
     </Fragment>
   );

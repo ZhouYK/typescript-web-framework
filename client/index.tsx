@@ -9,6 +9,8 @@ if (window.Promise && !window.Promise.prototype.finally) {
 require('es6-promise').polyfill();
 
 render(
-  <Root component={App} />,
+  <Root>
+    <App />
+  </Root>,
   document.getElementById('bd'),
 );

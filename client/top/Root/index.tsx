@@ -1,12 +1,12 @@
-import { ConnectedRouter } from 'react-router-redux';
-import React, { ComponentType, ErrorInfo, ReactNode, }  from 'react';
-import { store, history } from '../../store';
+import React, { ComponentType, ErrorInfo, ReactElement, ReactNode, } from 'react';
+import { Router } from 'react-router';
+import history from '../../history';
 
-let RealContent: ComponentType<{component: ComponentType}>;
+let RootComponent: ComponentType<{children: ReactElement<any>}>;
 if (process.env.NODE_ENV === 'development') {
-  RealContent = require('./Local').default;
+  RootComponent = require('./Local').default;
 } else {
-  RealContent = require('./Prod').default;
+  RootComponent = require('./Prod').default;
 }
 interface EcProps {
   children: ReactNode;
@@ -21,15 +21,17 @@ class ErrorCatch extends React.Component<EcProps> {
   }
 }
 interface RootProps {
-  component: ComponentType;
+  [index: string]: any;
 }
 const Root = (props: RootProps) => {
-  const { component } = props;
+  const { children } = props;
   return (
     <ErrorCatch>
-      <ConnectedRouter store={store} history={history}>
-        <RealContent component={component} />
-      </ConnectedRouter>
+      <Router history={history}>
+        <RootComponent>
+          {children}
+        </RootComponent>
+      </Router>
     </ErrorCatch>
   );
 };

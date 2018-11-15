@@ -19,6 +19,16 @@ const config = {
   }),
   module: {
     rules: [{
+      test: /\.tsx$/,
+      enforce: 'pre',
+      use: [{
+        loader: 'tslint-loader',
+        options: {
+          emitErrors: true,
+          failOnHint: true,
+        }
+      }]
+    }, {
         test: /\.less$/,
         use: [
           'style-loader',

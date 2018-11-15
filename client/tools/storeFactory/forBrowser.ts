@@ -1,19 +1,17 @@
 /**
  * Created by ink on 2018/4/10.
  */
-import { routerMiddleware } from 'react-router-redux';
-import { applyMiddleware, combineReducers } from 'redux';
-import { createBrowserHistory, History } from 'history';
+import { applyMiddleware, Reducer } from 'redux';
 import { middleware } from './common';
 import genStore from '../storeGen/store';
 
-const store = (reducers: {}, history: History) => {
-  const middlewares = [...middleware, routerMiddleware(history)];
+const defaultReducer = () => ({});
+const store = (reducers: Reducer<any> = defaultReducer) => {
+  const middlewares = [...middleware];
   return genStore(
-    combineReducers(reducers),
+    reducers,
     {},
     applyMiddleware(...middlewares),
   );
 };
-export const historyConf = (options: {}) => createBrowserHistory(options);
 export default store;
