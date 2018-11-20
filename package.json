@@ -48,7 +48,7 @@
       "node_modules"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!(glue-redux)/)"
+      "node_modules"
     ],
     "globals": {
       "BABEL_ENV": "test"
@@ -79,7 +79,7 @@
     "cross-env": "~5.2.0",
     "css-loader": "~0.28.11",
     "es6-promise": "~4.2.5",
-    "glue-redux": "~3.2.2",
+    "glue-redux": "~3.3.0",
     "happypack": "~5.0.0",
     "history": "~4.7.2",
     "html-webpack-plugin": "~3.2.0",
@@ -94,7 +94,7 @@
     "prop-types": "~15.6.2",
     "react": "~16.6.3",
     "react-dom": "~16.6.3",
-    "react-glux": "~1.1.4",
+    "react-glux": "~1.3.0",
     "react-loadable": "~5.4.0",
     "react-redux": "~5.0.7",
     "react-router": "~4.3.1",
