@@ -25,6 +25,7 @@
     ]
   },
   "scripts": {
+    "test": "jest",
     "start": "webpack-dev-server --config ./webpack/webpack.config.dev.babel.js",
     "dll": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.config.dll.babel.js &&cross-env NODE_ENV=development webpack --config ./webpack/webpack.config.dll.babel.js",
     "build": "webpack --env=local --config  ./webpack/webpack.config.babel.js",
@@ -43,8 +44,8 @@
       "\\.(css|less)$": "<rootDir>/__mocks__/styleMock.js"
     },
     "moduleFileExtensions": [
-      "js",
-      "jsx"
+      "ts",
+      "tsx"
     ],
     "moduleDirectories": [
       "node_modules"
