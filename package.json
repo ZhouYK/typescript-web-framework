@@ -13,10 +13,12 @@
   },
   "lint-staged": {
     "client/**/*.{ts,tsx}": [
-      "tslint --fix"
+      "tslint --fix",
+      "git add"
     ],
     "client/**/*.less": [
-      "stylelint --fix --syntax less"
+      "stylelint --fix --syntax less",
+      "git add"
     ],
     "tests/*": [
       "jest"
@@ -115,6 +117,7 @@
     "@types/redux-devtools-dock-monitor": "~1.1.32",
     "@types/redux-devtools-log-monitor": "~1.0.33",
     "ajv": "~6.5.5",
+    "eslint-config-prettier": "~3.3.0",
     "husky": "~1.0.0",
     "jest": "~23.6.0",
     "lint-staged": "~7.3.0",

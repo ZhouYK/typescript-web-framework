@@ -6,5 +6,4 @@ const Loading: ComponentType<any> = () => (
     加载中...
   </div>
 );
-
 export default Loading;
