@@ -38,7 +38,8 @@ const config = {
   output: {
     filename: 'js/[name].js',
     chunkFilename: 'js/[name].[chunkhash:8].js',
-    libraryTarget: 'umd',
+    // 这个会影响externals的配置
+    // libraryTarget: 'umd',
   },
   module: {
     rules,
@@ -56,8 +57,12 @@ const config = {
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
   },
   externals: {
-    react: 'React',
-    'react-dom': 'ReactDOM',
+    react: 'window.vendorsLib.react',
+    'react-dom': 'window.vendorsLib.reactDom',
+    redux: 'window.vendorsLib.redux',
+    'react-router-dom': 'window.vendorsLib.reactRouterDom',
+    'glue-redux': 'window.vendorsLib.glue',
+    'react-glux': 'window.vendorsLib.reactGlue'
   },
   plugins,
 };

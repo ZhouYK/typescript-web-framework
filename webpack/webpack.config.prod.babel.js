@@ -93,6 +93,7 @@ const getConfig = (publicPath, env) => (smp.wrap({
     ],
   },
   resolve: commonConfig.resolve,
+  externals: commonConfig.externals,
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(nodeEnv),
@@ -103,10 +104,6 @@ const getConfig = (publicPath, env) => (smp.wrap({
       exclude: ['dll'],
       verbose: true,
       dry: false,
-    }),
-    new webpack.DllReferencePlugin({
-      context: path.join(__dirname, '..'),
-      manifest: require(path.join(__dirname, `../dist/dll/${nodeEnv}/vendors.manifest.json`)),
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[hash:8].css',
@@ -130,6 +127,6 @@ const getConfig = (publicPath, env) => (smp.wrap({
     }),
     ...commonConfig.plugins,
   ],
-  stats: 'minimal'
+  //stats: 'minimal'
 }));
 export default getConfig;

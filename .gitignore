@@ -6,6 +6,5 @@ node_modules/
 dist/*
 !dist/dll
 ts-build
-package-lock.json
 client/**/*.js
 client/**/*.jsx
