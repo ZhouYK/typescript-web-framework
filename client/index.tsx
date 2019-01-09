@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
-import Root from './top/Root';
-import App from './top/App';
+import Root from './toc/Root';
+import App from './toc/App';
 
 if (window.Promise && !window.Promise.prototype.finally) {
   window.Promise = null;

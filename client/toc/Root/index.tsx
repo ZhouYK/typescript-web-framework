@@ -1,6 +1,6 @@
 import React, { ComponentType, ErrorInfo, ReactElement, ReactNode, } from 'react';
 import { Router } from 'react-router';
-import history from '../../history';
+import history from './history';
 
 let RootComponent: ComponentType<{children: ReactElement<any>}>;
 if (process.env.NODE_ENV === 'development') {

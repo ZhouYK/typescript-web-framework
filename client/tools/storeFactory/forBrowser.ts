@@ -3,7 +3,7 @@
  */
 import { applyMiddleware, Reducer } from 'redux';
 import { middleware } from './common';
-import genStore from '../storeGen/store';
+import genStore from '../genStore/store';
 
 const defaultReducer = () => ({});
 const store = (reducers: Reducer<any> = defaultReducer) => {
