@@ -1,4 +1,4 @@
-var CACHE_NAME = 'javascript-web-framework-cache-v1';
+var CACHE_NAME = 'typescript-web-framework-cache-v1';
 var urlsToCache = [
   '/dll/production/vendors.dll.js',
   '/favicon.ico',
