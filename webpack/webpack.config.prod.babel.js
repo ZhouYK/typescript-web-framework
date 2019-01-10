@@ -7,6 +7,7 @@ import CleanWebpackPlugin from 'clean-webpack-plugin';
 import UglifyjsWebpackPlugin from 'uglifyjs-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import SpeedMeasurePlugin from 'speed-measure-webpack-plugin';
+import swVersion from '../dist/sw-version';
 
 import commonConfig, { contentPath } from './common.config';
 const smp = new SpeedMeasurePlugin();
@@ -119,6 +120,7 @@ const getConfig = (publicPath, env) => (smp.wrap({
       template: './html/index.html',
       filename: 'index.html',
       templateParameters: {
+        version: `/forsw.gif?${swVersion}`,
         vendor: `${publicPath}dll/${nodeEnv}/vendors.dll.js`,
         title: '中后台管理系统'
       },
