@@ -6,14 +6,11 @@ import OptimizeCssPlugin from 'optimize-css-assets-webpack-plugin';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
 import UglifyjsWebpackPlugin from 'uglifyjs-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import SpeedMeasurePlugin from 'speed-measure-webpack-plugin';
-import swVersion from '../dist/sw-version';
 
 import commonConfig, { contentPath } from './common.config';
-const smp = new SpeedMeasurePlugin();
 
-const nodeEnv = 'production';
-const getConfig = (publicPath, env) => (smp.wrap({
+const nodeEnv = process.env.NODE_ENV || 'production';
+const getConfig = (publicPath, env) => ({
   mode: nodeEnv,
   devtool: 'source-map',
   entry: commonConfig.entry,
@@ -23,6 +20,18 @@ const getConfig = (publicPath, env) => (smp.wrap({
   }),
   module: {
     rules: [{
+      test: /\.(ts|js)x$/,
+      enforce: 'pre',
+      use: [
+        {
+          loader: 'eslint-loader',
+          options: {
+            emitErrors: true,
+            failOnHint: true,
+          },
+        },
+      ],
+    }, {
       test: /\.less$/,
       use: [{
         loader: 'css-loader',
@@ -102,12 +111,11 @@ const getConfig = (publicPath, env) => (smp.wrap({
     }),
     new CleanWebpackPlugin(['dist'], {
       root: path.resolve(__dirname, '../'),
-      exclude: ['dll'],
       verbose: true,
       dry: false,
     }),
     new MiniCssExtractPlugin({
-      filename: 'css/[name].[hash:8].css',
+      filename: 'css/[name].[contenthash].css',
     }),
     new ManifestPlugin({
       fileName: 'mapping.json',
@@ -120,9 +128,7 @@ const getConfig = (publicPath, env) => (smp.wrap({
       template: './html/index.html',
       filename: 'index.html',
       templateParameters: {
-        version: `/forsw.gif?${swVersion}`,
-        vendor: `${publicPath}dll/${nodeEnv}/vendors.dll.js`,
-        title: '中后台管理系统'
+        title: ''
       },
       inject: true,
       favicon: 'html/favicon.ico'
@@ -130,5 +136,5 @@ const getConfig = (publicPath, env) => (smp.wrap({
     ...commonConfig.plugins,
   ],
   //stats: 'minimal'
-}));
+});
 export default getConfig;

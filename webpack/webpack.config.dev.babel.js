@@ -3,9 +3,9 @@ import ManifestPlugin from 'webpack-manifest-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import commonConfig, { contentPath } from './common.config';
 import packageObj from '../package.json';
-import swVersion from '../dist/sw-version';
 
-const nodeEnv = 'development';
+const nodeEnv = process.env.NODE_ENV || 'development';
+const devPort = process.env.PORT || '9999';
 const publicPath = '/'; // 可自定义
 const entry = Object.assign({}, commonConfig.entry);
 const config = {
@@ -16,18 +16,21 @@ const config = {
   output: Object.assign({}, commonConfig.output, {
     path: contentPath,
     publicPath,
+    globalObject: 'this'
   }),
   module: {
     rules: [{
-      test: /\.tsx$/,
+      test: /\.(ts|js)x$/,
       enforce: 'pre',
-      use: [{
-        loader: 'tslint-loader',
-        options: {
-          emitErrors: true,
-          failOnHint: true,
-        }
-      }]
+      use: [
+        {
+          loader: 'eslint-loader',
+          options: {
+            emitErrors: true,
+            failOnHint: true,
+          },
+        },
+      ],
     }, {
         test: /\.less$/,
         use: [
@@ -59,12 +62,13 @@ const config = {
   devServer: {
     hot: true,
     host: '0.0.0.0',
-    port: '8888',
+    port: devPort,
     disableHostCheck: true,
     contentBase: contentPath,
     historyApiFallback: true,
     stats: 'minimal',
     compress: true,
+    proxy: {}
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
@@ -83,8 +87,6 @@ const config = {
       template: './html/index.html',
       filename: 'index.html',
       templateParameters: {
-        version: `/forsw.gif?${swVersion}`,
-        vendor: `${publicPath}dll/${nodeEnv}/vendors.dll.js`,
         title: packageObj.name,
       },
       inject: true,

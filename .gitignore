@@ -4,11 +4,6 @@
 .git/
 node_modules/
 dist/*
-baseLib/*.js
-ts-build
 client/**/*.js
 client/**/*.jsx
-!dist/dll
-!dist/sw.js
-!dist/sw-version.js
-!dist/forsw.gif
+*.log

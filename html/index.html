@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <!-- 必须放到第一个加载，第一个触发fetch事件 -->
-    <img style="display: none" src="<%= version %>" />
     <meta charset="UTF-8">
     <meta http-equiv="x-ua-compatible" content="IE=edge,Chrome=1" />
     <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no"/>
@@ -11,17 +9,5 @@
 </head>
 <body>
     <div id="bd"></div>
-    <script>
-      if ('serviceWorker' in window.navigator) {
-        window.addEventListener('load', function () {
-          window.navigator.serviceWorker.register('/sw.js').then(function (registration) {
-            console.log('SW registered：', registration.scope);
-          }, function (error) {
-            console.log('SW failed：', error);
-          })
-        })
-      }
-    </script>
-    <script src="<%= vendor %>"></script>
 </body>
 </html>

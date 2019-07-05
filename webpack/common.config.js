@@ -1,13 +1,10 @@
-/**
- * Created by ink on 2018/4/4.
- */
 import path from 'path';
 import ProgressBarPlugin from 'progress-bar-webpack-plugin';
 
 export const contentPath = path.resolve(__dirname, '../dist');
 // 这里可以路径前一个名称作为页面区分
 const entry = {
-  index: ['./client/index.tsx'],
+  index: ['./src/index.tsx'],
 };
 const rules = [{
   test: /\.tsx?$/,
@@ -36,8 +33,8 @@ const config = {
   entry,
   target: 'web',
   output: {
-    filename: 'js/[name].[hash:8].js',
-    chunkFilename: 'js/[name].[chunkhash:8].js',
+    filename: 'js/[name].[hash].js',
+    chunkFilename: 'js/[name].[chunkhash].js',
     // 这个会影响externals的配置
     // libraryTarget: 'umd',
   },
@@ -45,24 +42,20 @@ const config = {
     rules,
   },
   resolve: {
-    alias: {
-      $tools: path.resolve(__dirname, '../client/tools/'),
-      $utils: path.resolve(__dirname, '../client/utils/'),
-    },
-    mainFiles: ['index.web', 'index'],
-    modules: [
-      path.resolve(__dirname, '../node_modules'),
-      path.resolve(__dirname, '../client'),
-    ],
-    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+    mainFiles: ['index'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.d.ts', '.less'],
+    symlinks: false
   },
-  externals: {
-    react: 'window.vendorsLib.react',
-    'react-dom': 'window.vendorsLib.reactDom',
-    redux: 'window.vendorsLib.redux',
-    'react-router-dom': 'window.vendorsLib.reactRouterDom',
-    'glue-redux': 'window.vendorsLib.glue',
-    'react-glux': 'window.vendorsLib.reactGlue'
+  optimization: {
+    chunkIds: 'named',
+    moduleIds: 'hashed',
+    runtimeChunk: {
+      name: 'runtime'
+    },
+    splitChunks: {
+      automaticNameDelimiter: '_',
+      cacheGroups: {}
+    }
   },
   plugins,
 };

@@ -1,5 +1,5 @@
 import React, { Fragment, Suspense, lazy } from 'react';
-import { Route } from 'react-router-dom';
+import { Route } from 'react-router';
 import Loader from '../../components/Loader';
 import 'normalize.css';
 
