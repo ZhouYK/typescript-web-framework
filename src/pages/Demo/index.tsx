@@ -1,57 +1,70 @@
 import React, { PureComponent, RefObject } from 'react';
-import { connect } from '../../store';
-import demoModel from '../models/demo';
+import store from '../../store';
 import './index.less';
 
 interface Person {
-  title: string;
+    title: string;
 }
-interface Props {
-  person: Person;
-  country: string;
+interface State {
+    person: Person;
+    country: string;
 }
-class DemoClass extends PureComponent<Props> {
-  refName: RefObject<any>;
-  refCountry: RefObject<any>;
-  constructor(props: Props) {
-    super(props);
-    this.refName = React.createRef();
-    this.refCountry = React.createRef();
-  }
+class DemoClass extends PureComponent<any, State> {
+    public refName: RefObject<any>;
 
-  onClick = async () => {
-    const { value } = this.refName.current;
-    demoModel.person({title: value});
-    const { value: country } = this.refCountry.current;
-    demoModel.country(country);
-  }
+    public refCountry: RefObject<any>;
 
-  render() {
-    const { person, country } = this.props;
-    return (
-      <div className="demo-container">
-        <form action="/" method="get">
-          <label htmlFor="input">
+    public constructor(props: any) {
+        super(props);
+        this.refName = React.createRef();
+        this.refCountry = React.createRef();
+        store.subscribe([store.model.demo], (demo) => {
+            if (!this.state) {
+                // eslint-disable-next-line react/no-direct-mutation-state
+                this.state = {
+                    ...demo,
+                };
+            } else {
+                this.setState({
+                    ...demo,
+                });
+            }
+        });
+    }
+
+    public onClick = async () => {
+        const { value } = this.refName.current;
+        store.model.demo.person({ title: value });
+        const { value: country } = this.refCountry.current;
+        store.model.demo.country(country);
+    }
+
+    public render() {
+        const { person, country } = this.state;
+        return (
+            <div className="demo-container">
+                <form action="/" method="get">
+                    <label htmlFor="input">
               人名：
-            <input ref={this.refName} type="text" id="input" />
-          </label>
-          <label htmlFor="country">
+                        <input ref={this.refName} type="text" id="input" />
+                    </label>
+                    <label htmlFor="country">
             国家：
-            <input ref={this.refCountry} type="text" id="country"/>
-          </label>
-          <button type="button" onClick={this.onClick}>
+                        <input ref={this.refCountry} type="text" id="country"/>
+                    </label>
+                    <button type="button" onClick={this.onClick}>
               提交
-          </button>
-        </form>
-        <p>
+                    </button>
+                </form>
+                <p>
             添加的人名为：
-          {person.title}
-          <br/>
+                    {person.title}
+                    <br/>
             添加的国家为：
-          {country}
-        </p>
-      </div>
-    );
-  }
+                    {country}
+                </p>
+            </div>
+        );
+    }
 }
-export default connect(demoModel)(DemoClass);
+export default DemoClass;

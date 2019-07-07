@@ -1,13 +1,13 @@
-import { gluer, gas } from 'glue-redux';
+import { gluer } from 'femo';
 
 const person = gluer((data, state) => ({ ...state, ...data }), {
-  title: '',
+    title: '',
 });
 
-const country = gas(async (cou) => cou, gluer('China'));
+const country = gluer('China');
 const demo = {
-  person,
-  country
+    person,
+    country,
 };
 
 export default demo;

@@ -2,8 +2,8 @@ import React, { ComponentType } from 'react';
 import './index.less';
 
 const Loading: ComponentType<any> = () => (
-  <div className="loader-container">
+    <div className="loader-container">
     加载中...
-  </div>
+    </div>
 );
 export default Loading;

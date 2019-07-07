@@ -1,13 +1,6 @@
-import { combineReducers } from 'redux';
-import { destruct } from 'react-glux';
-import storeFactory from '../tools/storeFactory/forBrowser';
+import femo from 'femo';
 import models from '../pages/models';
 
-const store = storeFactory();
-const { reducers, connect } = destruct(store)(models);
-store.replaceReducer(combineReducers(reducers));
+const store = femo(models);
 
-export {
-  connect,
-  store
-};
+export default store;
