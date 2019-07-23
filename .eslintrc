@@ -33,5 +33,10 @@
     "plugin:jest/recommended"
   ],
   "rules": {
+	"react/display-name": 0,
+	"@typescript-eslint/camelcase": 0,
+	"import/prefer-default-export": 0,
+	"max-len": ["error", { "code": 200 }]
   }
+
 }
