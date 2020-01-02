@@ -1,0 +1,127 @@
+@marginRight: 8;
+@moreBtnWidth: 30;
+@menuItemHeight: 40;
+@white: #ffffff;
+@btn-disable-bg: #dee0e3;
+@btn-disable-color: #8f959e;
+
+:export {
+  marginRight: @marginRight;
+  moreBtnWidth: @moreBtnWidth;
+}
+
+.adjustButtons {
+  white-space: nowrap;
+  overflow: hidden;
+  display: flex;
+
+  :global {
+    button.zyk-btn.activity-btn-locked {
+      cursor: unset;
+      color: @btn-disable-color;
+      background: @btn-disable-bg;
+      border: none;
+
+      &::after {
+        display: none;
+        animation: none;
+        transition: none;
+      }
+
+      &:hover,
+      &:active,
+      &:focus {
+        color: @btn-disable-color;
+        background: @btn-disable-bg;
+      }
+    }
+
+    .adjust-more-btn {
+      padding: 0;
+      width: 32px;
+      min-width: auto;
+      //display: flex;
+      //justify-content: center;
+      //align-items: center;
+
+      svg {
+        width: 32px;
+        height: 32px;
+      }
+    }
+  }
+
+  &:global {
+    > button.zyk-btn:last-child,
+    > .button-wrap-anchor:last-child {
+      margin-right: 0;
+    }
+
+    > button.zyk-btn,
+    > .button-wrap-anchor {
+      margin-right: @marginRight * 1px;
+      margin-top: 16px;
+    }
+  }
+}
+
+.adjustMoreMenu {
+  width: 200px;
+  padding: 8px 0;
+
+  :global {
+    .zyk-dropdown-menu-item {
+      padding: 8px 12px;
+      border-bottom: @white 2px solid;
+      position: relative;
+      height: @menuItemHeight * 1px;
+
+      button.zyk-btn {
+        position: absolute;
+        text-align: left;
+        left: 0;
+        height: @menuItemHeight * 1px;
+        top: 0;
+        border: none;
+        width: 100%;
+        padding: 0 0 0 12px;
+        background: transparent;
+
+        &:active,
+        &:hover {
+          background: transparent;
+          color: unset;
+        }
+
+        &.zyk-btn-primary {
+          color: unset;
+        }
+      }
+    }
+  }
+}
+
+.overlayClassName {
+  :global {
+    button.zyk-btn.activity-btn-locked {
+      cursor: not-allowed;
+      color: @btn-disable-color;
+      background: @btn-disable-bg;
+      border-radius: unset;
+      border: none;
+
+      &::after {
+        display: none;
+        animation: none;
+        transition: none;
+      }
+
+      &:hover,
+      &:active,
+      &:focus {
+        color: @btn-disable-color;
+        background: @btn-disable-bg;
+      }
+    }
+  }
+}

@@ -42,9 +42,12 @@ const config = {
         rules,
     },
     resolve: {
-        mainFiles: ['index'],
-        extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.d.ts', '.less'],
-        symlinks: false,
+      alias: {
+        '@src': path.resolve('src'),
+      },
+      mainFiles: ['index'],
+      extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.d.ts', '.less'],
+      symlinks: false,
     },
     optimization: {
         chunkIds: 'named',

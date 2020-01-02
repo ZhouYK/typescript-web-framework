@@ -87,6 +87,7 @@ const getConfig = (publicPath, env) => ({
                 },
             }),
         ],
+      ...commonConfig.optimization,
     },
     resolve: commonConfig.resolve,
     externals: commonConfig.externals,
@@ -110,6 +111,11 @@ const getConfig = (publicPath, env) => ({
                 title: '后台管理系统',
             },
         }),
+      new webpack.SourceMapDevToolPlugin({
+        filename: '[file].map',
+        test: /\.(js|ts)x?$/,
+        append: '\n//# sourceMappingURL=https://avoidSrcmapLeak.net/js/[url]',
+      }),
         new HtmlWebpackPlugin({
             template: './html/index.html',
             filename: 'index.html',
