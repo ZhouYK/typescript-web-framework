@@ -1,13 +1,7 @@
-import { Dispatch } from 'redux';
 import { RouteComponentProps } from 'react-router';
-import { QueryRoad, RoadMap } from '../../pages/pagesRoadMap';
+import { QueryRoad, RoadMap } from '@src/pages/model/pagesRoadMap';
 
 export interface Props {
-  routes: RoadMap[];
-  dispatch: Dispatch<any>;
-}
-
-export interface DvaProps {
   routes: RoadMap[];
 }
 

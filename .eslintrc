@@ -9,14 +9,20 @@
     "tsconfigRootDir": "./"
   },
   "settings": {
-    "import/resolver": {
-      "node": {
-        "extensions": [".ts", ".tsx", ".js", ".jsx", ".d.ts"]
-      }
-    },
-    "react": {
-      "version": "detect"
-    }
+	"import/resolver": {
+	  "node": {
+		"extensions": [".ts", ".tsx", ".js", ".jsx", ".d.ts"]
+	  },
+	  "alias": {
+		"map": [
+		  ["@src", "./src"]
+		],
+		"extensions": [".ts", ".tsx", ".js", ".jsx"]
+	  }
+	},
+	"react": {
+	  "version": "detect"
+	}
   },
   "env": {
     "jest/globals": true
@@ -35,8 +41,12 @@
   "rules": {
 	"react/display-name": 0,
 	"@typescript-eslint/camelcase": 0,
-	"import/prefer-default-export": 0,
+	"@typescript-eslint/no-empty-interface": 0,
 	"@typescript-eslint/indent": 0,
+	"no-param-reassign": 0,
+	"no-shadow": 0,
+	"import/no-extraneous-dependencies": "off",
+	"import/prefer-default-export": 0,
 	"max-len": ["error", { "code": 200 }]
   }
 

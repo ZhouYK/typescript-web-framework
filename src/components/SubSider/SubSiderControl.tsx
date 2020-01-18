@@ -3,7 +3,7 @@ import React, { useCallback, useEffect } from 'react';
 import pathToRegexp from 'path-to-regexp';
 import LeftSubSider from './index';
 import { SubSider } from '../Routes/interface';
-import { RoadMap } from '../../pages/pagesRoadMap';
+import { RoadMap } from '../../pages/model/pagesRoadMap';
 import './style.less';
 
 const { useState } = React;

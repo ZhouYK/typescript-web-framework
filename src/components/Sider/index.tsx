@@ -3,7 +3,7 @@ import { Layout, Menu, Icon } from '@zyk/components';
 import pathToRegexp from 'path-to-regexp';
 import React, { useMemo, useRef } from 'react';
 import { uniq } from 'lodash';
-import { RoadMap } from '../../pages/pagesRoadMap';
+import { RoadMap } from '../../pages/model/pagesRoadMap';
 import { State, KeyPathItem, CurContext, RefInstance, Props, EXTERN_KEY_PREFIX } from './interface';
 import style from './style.less';
 

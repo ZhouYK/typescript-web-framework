@@ -1,20 +1,15 @@
-import { connect } from 'dva';
-import { RouteComponentProps, withRouter } from 'dva/router';
-import React, { useCallback, useEffect } from 'react';
-import { get } from 'lodash';
-import pathToRegexp from 'path-to-regexp';
+import React, { useCallback, useEffect, useState } from 'react';
+import { pathToRegexp } from 'path-to-regexp';
+import { RouteComponentProps } from 'react-router';
+import { RoadMap } from '@src/pages/model/pagesRoadMap';
+import store from '@src/store';
+
 import LeftSider from './index';
-import { RoadMap } from '../../pages/pagesRoadMap';
-import { UserInfo } from '../../models/userInfo';
 import './style.less';
 
-const { useState } = React;
-
-interface Props {
+interface WholeProps extends RouteComponentProps {
   sider: RoadMap[];
 }
-
-interface WholeProps extends Props, RouteComponentProps {}
 
 interface SimpleRoute {
   path: string;
@@ -29,7 +24,7 @@ interface CurContext {
 const genRenderMenus = (curContext: CurContext) => {
   // @ts-ignore
   // eslint-disable-next-line consistent-return, func-names
-  const renderRecordMenus = function(menus: RoadMap[], path: string[] = [], parentHasSider: boolean = true) {
+  const renderRecordMenus = function (menus: RoadMap[], path: string[] = [], parentHasSider: boolean = true) {
     // 第一次调用
     if (path.length === 0) {
       // 如果sider数据发生了更新才做重新渲染
@@ -39,7 +34,7 @@ const genRenderMenus = (curContext: CurContext) => {
       }
       curContext.recordMenus = [];
     }
-    menus.forEach(item => {
+    menus.forEach((item) => {
       path.push(item.path);
       const keyPath = path.join('');
       let { hasSider } = item;
@@ -61,7 +56,7 @@ const genRenderMenus = (curContext: CurContext) => {
   return renderRecordMenus;
 };
 
-const SiderControl = (props: WholeProps) => {
+const SiderControl = (props: RouteComponentProps) => {
   const [curContext] = useState(() => {
     const initial: CurContext = {
       cachedSider: [],
@@ -69,6 +64,12 @@ const SiderControl = (props: WholeProps) => {
     };
     return initial;
   });
+
+  const [sider, updateSider] = useState(() => store.referToState(store.model.pagesRoadMap));
+
+  useEffect(() => store.subscribe([store.model.pagesRoadMap], (sider: RoadMap[]) => {
+      updateSider(sider);
+    }), []);
 
   const mainFn = useCallback((params: WholeProps) => {
     // 渲染menus
@@ -88,7 +89,7 @@ const SiderControl = (props: WholeProps) => {
 
   // @ts-ignore
   const [siderShow, siderShowUpdater] = useState(() => {
-    const arr = mainFn(props);
+    const arr = mainFn({ ...props, sider });
     // 由于是精确匹配，取数组第一个，遵守先匹配先生效的原则
     if (arr.length === 0) {
       return false;
@@ -98,7 +99,7 @@ const SiderControl = (props: WholeProps) => {
   });
 
   useEffect(() => {
-    const arr = mainFn(props);
+    const arr = mainFn({ ...props, sider });
     let result;
     // 由于是精确匹配，取数组第一个，遵守先匹配先生效的原则
     if (arr.length === 0) {
@@ -108,18 +109,11 @@ const SiderControl = (props: WholeProps) => {
       result = target.hasSider;
     }
     siderShowUpdater(result);
-  }, [props.location.pathname, props.location.search, props.sider]);
+  }, [props.location.pathname, props.location.search, sider]);
 
   return siderShow ? (
-    <LeftSider history={props.history} location={props.location} match={props.match} sider={props.sider} />
+    <LeftSider history={props.history} location={props.location} match={props.match} sider={sider} />
   ) : null;
 };
 
-const mapStateToProps = (state: { userInfo: UserInfo }): Props => {
-  const sider = get(state, 'userInfo.userRoadMap', []) || [];
-  return {
-    sider,
-  };
-};
-
-export default withRouter(connect(mapStateToProps)(SiderControl));
+export default SiderControl;

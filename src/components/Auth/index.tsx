@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { permissionCheck } from '../../utils/auth';
-import { Permission } from '../../pages/pagesRoadMap';
+import { Permission } from '../../pages/model/pagesRoadMap';
 
 interface AuthProps {
   // 组件本身需要的权限码，权限条件

@@ -1,9 +1,9 @@
 import { RouteComponentProps } from 'react-router';
 import React from 'react';
 import { SubSider } from '../Routes/interface';
-import { QueryRoad } from '../../pages/pagesRoadMap';
+import { QueryRoad } from '../../pages/model/pagesRoadMap';
 
-export { QueryRoad, Key } from '../../pages/pagesRoadMap';
+export { QueryRoad, Key } from '../../pages/model/pagesRoadMap';
 export { SubSider } from '../Routes/interface';
 export { EXTERN_KEY_PREFIX } from '../Sider/interface';
 export interface State {

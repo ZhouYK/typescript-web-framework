@@ -1,7 +1,7 @@
 import React from 'react';
 import { withRouter } from 'react-router';
 import { FailedPage, Mode } from '../../FOF';
-import { getPagesRoadMap } from '../../../pages/pagesRoadMap';
+import { getPagesRoadMap } from '../../../pages/model/pagesRoadMap';
 import { basename } from '../../../runtime/env';
 import { captureException } from '../../../utils/util';
 

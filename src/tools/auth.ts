@@ -1,5 +1,5 @@
 import { isArray, isSet, isString, isNumber } from 'lodash';
-import { Permission, QueryRoad, RoadMap } from '../pages/pagesRoadMap';
+import { Permission, QueryRoad, RoadMap } from '../pages/model/pagesRoadMap';
 import { GrayFeature } from '../pages/grayFeature';
 
 export const permissionCheck = (permissions: Permission = [], purviews: { [index: string]: boolean }) => {

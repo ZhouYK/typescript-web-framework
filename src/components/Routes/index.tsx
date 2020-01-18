@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Route, Switch, RouteComponentProps } from 'dva/router';
-import { RoadMap, /* fallbackRoad, */ road404, QueryRoad } from '../../pages/pagesRoadMap';
-import { DvaProps, SubSider, KeyPathItem, CurContext } from './interface';
-import { queryToObject } from '../../utils/util';
+import { Route, Switch, RouteComponentProps } from 'react-router';
+import { queryToObject } from '@src/tools/util';
+import { RoadMap, /* fallbackRoad, */ road404, QueryRoad } from '@src/pages/model/pagesRoadMap';
+import { SubSider, KeyPathItem, CurContext } from './interface';
 
 const genPermittedRoutesFn = (curContext: CurContext) => {
   // @ts-ignore
@@ -145,8 +145,9 @@ const genRenderRoutesFn = (curContext: CurContext, props: Props) => {
   return renderRoutes;
 };
 
-interface Props extends DvaProps {
+interface Props {
   road404?: RoadMap;
+  routes: RoadMap[];
 }
 
 const Routes: React.FC<Props> = (props: Props) => {
@@ -173,10 +174,7 @@ const Routes: React.FC<Props> = (props: Props) => {
   getPermittedRoutes(routes);
   renderRoutes(routes);
 
-  const contentView = <Switch>{curContext.routeComponents}</Switch>;
-
-  return contentView;
+  return <Switch>{curContext.routeComponents}</Switch>;
 };
 
-// export default withRouter(connect(mapStateToProps)(Routes));
 export default Routes;

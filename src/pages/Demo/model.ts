@@ -1,13 +1,13 @@
 import { gluer } from 'femo';
 
 const person = gluer((data, state) => ({ ...state, ...data }), {
-    title: '',
+  title: '',
 });
 
 const country = gluer('China');
 const demo = {
-    person,
-    country,
+  person,
+  country,
 };
 
 export default demo;

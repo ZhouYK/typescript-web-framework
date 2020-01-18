@@ -7,7 +7,7 @@ import './index.less';
 import F00 from '../../assets/svg/404.svg';
 import FailedSvg from '../../partialPageEntry/bridge/video/assets/svg/failed.svg';
 
-import { RoadMap } from '../../pages/pagesRoadMap';
+import { RoadMap } from '../../pages/model/pagesRoadMap';
 
 export enum Mode {
   default = 'default',

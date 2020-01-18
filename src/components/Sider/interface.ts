@@ -1,6 +1,6 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router';
-import { RoadMap } from '../../pages/pagesRoadMap';
+import { RoadMap } from '../../pages/model/pagesRoadMap';
 
 export const EXTERN_KEY_PREFIX = 'EXTERN_KEY_PREFIX';
 

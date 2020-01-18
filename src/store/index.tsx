@@ -1,6 +1,6 @@
 import femo from 'femo';
-import models from '../pages/models';
+import model from '../pages/model';
 
-const store = femo(models);
+const store = femo(model);
 
 export default store;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
-import Root from './toc/Root';
+import Root from './Root';
 import App from './App';
 
 if (window.Promise && !window.Promise.prototype.finally) {

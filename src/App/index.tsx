@@ -1,59 +1,40 @@
-import { Layout } from '@zyk/components';
-import React from 'react';
-import { connect, DvaInstance } from 'dva';
-import { RouteComponentProps } from 'react-router';
-import { get} from 'lodash';
-import { Dispatch } from 'redux';
-import DispatchRoute from '../components/Routes/DispatchRoute';
-import SiderControl from '../components/Sider/SiderControl';
-import HeaderControl from '../components/PeopleHeader/HeaderControl';
-import Evaluation from '../components/Evaluation';
+import React, { FC } from 'react';
+import { Layout } from 'antd';
+import { RouteComponentProps, withRouter } from 'react-router';
+import SiderControl from '@src/components/Sider/SiderControl';
+import DispatchRoute from '@src/components/Routes/DispatchRoute';
+import subSiderStyle from '@src/components/SubSider/style.less';
+import HeaderControl from "@src/components/Header/HeaderControl";
+
 import style from './style.less';
-import subSiderStyle from '../components/SubSider/style.less';
-import { RoadMap } from '../pages/pagesRoadMap';
-import { UserInfo } from '../models/userInfo';
 
 const { Content } = Layout;
 
 interface AppProps extends RouteComponentProps {
-  app: DvaInstance;
-  pagesRoadMap: RoadMap[];
-  dispatch: Dispatch;
 }
 
-const App = (props: AppProps) => {
-  const { app, ...routeProps } = props;
+const App: FC<AppProps> = (props: AppProps) => {
+  const { ...routeProps } = props;
 
   return (
-    <React.Fragment>
-      <Layout style={{ height: '100%' }}>
-        <HeaderControl />
-        <Content className={style.contentWrap}>
-          <Layout hasSider>
-            <SiderControl {...routeProps} />
-            <Layout
-              id="page-layout"
-              style={{
-                overflowX: 'auto',
-              }}
-              className={subSiderStyle.subSider}
-            >
-              <DispatchRoute />
-              <Evaluation />
-            </Layout>
+    <Layout style={{ height: '100%' }}>
+      <HeaderControl {...routeProps} />
+      <Content className={style.contentWrap}>
+        <Layout hasSider>
+          <SiderControl {...routeProps} />
+          <Layout
+            id="page-layout"
+            style={{
+              overflowX: 'auto',
+            }}
+            className={subSiderStyle.subSider}
+          >
+            <DispatchRoute { ...routeProps } />
           </Layout>
-        </Content>
-      </Layout>
-    </React.Fragment>
+        </Layout>
+      </Content>
+    </Layout>
   );
 };
 
-const mapStateToProps = (state: { userInfo: UserInfo }) => {
-  const pagesRoadMap = get(state, 'userInfo.userRoadMap') || [];
-
-  return {
-    pagesRoadMap,
-  };
-};
-
-export default connect(mapStateToProps)(App);
+export default withRouter(App);
