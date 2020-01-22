@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {ReactElement} from 'react';
 import { RouteComponentProps } from 'react-router';
 import { RoadMap } from '../../pages/model/pagesRoadMap';
 
@@ -28,3 +28,11 @@ export interface CurContext {
 export interface RefInstance {
   current: any;
 }
+
+export interface RecordMenusFunc {
+  (menus: RoadMap[], path?: string[], parentHasSider?: boolean): void;
+}
+
+export interface MenusFunc {
+  (menus: RoadMap[], path?: string[], depth?: number): ReactElement[];
+};

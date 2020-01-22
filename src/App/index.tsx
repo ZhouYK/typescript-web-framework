@@ -4,7 +4,7 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import SiderControl from '@src/components/Sider/SiderControl';
 import DispatchRoute from '@src/components/Routes/DispatchRoute';
 import subSiderStyle from '@src/components/SubSider/style.less';
-import HeaderControl from "@src/components/Header/HeaderControl";
+import HeaderControl from '@src/components/Header/HeaderControl';
 
 import style from './style.less';
 

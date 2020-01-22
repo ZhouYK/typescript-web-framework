@@ -51,8 +51,7 @@ export const queryToObject = (searchStr: string = window.location.search, initia
  * 对象转查询字符串
  * @param obj
  */
-export const objectToQuery = (obj: { [index: string]: any }) => {
-  return Object.keys(obj).reduce((pre, cur) => {
+export const objectToQuery = (obj: { [index: string]: any }) => Object.keys(obj).reduce((pre, cur) => {
     let temp;
     if (!pre) {
       temp = `${cur}=${encodeURIComponent(obj[cur])}`;
@@ -61,7 +60,6 @@ export const objectToQuery = (obj: { [index: string]: any }) => {
     }
     return temp;
   }, '');
-};
 
 export function getLocalItem(key: string): string | null {
   return window.localStorage.getItem(key);
@@ -79,8 +77,7 @@ export const openLark = (() => {
   };
 })();
 
-export const promiseRun = (func: Function, args?: any[]) => {
-  return new Promise(resolve => {
+export const promiseRun = (func: Function, args?: any[]) => new Promise((resolve) => {
     try {
       if (args) {
         func(...args);
@@ -93,7 +90,6 @@ export const promiseRun = (func: Function, args?: any[]) => {
       resolve();
     }
   });
-};
 
 /**
  * 获取标准时间对应的本地时间
@@ -125,5 +121,4 @@ export const tooltipTool: {
 /**
  * 当前客户端浏览器是否为移动端
  */
-export const isMobile = () =>
-  /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(window.navigator.userAgent);
+export const isMobile = () => /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(window.navigator.userAgent);

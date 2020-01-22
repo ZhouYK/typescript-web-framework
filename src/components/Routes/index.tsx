@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Route, Switch, RouteComponentProps } from 'react-router';
-import { queryToObject } from '@src/tools/util';
-import { RoadMap, /* fallbackRoad, */ road404, QueryRoad } from '@src/pages/model/pagesRoadMap';
-import { SubSider, KeyPathItem, CurContext } from './interface';
+import React, { ReactElement, useState } from 'react';
+import { Route, RouteComponentProps, Switch } from 'react-router';
+import { road404, RoadMap } from '@src/pages/model/pagesRoadMap';
+import {
+CurContext, KeyPathItem, PermittedRouteFunc, SubSider,
+} from './interface';
 
-const genPermittedRoutesFn = (curContext: CurContext) => {
+const genPermittedRoutesFn = (curContext: CurContext): PermittedRouteFunc => {
   // @ts-ignore
   const getPermittedRoutes = (
     roads: RoadMap[],
@@ -13,7 +14,7 @@ const genPermittedRoutesFn = (curContext: CurContext) => {
     parentHasSubSider: boolean = true,
     parentHasSider: boolean = true,
     parentFallback: (props: RouteComponentProps) => any = null,
-  ) => {
+  ): void => {
     if (path.length === 0) {
       // 如果routes数据发生了变化才去重新生成
       // 否则使用缓存数据
@@ -22,7 +23,7 @@ const genPermittedRoutesFn = (curContext: CurContext) => {
       }
       curContext.keyPaths = [];
     }
-    roads.map(item => {
+    roads.map((item): void => {
       path.push(item.path);
       const keyPath = path.join('');
       let { hasSubSider, hasSider, fallback } = item;
@@ -45,7 +46,6 @@ const genPermittedRoutesFn = (curContext: CurContext) => {
           hasSubSider,
           access: item.access,
           fallback,
-          queries: item.queries,
           authResult: item.authResult,
         };
         curContext.keyPaths.push(obj);
@@ -67,21 +67,20 @@ const genPermittedRoutesFn = (curContext: CurContext) => {
           getPermittedRoutes(item.leafPaths, path, subSider, hasSubSider, hasSider, fallback);
         }
       }
-      return path.pop();
+      path.pop();
     });
   };
   return getPermittedRoutes;
 };
 
-const genRenderRoutesFn = (curContext: CurContext, props: Props) => {
-  const renderRoutes = (routes: RoadMap[]): void => {
+const genRenderRoutesFn = (curContext: CurContext, props: Props): (routes: RoadMap[]) => void => (routes: RoadMap[]): void => {
     if (curContext.cachedRoutes === routes) {
       return;
     }
     // fallbackRoad和404作为兜底
     // curContext.keyPaths.push(/* fallbackRoad, */road404);
 
-    const finalRoutes = curContext.keyPaths.map((route: KeyPathItem) => {
+    const finalRoutes = curContext.keyPaths.map((route: KeyPathItem): ReactElement => {
       if (route.access === false) {
         // 默认使用通用的404
         if (!route.fallback) {
@@ -90,76 +89,51 @@ const genRenderRoutesFn = (curContext: CurContext, props: Props) => {
         // 否则使用自定义的fallback逻辑
         return (
           <Route
-            key={route.path}
+            key={ route.path }
             exact
-            path={route.path}
-            render={(props: RouteComponentProps) => {
+            path={ route.path }
+            render={ (props: RouteComponentProps): any => {
               const result = route.fallback(props);
               return result || null;
-            }}
+            } }
           />
         );
       }
       if (route.hasSubSider && route.subSider) {
         return (
           <Route
-            key={route.path}
+            key={ route.path }
             exact
-            path={route.path}
-            render={(props: RouteComponentProps) => {
-              // 针对queries进行判断
-              // 如果queries中某一项access为false，且设置了fallback，那么判断其是否被匹配。如果被匹配了，则执行fallback
-              if (route.queries) {
-                const queryObj = queryToObject(props.location.search, {});
-                for (let i = 0; i < route.queries.length; i += 1) {
-                  const q: QueryRoad = route.queries[i];
-                  // 因为这里是query，路由其实匹配了的，
-                  // 强制要求fallback有效时才做特定渲染
-                  if (q.access === false && q.fallback) {
-                    const keys = Object.keys(q.key);
-                    if (
-                      (keys.length === 0 && Object.keys(queryObj).length === 0) ||
-                      (keys.length !== 0 && keys.every((index: string) => index in queryObj))
-                    ) {
-                      const result = q.fallback(props);
-                      return result || null;
-                    }
-                  }
-                }
-              }
+            path={ route.path }
+            render={ (props: RouteComponentProps): ReactElement => {
               const Component = route.component;
-              return <Component {...props} />;
-            }}
+              return <Component { ...props } />;
+            } }
           />
         );
       }
-      return <Route key={route.path} exact path={route.path} component={route.component} />;
+      return <Route key={ route.path } exact path={ route.path } component={ route.component }/>;
     });
     const final404 = props.road404 || road404;
-    const route404 = <Route key="404" path={final404.path} component={final404.component} />;
+    const route404 = <Route key="404" path={ final404.path } component={ final404.component }/>;
 
     curContext.routeComponents = [...finalRoutes, route404];
 
     curContext.cachedRoutes = routes;
   };
-  return renderRoutes;
-};
 
 interface Props {
   road404?: RoadMap;
   routes: RoadMap[];
 }
 
-const Routes: React.FC<Props> = (props: Props) => {
+const Routes: React.FC<Props> = (props: Props): ReactElement => {
   // const { loadingStatus } = props;
-  const [curContext] = useState(() => {
-    const initial: CurContext = {
-      keyPaths: [],
-      cachedRoutes: [],
-      routeComponents: [],
-    };
-    return initial;
-  });
+  const [curContext] = useState((): CurContext => ({
+    keyPaths: [],
+    cachedRoutes: [],
+    routeComponents: [],
+  }));
 
   // 生成path和component对应的路由配置数组
   // 不放在useEffect和useLayoutEffect中是因为他们执行时机是在渲染在浏览器生效后再触发，会触发第二次渲染

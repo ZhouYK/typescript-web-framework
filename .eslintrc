@@ -40,14 +40,19 @@
   ],
   "rules": {
 	"react/display-name": 0,
+	"react/no-direct-mutation-state": 0,
 	"@typescript-eslint/camelcase": 0,
 	"@typescript-eslint/no-empty-interface": 0,
 	"@typescript-eslint/indent": 0,
 	"no-param-reassign": 0,
 	"no-shadow": 0,
+	"func-names": 0,
 	"import/no-extraneous-dependencies": "off",
+	"@typescript-eslint/no-explicit-any": "off",
+	"@typescript-eslint/explicit-member-accessibility": "off",
 	"import/prefer-default-export": 0,
-	"max-len": ["error", { "code": 200 }]
+	"max-len": ["error", { "code": 200 }],
+	"array-callback-return": "off"
   }
 
 }

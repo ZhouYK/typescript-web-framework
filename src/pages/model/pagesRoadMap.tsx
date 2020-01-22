@@ -2,26 +2,13 @@ import { ComponentType, lazy, ReactNode } from 'react';
 import { RouteComponentProps } from 'react-router';
 import { gluer } from 'femo';
 
-const Demo = lazy(() => import('../Demo'));
+const Demo = lazy((): Promise<any> => import('../Demo'));
 
 export interface Key {
   [index: string]: any;
 }
 
 export type Permission = Set<any> | any[];
-
-export interface QueryRoad {
-  name?: string | ReactNode;
-  key: Key;
-  permissions?: Permission; // 每个节点权限码。如果不指定permissions或者permissions为空数组，则认为该节点默认所有可见。普通数组代表'且', Set代表'或'
-  authResult?: { [index: string]: boolean }; // 权限校验结果
-  innerTitle?: string | ReactNode; // 渲染到 Menu.Item children 的内容，如果为 undefined 则渲染 name
-  render?: (p: any) => any;
-  className?: string;
-  fallback?: (props: RouteComponentProps) => any; // 当没有权限时的回退函数（重定向，还是绘制其他视图，都通过fallback）
-  visible?: boolean; // 单纯控制现实与否.false: 菜单不可见；true: 菜单可见; visible菜单是否展示。目前在beforeRender.ts(这里面相当于当做是过滤标识，不是字段的本意)、SubSider/index.tsx中有使用
-  access?: boolean; // 是否可以访问到，是权限码校验的结果。配合fallback使用
-}
 
 export interface RoadMap {
   name?: string | ReactNode; // 路由的 name
@@ -44,8 +31,6 @@ export interface RoadMap {
   hasSider?: boolean; // 可应用所有路由，对应的页面是否显示最左侧导航菜单栏，true：展示，false：隐藏，默认为true。上级路由设置对下级路由生效，下级路由设置可以覆盖上级路由设置（优先级高于上级路由）
   hasSubSider?: boolean; // 可应用于所有路由，对应的页面是否展示左侧第二级导航菜单栏，true：展示，false：隐藏，默认为true。上级路由设置对下级路由生效，下级路由设置可以覆盖上级路由设置（优先级高于上级路由）
   visible?: boolean; // 单纯控制显示与否.false: 菜单不可见；true: 菜单可见; visible菜单是否展示。目前在beforeRender.ts(这里面相当于当做是过滤标识，不是字段的本意)、SubSider/index.tsx中有使用
-  // todo 目前queries只在SubSider中发挥正常作用，在Sider中还没有添加相应代码
-  queries?: QueryRoad[]; // 通过url中的query来做区分的菜单项。如果有此项，那么该配置的菜单项将以queries中的配置来展示
   defaultOpen?: boolean; // 控制二级子菜单是否默认展开
 }
 // 由于 pagesRoadMap 有依赖国际化内容，需要延迟 pagesRoadMap 初始化时机

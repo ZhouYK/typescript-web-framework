@@ -1,5 +1,6 @@
 import { RouteComponentProps } from 'react-router';
-import { QueryRoad, RoadMap } from '@src/pages/model/pagesRoadMap';
+import { RoadMap } from '@src/pages/model/pagesRoadMap';
+import React from 'react';
 
 export interface Props {
   routes: RoadMap[];
@@ -19,7 +20,6 @@ export interface KeyPathItem {
   visible?: boolean;
   access?: boolean;
   fallback?: (props: RouteComponentProps) => any;
-  queries?: QueryRoad[];
   authResult?: { [index: string]: boolean };
 }
 
@@ -27,4 +27,8 @@ export interface CurContext {
   keyPaths: KeyPathItem[];
   cachedRoutes: RoadMap[];
   routeComponents: React.ReactElement[];
+}
+
+export interface PermittedRouteFunc {
+  (roads: RoadMap[], path?: string[], subSider?: SubSider, parentHasSubSider?: boolean, parentHasSider?: boolean, parentFallback?: (props: RouteComponentProps) => any): void;
 }

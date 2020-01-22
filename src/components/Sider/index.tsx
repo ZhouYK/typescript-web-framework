@@ -1,10 +1,11 @@
-import { Link } from 'dva/router';
-import { Layout, Menu, Icon } from '@zyk/components';
-import pathToRegexp from 'path-to-regexp';
-import React, { useMemo, useRef } from 'react';
-import { uniq } from 'lodash';
-import { RoadMap } from '../../pages/model/pagesRoadMap';
-import { State, KeyPathItem, CurContext, RefInstance, Props, EXTERN_KEY_PREFIX } from './interface';
+import { Link } from 'react-router-dom';
+import { Layout, Menu, Icon } from 'antd';
+import { pathToRegexp } from 'path-to-regexp';
+import React, { ReactElement, useCallback, useRef } from 'react';
+import { RoadMap } from '@src/pages/model/pagesRoadMap';
+import {
+  State, KeyPathItem, CurContext, RefInstance, Props, EXTERN_KEY_PREFIX, MenusFunc,
+} from './interface';
 import style from './style.less';
 
 const { useState, useEffect } = React;
@@ -12,9 +13,9 @@ const { SubMenu } = Menu;
 const MenuItem = Menu.Item;
 const { Sider } = Layout;
 
-const genRenderMenus = (curContext: CurContext) => {
+const genRenderMenus = (curContext: CurContext): MenusFunc => {
   // @ts-ignore
-  const renderMenus = (menus: RoadMap[], path: string[] = [], depth: number = 1) => {
+  const renderMenus = (menus: RoadMap[], path: string[] = [], depth: number = 1): ReactElement[] => {
     // 第一次调用
     if (path.length === 0) {
       // 如果sider数据发生了更新才做重新渲染
@@ -25,7 +26,7 @@ const genRenderMenus = (curContext: CurContext) => {
       curContext.keyPaths = [];
     }
 
-    const cachedElements = menus.map(item => {
+    return menus.map((item): ReactElement => {
       let elements = null;
       path.push(item.path);
       if (item.visible !== false) {
@@ -80,20 +81,16 @@ const genRenderMenus = (curContext: CurContext) => {
       path.pop();
       return elements;
     });
-    return cachedElements;
   };
   return renderMenus;
 };
 
-const LeftSider = (props: Props) => {
-  const [curContext] = useState(() => {
-    const initial: CurContext = {
-      keyPaths: [],
-      cachedSider: [],
-      cachedElements: [],
-    };
-    return initial;
-  });
+const LeftSider = (props: Props): ReactElement => {
+  const [curContext] = useState((): CurContext => ({
+    keyPaths: [],
+    cachedSider: [],
+    cachedElements: [],
+  }));
   const keysRef: RefInstance = useRef([]);
   // 菜单状态
   const keysInitial: State = { openKeys: [], selectedKeys: [] };
@@ -101,8 +98,8 @@ const LeftSider = (props: Props) => {
   keysRef.current = keys;
 
   // 使用url path匹配keyPaths中的路径
-  const analyzeUrlToKeys = (urlPath: string) => {
-    const arr = curContext.keyPaths.filter(item => {
+  const analyzeUrlToKeys = (urlPath: string): void => {
+    const arr = curContext.keyPaths.filter((item): boolean => {
       const { keyPath } = item;
       const re = pathToRegexp(keyPath, [], { end: false });
       const result = re.exec(urlPath);
@@ -110,7 +107,7 @@ const LeftSider = (props: Props) => {
     });
     const map = new Map();
     // 同等深度的节点，取先匹配的
-    arr.forEach((road: KeyPathItem) => {
+    arr.forEach((road: KeyPathItem): void => {
       if (!map.has(road.depth)) {
         map.set(road.depth, road);
       }
@@ -119,9 +116,7 @@ const LeftSider = (props: Props) => {
     const newArr = Array.from(map.values());
 
     // 按深度进行升序排列
-    newArr.sort((a, b) => {
-      return a.depth - b.depth;
-    });
+    newArr.sort((a, b): number => a.depth - b.depth);
 
     const obj: {
       openKeys: string[];
@@ -134,23 +129,23 @@ const LeftSider = (props: Props) => {
     if (length >= 1) {
       // 最后一个是高亮的，我们要找的
       const target = newArr[newArr.length - 1];
-      obj.openKeys = newArr.map((n: KeyPathItem) => n.keyPath);
+      obj.openKeys = newArr.map((n: KeyPathItem): string => n.keyPath);
       obj.selectedKeys = [target.keyPath];
     }
     keysUpdater({
       ...obj,
-      openKeys: uniq([...keysRef.current.openKeys, ...obj.openKeys]),
+      openKeys: Array.from(new Set([...keysRef.current.openKeys, ...obj.openKeys])),
     });
   };
 
   // 添加副作用代码
-  useEffect(() => {
+  useEffect((): void => {
     analyzeUrlToKeys(props.location.pathname);
   }, [props.sider, props.location.pathname]);
 
   // 菜单项点击事件
-  const handleItemClick = useMemo(
-    () => (obj: { item: any; key: string; keyPath: string[] }) => {
+  const handleItemClick = useCallback(
+    (obj: { item: any; key: string; keyPath: string[] }): void => {
       keysUpdater({
         ...keysRef.current,
         selectedKeys: [obj.key],
@@ -160,8 +155,8 @@ const LeftSider = (props: Props) => {
   );
 
   // 次级菜单展开状态变化事件
-  const handleSubMenuOpenChange = useMemo(
-    () => (oks: string[]) => {
+  const handleSubMenuOpenChange = useCallback(
+    (oks: string[]): void => {
       keysUpdater({
         ...keysRef.current,
         openKeys: oks,

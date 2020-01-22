@@ -1,6 +1,6 @@
-import React from 'react';
-import { RouteComponentProps, withRouter } from 'dva/router';
-import { queryToObject, objectToQuery } from '../../../utils/util';
+import React, { ComponentClass, ReactElement } from 'react';
+import { RouteComponentProps, withRouter } from 'react-router';
+import { queryToObject, objectToQuery } from '@src/tools/util';
 
 interface Query {
   [index: string]: any;
@@ -30,6 +30,10 @@ interface CachedState {
   location: Location;
 }
 
+interface UrlFunc {
+  (TargetComponent: React.ComponentType<any>): ComponentClass;
+}
+
 /**
  * 调用了withRouter注入location、history和match属性
  * 另外还会注入query和objectToQuery属性
@@ -38,7 +42,7 @@ interface CachedState {
  * initialQuery 会用于didMount时兜底的初始参数，需要体现出页面需要的全量的查询变量，体现页面所需query的真实情况：需要哪些数据以及这些数据的类型
  * 注入的query属性会根据initialQuery中的类型进行数据转换
  */
-const urlInspector = (initialQuery: Query) => (TargetComponent: React.ComponentType<any>) => {
+const urlInspector = (initialQuery: Query): UrlFunc => (TargetComponent: React.ComponentType<any>): ComponentClass => {
   class UrlInspector extends React.Component<UrlInspectorReceivedProps, UrlInspectorState> {
     public state = {
       query: { ...initialQuery },
@@ -47,7 +51,7 @@ const urlInspector = (initialQuery: Query) => (TargetComponent: React.ComponentT
       cachedState: { location: {} },
     };
 
-    static getDerivedStateFromProps(props: UrlInspectorReceivedProps, state: UrlInspectorState) {
+    static getDerivedStateFromProps(props: UrlInspectorReceivedProps, state: UrlInspectorState): any {
       const { location: { search, pathname } = { search: '', pathname: '' } } = props;
       const { cachedState } = state;
       if (cachedState.location.pathname !== pathname || cachedState.location.search !== search) {
@@ -69,7 +73,7 @@ const urlInspector = (initialQuery: Query) => (TargetComponent: React.ComponentT
       return null;
     }
 
-    render() {
+    render(): ReactElement {
       return <TargetComponent {...this.props} {...this.state} />;
     }
   }

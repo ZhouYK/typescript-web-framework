@@ -1,11 +1,10 @@
-import { Link } from 'dva/router';
-import { Layout, Menu, Scrollbar } from '@zyk/components';
-import pathToRegexp from 'path-to-regexp';
-import React, { useMemo, useRef, useState, useEffect, useLayoutEffect } from 'react';
-import ReactDOM from 'react-dom';
-import { uniq, isPlainObject } from 'lodash';
+import { Link } from 'react-router-dom';
+import { Layout, Menu } from 'antd';
+import { pathToRegexp } from 'path-to-regexp';
+import React, {
+  useMemo, useRef, useState, useEffect, ReactElement,
+} from 'react';
 import classnames from 'classnames';
-import { objectToQuery, queryToObject } from '../../utils/util';
 import {
   EXTERN_KEY_PREFIX,
   SubSider,
@@ -14,9 +13,7 @@ import {
   RefInstance,
   CurContext,
   KeyPathItem,
-  QueryRoad,
-  Key,
-  OTHER_NAV_KEY_PREFIX,
+  OTHER_NAV_KEY_PREFIX, RenderFunc,
 } from './interface';
 import style from './style.less';
 
@@ -24,27 +21,12 @@ const { SubMenu } = Menu;
 const MenuItem = Menu.Item;
 const { Sider } = Layout;
 
-const genSearchStr = (key: Key) => {
-  if (isPlainObject(key)) {
-    return objectToQuery(key);
-  }
-  return '';
-};
-
-const transform_16 = 'transform-16';
-
-let scrollContainer: any = null;
-
-const getScrollContainer = (node: any) => {
-  scrollContainer = node;
-};
-
 /**
  * 获取一个 url path 中最大斜线的个数
  * 如果 url path 不是以斜线开始或者结束，会将斜线补全再计算
  * @param path
  */
-const getPathLength = (path: string) => {
+const getPathLength = (path: string): number => {
   let pathLength = path.split('/').length;
   if (!path.startsWith('/')) {
     pathLength += 1;
@@ -63,7 +45,7 @@ const getPathLength = (path: string) => {
 const getMostEqualPath = (sameDepthRoads: KeyPathItem[]): KeyPathItem => {
   let maxPath = -1;
   let maxPathRoad: KeyPathItem;
-  sameDepthRoads.forEach((road: KeyPathItem) => {
+  sameDepthRoads.forEach((road: KeyPathItem): void => {
     const currentPathLength = getPathLength(road.keyPath);
     if (currentPathLength > maxPath) {
       maxPath = currentPathLength;
@@ -73,8 +55,8 @@ const getMostEqualPath = (sameDepthRoads: KeyPathItem[]): KeyPathItem => {
   return maxPathRoad;
 };
 
-const genRenderMenus = (curContext: CurContext, urlPath: string) => {
-  const renderMenus = (sider: SubSider, path: string[] = [], depth: number = 1) => {
+const genRenderMenus = (curContext: CurContext): RenderFunc => {
+  const renderMenus = (sider: SubSider, path: string[] = [], depth: number = 1): ReactElement[] => {
     // 第一次调用
     if (path.length === 0) {
       // 如果sider数据发生了更新才做重新渲染
@@ -86,7 +68,7 @@ const genRenderMenus = (curContext: CurContext, urlPath: string) => {
     }
     const { basePath, subSider } = sider;
     const cachedElements: (React.ReactElement | null)[] = [];
-    subSider.forEach(item => {
+    subSider.forEach((item): void => {
       path.push(item.path);
       if (item.visible !== false) {
         const keyPath = `${basePath}${path.join('')}`;
@@ -109,48 +91,14 @@ const genRenderMenus = (curContext: CurContext, urlPath: string) => {
           // 跳转到非 zyk 页面的链接，渲染一个 a 标签
         } else if (item.externUrl) {
           cachedElements.push(
-            // @ts-ignore
             <MenuItem key={`${EXTERN_KEY_PREFIX}-${item.externUrl}`} title={title} className="zyk-menu-extern-item">
               <a href={item.externUrl} rel="noopener noreferrer" {...item.externProps || {}}>
                 {item.innerTitle || title}
               </a>
             </MenuItem>,
           );
-        } else if (item.queries) {
-          // 这段逻辑处理path不变，query改变的情况
-          const temp = item.queries.map((query: QueryRoad) => {
-            if (query.visible !== false) {
-              const searchStr = genSearchStr(query.key);
-              let path = searchStr ? `${keyPath}?${searchStr}` : keyPath;
-              let content = <Link to={path}>{query.innerTitle || query.name}</Link>;
-              if (query.render) {
-                path = `${OTHER_NAV_KEY_PREFIX}${path}`;
-                content = query.render({
-                  getScrollContainer: () => scrollContainer,
-                });
-              }
-              const other = !!query.render;
-              const isTalentList = urlPath.startsWith('/talent/list');
-              return (
-                <MenuItem
-                  key={path}
-                  className={classnames({
-                    'zyk-menu-item-has-other-children': other,
-                    'talent-folder-subsider-menu-item': isTalentList,
-                  })}
-                >
-                  {content}
-                </MenuItem>
-              );
-            }
-            return null;
-          });
-          cachedElements.push(...temp);
-          // ✨
-          obj.queries = item.queries;
         } else {
           cachedElements.push(
-            // @ts-ignore
             <MenuItem key={keyPath} title={title}>
               <Link to={item.realPath || keyPath}>{item.innerTitle || title}</Link>
             </MenuItem>,
@@ -170,7 +118,7 @@ const getDefaultOpenKeys = (sider: SubSider) => {
   if (sider) {
     const { basePath, subSider } = sider;
     if (subSider) {
-      subSider.forEach(item => {
+      subSider.forEach((item) => {
         if (item.subPaths && item.defaultOpen) {
           defaultOpenKeys.push(`${basePath}${item.path}`);
         }
@@ -199,8 +147,8 @@ const SubLeftSider = (props: SubSiderProps) => {
   keysRef.current = keys;
 
   // 使用url path匹配keyPaths中的路径
-  const analyzeUrlToKeys = (urlPath: string, searchStr?: string) => {
-    const arr = curContext.keyPaths.filter(item => {
+  const analyzeUrlToKeys = (urlPath: string) => {
+    const arr = curContext.keyPaths.filter((item) => {
       const { keyPath } = item;
       const re = pathToRegexp(keyPath, [], { end: false });
       const result = re.exec(urlPath);
@@ -219,9 +167,7 @@ const SubLeftSider = (props: SubSiderProps) => {
     const newArr = Array.from(map.values());
 
     // 按深度进行升序排列
-    newArr.sort((a, b) => {
-      return a.depth - b.depth;
-    });
+    newArr.sort((a, b) => a.depth - b.depth);
 
     const obj: {
       openKeys: string[];
@@ -234,29 +180,12 @@ const SubLeftSider = (props: SubSiderProps) => {
     if (length >= 1) {
       // 最后一个是高亮的，我们要找的
       const target = newArr[newArr.length - 1];
-      const queryObj = queryToObject(searchStr, {});
-      let forQuerySelectedKeys: string[] = [];
-      // 如果有queries，需要针对性的做匹配
-      if (target.queries) {
-        // 只要地址栏中的query包含了配置的query，那么就会点亮
-        const result = target.queries.filter((q: QueryRoad) => {
-          const keys = Object.keys(q.key);
-          if (keys.length === 0) return false;
-          return keys.every((index: string) => index in queryObj);
-        });
-        if (result.length >= 1) {
-          const theFirst = result[0];
-          const searchStr = genSearchStr(theFirst.key);
-          const keyPath = searchStr ? `${target.keyPath}?${searchStr}` : target.keyPath;
-          forQuerySelectedKeys = [keyPath];
-        }
-      }
       obj.openKeys = newArr.map((n: KeyPathItem) => n.keyPath);
-      obj.selectedKeys = forQuerySelectedKeys.length ? forQuerySelectedKeys : [target.keyPath];
+      obj.selectedKeys = [target.keyPath];
     }
     keysUpdater({
       ...obj,
-      openKeys: uniq([...keysRef.current.openKeys, ...obj.openKeys]),
+      openKeys: Array.from(new Set([...keysRef.current.openKeys, ...obj.openKeys])),
     });
   };
 
@@ -292,112 +221,33 @@ const SubLeftSider = (props: SubSiderProps) => {
 
   // 渲染menus
   // 这里没有放入useEffect和useLayoutEffect是为了在属性发生变化的第一次渲染就得到最新的元素;它们时机滞后，不合适
-  const renderMenus = genRenderMenus(curContext, props.location.pathname);
+  const renderMenus = genRenderMenus(curContext);
 
   const { sider /* loadingStatus */, hasSider } = props;
   curContext.cachedElements = renderMenus(sider);
   curContext.cachedSider = sider;
   const { openKeys, selectedKeys } = keys;
-
-  const [menuWidth, menuWidthUpdater] = useState(
-    // style.siderWidth - (hasSider ? 2 * style.paddingOneSide : style.paddingOneSide),
-    style.siderWidth - 2 * style.paddingOneSide,
-  );
-
   const siderMenu = useRef(null);
-  const siderMenuInfo = useRef({
-    offsetWidth: 0,
-    direction: 'right',
-    dom: null,
-  });
-
-  const onScrollRight = useMemo(
-    () => (container: Element) => {
-      if (siderMenuInfo.current.offsetWidth === 0 && siderMenuInfo.current.dom) {
-        siderMenuInfo.current.offsetWidth = siderMenuInfo.current.dom.offsetWidth;
-      }
-      let width = Number(menuWidth) + container.scrollLeft;
-      const { scrollWidth } = siderMenuInfo.current.dom || { scrollWidth: 0 };
-      if (width > scrollWidth) {
-        width = scrollWidth;
-      } else if (width === scrollWidth) {
-        if (siderMenuInfo.current.direction === 'right') {
-          menuWidthUpdater(width);
-        }
-        siderMenuInfo.current.direction = 'left';
-      } else if (scrollWidth - width <= style.paddingOneSide) {
-        if (siderMenuInfo.current.dom && siderMenuInfo.current.direction === 'right') {
-          siderMenuInfo.current.dom.className = `${siderMenuInfo.current.dom.className} ${transform_16}`;
-          // safari上需要加上1像素才能完全显示
-          // todo 原因待查
-          menuWidthUpdater(scrollWidth + 1);
-        }
-        siderMenuInfo.current.direction = 'left';
-      } else {
-        siderMenuInfo.current.direction = 'right';
-      }
-      if (siderMenuInfo.current.direction === 'right') {
-        menuWidthUpdater(width);
-      }
-    },
-    [],
-  );
-
-  const onScrollLeft = useMemo(
-    () => (container: Element) => {
-      if (siderMenuInfo.current.dom) {
-        siderMenuInfo.current.dom.className = siderMenuInfo.current.dom.className.replace(transform_16, '');
-      }
-      if (siderMenuInfo.current.offsetWidth === 0 && siderMenuInfo.current.dom) {
-        siderMenuInfo.current.offsetWidth = siderMenuInfo.current.dom.offsetWidth;
-      }
-      let width = Number(menuWidth) + container.scrollLeft;
-      const { scrollWidth } = siderMenuInfo.current.dom || { scrollWidth: 0 };
-      if (width > scrollWidth) {
-        width = scrollWidth;
-      } else if (width === scrollWidth) {
-        if (siderMenuInfo.current.direction === 'left') {
-          menuWidthUpdater(width);
-        }
-        siderMenuInfo.current.direction = 'right';
-      } else {
-        siderMenuInfo.current.direction = 'left';
-      }
-      if (siderMenuInfo.current.direction === 'left') {
-        menuWidthUpdater(width);
-      }
-    },
-    [],
-  );
-
-  useLayoutEffect(() => {
-    siderMenuInfo.current.dom = ReactDOM.findDOMNode(siderMenu.current);
-  }, []);
-
-  const isReferral = props.location.pathname && props.location.pathname.startsWith('/referral');
 
   return (
     <Sider
       className={classnames('zyk-layout-sider', {
         'zyk-sub-sider-without-top-sider': !hasSider,
-        'zyk-layout-sider-referral': isReferral,
       })}
       width={hasSider ? style.siderWidth : style.siderWidth - style.paddingOneSide}
     >
-      <Scrollbar containerRef={getScrollContainer} onScrollRight={onScrollRight} onScrollLeft={onScrollLeft}>
-        <Menu
-          ref={siderMenu}
-          className="zyk-sider-menu"
-          openKeys={openKeys}
-          selectedKeys={selectedKeys}
-          onClick={handleItemClick}
-          onOpenChange={handleSubMenuOpenChange}
-          mode="inline"
-          style={{ minHeight: '100%', borderRight: 0, width: menuWidth }}
-        >
-          {curContext.cachedElements}
-        </Menu>
-      </Scrollbar>
+      <Menu
+        ref={siderMenu}
+        className="zyk-sider-menu"
+        openKeys={openKeys}
+        selectedKeys={selectedKeys}
+        onClick={handleItemClick}
+        onOpenChange={handleSubMenuOpenChange}
+        mode="inline"
+        style={{ minHeight: '100%', borderRight: 0 }}
+      >
+        {curContext.cachedElements}
+      </Menu>
     </Sider>
   );
 };

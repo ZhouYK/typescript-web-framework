@@ -1,4 +1,4 @@
-import React, { PureComponent, RefObject } from 'react';
+import React, { PureComponent, ReactElement, RefObject } from 'react';
 import store from '../../store';
 import './index.less';
 
@@ -18,9 +18,8 @@ class DemoClass extends PureComponent<any, State> {
         super(props);
         this.refName = React.createRef();
         this.refCountry = React.createRef();
-        store.subscribe([store.model.demo], (demo) => {
+        store.subscribe([store.model.demo], (demo): void => {
             if (!this.state) {
-                // eslint-disable-next-line react/no-direct-mutation-state
                 this.state = {
                     ...demo,
                 };
@@ -32,14 +31,14 @@ class DemoClass extends PureComponent<any, State> {
         });
     }
 
-    public onClick = async () => {
+    public onClick = async (): Promise<any> => {
         const { value } = this.refName.current;
         store.model.demo.person({ title: value });
         const { value: country } = this.refCountry.current;
         store.model.demo.country(country);
-    }
+    };
 
-    public render() {
+    public render(): ReactElement {
         const { person, country } = this.state;
         return (
             <div className="demo-container">

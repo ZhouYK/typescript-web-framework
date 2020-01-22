@@ -1,27 +1,25 @@
 import React, {
- FC, Suspense, useEffect, useState,
+  FC, ReactElement, Suspense, useEffect, useState,
 } from 'react';
 import { RouteComponentProps } from 'react-router';
 import classnames from 'classnames';
 import { RoadMap } from '@src/pages/model/pagesRoadMap';
 import Routes from './index';
 import SubSiderControl from '../SubSider/SubSiderControl';
-import { isolatePage } from '../HOC';
 
 interface Props extends RouteComponentProps {
   road: RoadMap;
-  routes: RoadMap[];
   index: number;
 }
 
-const UndertakeRoute: FC<Props> = (props: Props) => {
+const UndertakeRoute: FC<Props> = (props: Props): ReactElement => {
   const {
-    road, routes: userRoadMap, index, ...routeProps
+    road, ...routeProps
   } = props;
 
   const [routes, routesUpdater] = useState([road]);
 
-  useEffect(() => {
+  useEffect((): void => {
     routesUpdater([road]);
   }, [road]);
   const loadingEl = <div>加载中</div>;
@@ -40,4 +38,4 @@ const UndertakeRoute: FC<Props> = (props: Props) => {
   );
 };
 
-export default isolatePage(UndertakeRoute);
+export default UndertakeRoute;

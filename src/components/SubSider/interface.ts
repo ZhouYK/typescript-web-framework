@@ -1,9 +1,8 @@
 import { RouteComponentProps } from 'react-router';
-import React from 'react';
+import React, {ReactElement} from 'react';
 import { SubSider } from '../Routes/interface';
-import { QueryRoad } from '../../pages/model/pagesRoadMap';
 
-export { QueryRoad, Key } from '../../pages/model/pagesRoadMap';
+export { Key } from '../../pages/model/pagesRoadMap';
 export { SubSider } from '../Routes/interface';
 export { EXTERN_KEY_PREFIX } from '../Sider/interface';
 export interface State {
@@ -20,7 +19,6 @@ export interface KeyPathItem {
   keyPath: string;
   depth: number;
   component?: React.Component;
-  queries?: QueryRoad[];
 }
 
 export interface CurContext {
@@ -34,3 +32,7 @@ export interface RefInstance {
 }
 
 export const OTHER_NAV_KEY_PREFIX = 'other_nav_key_';
+
+export interface RenderFunc {
+  (sider: SubSider, path?: string[], depth?: number): ReactElement[];
+}
