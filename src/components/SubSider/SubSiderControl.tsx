@@ -1,9 +1,11 @@
-import { RouteComponentProps } from 'dva/router';
-import React, { useCallback, useEffect } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
+import React, { ReactElement, useCallback, useEffect } from 'react';
 import pathToRegexp from 'path-to-regexp';
+import { RoadMap } from '@src/pages/model/pagesRoadMap';
+import { RecordRenderFunc } from '@src/components/SubSider/interface';
+
 import LeftSubSider from './index';
 import { SubSider } from '../Routes/interface';
-import { RoadMap } from '../../pages/model/pagesRoadMap';
 import './style.less';
 
 const { useState } = React;
@@ -26,27 +28,27 @@ interface CurContext {
   recordMenus: SimpleRoute[];
 }
 
-const genRenderMenus = (curContext: CurContext) => {
+const genRenderMenus = (curContext: CurContext): RecordRenderFunc => {
   // @ts-ignore
   // eslint-disable-next-line consistent-return, func-names
-  const renderRecordMenus = function(
+  const renderRecordMenus = (
     menus: RoadMap[],
     path: string[] = [],
     subSider?: SubSider,
     parentHasSider: boolean = true,
     parentHasSubSider: boolean = true,
-  ) {
+  ): void => {
     // 第一次调用
     if (path.length === 0) {
       // 如果sider数据发生了更新才做重新渲染
       // 否则，从缓存中获取
       if (curContext.cachedSider === menus) {
-        return curContext.recordMenus;
+        return;
       }
       curContext.recordMenus = [];
     }
 
-    menus.forEach(item => {
+    menus.forEach((item): void => {
       path.push(item.path);
       const keyPath = path.join('');
       let { hasSider, hasSubSider } = item;
@@ -85,33 +87,28 @@ const genRenderMenus = (curContext: CurContext) => {
   return renderRecordMenus;
 };
 
-const SiderControl = (props: WholeProps) => {
-  const [curContext] = useState(() => {
-    const initial: CurContext = {
-      cachedSider: [],
-      recordMenus: [],
-    };
-    return initial;
-  });
+const SiderControl = (props: WholeProps): ReactElement => {
+  const [curContext] = useState((): CurContext => ({
+    cachedSider: [],
+    recordMenus: [],
+  }));
 
-  const mainFn = useCallback((params: WholeProps) => {
+  const mainFn = useCallback((params: WholeProps): SimpleRoute[] => {
     // 渲染menus
     // 这里没有放入useEffect和useLayoutEffect是为了在属性发生变化的第一次渲染就得到最新的元素;它们时机滞后，不合适
     const renderRecordMenus = genRenderMenus(curContext);
 
     const { sider, location } = params;
     renderRecordMenus(sider);
-    const arr = curContext.recordMenus.filter((item: SimpleRoute) => {
+    return curContext.recordMenus.filter((item: SimpleRoute): boolean => {
       const { path } = item;
       const re = pathToRegexp(path, [], { end: true });
       const result = re.exec(location.pathname);
       return !!result;
     });
-    return arr;
   }, []);
 
-  // @ts-ignore
-  const [targetSider, siderUpdater] = useState(() => {
+  const [targetSider, siderUpdater] = useState((): SimpleRoute => {
     const arr = mainFn(props);
     // 由于是精确匹配，取数组第一个，遵守先匹配先生效的原则
     if (arr.length === 0) {
@@ -122,11 +119,10 @@ const SiderControl = (props: WholeProps) => {
         subSider: null,
       };
     }
-    const target = arr[0];
-    return target;
+    return arr[0];
   });
 
-  useEffect(() => {
+  useEffect((): void => {
     const arr = mainFn(props);
     let result: SimpleRoute;
     // 由于是精确匹配，取数组第一个，遵守先匹配先生效的原则
@@ -138,8 +134,7 @@ const SiderControl = (props: WholeProps) => {
         subSider: null,
       };
     } else {
-      const target = arr[0];
-      result = target;
+      [result] = arr;
     }
     siderUpdater(result);
   }, [props.location.pathname, props.location.search, props.sider]);

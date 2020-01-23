@@ -1,4 +1,6 @@
-import { ComponentType, lazy, ReactNode } from 'react';
+import React, {
+ ComponentType, lazy, ReactElement, ReactNode,
+} from 'react';
 import { RouteComponentProps } from 'react-router';
 import { gluer } from 'femo';
 
@@ -49,7 +51,7 @@ const pagesRoadMap: RoadMap[] = gluer([
 export const road404: RoadMap = {
   name: '404',
   path: '*',
-  component: null,
+  component: (): ReactElement => (<div>没有找到</div>),
   permissions: [], // 无权限要求
 };
 

@@ -1,9 +1,8 @@
-@import '../../theme/index.less';
-
+@import (reference) "../../theme/index";
 @siderWidth: 56px;
 
 :export {
-  siderWidth: @siderWidth;
+  siderwidth: @siderWidth;
 }
 
 .zykMenuSider {
@@ -12,90 +11,4 @@
   background: white;
   box-shadow: 0 1px 4px 0 rgba(31, 35, 41, 0.05);
   z-index: 100;
-
-  :global {
-    .@{prefix}-sider-menu {
-      &-item {
-        position: relative;
-        height: 42px;
-        text-overflow: unset;
-
-        &::after {
-          left: 0;
-          right: unset;
-          border-right-width: 4px;
-        }
-
-        > a {
-          color: @neutral-7;
-
-          &:hover {
-            color: @neutral-7;
-          }
-        }
-      }
-
-      .@{prefix}-menu-item {
-        margin: 0;
-        height: 56px;
-        line-height: 56px;
-        padding: 0 !important;
-
-        &::after {
-          left: 0;
-          right: unset;
-        }
-
-        &:hover:not(.@{prefix}-menu-item-selected) {
-          background: @menu-item-hover-bg;
-          border-top-right-radius: 4px;
-          border-bottom-right-radius: 4px;
-        }
-
-        > a {
-          height: 100%;
-          color: @neutral-7;
-
-          > span {
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
-        }
-
-        &:not(.@{prefix}-menu-item-selected) > a {
-          &:hover {
-            color: @neutral-7;
-          }
-        }
-
-        .anticon {
-          min-width: 20px;
-          font-size: 20px;
-          margin: 0;
-        }
-      }
-
-      .@{prefix}-menu-submenu-title {
-        .anticon {
-          min-width: 20px;
-          font-size: 20px;
-          margin: 0;
-        }
-      }
-
-      .@{prefix}-menu-item-selected {
-        @radius: 4px;
-
-        border-top-right-radius: @radius;
-        border-bottom-right-radius: @radius;
-        background: @menu-selected-bg;
-
-        > a {
-          color: @icon-hover-color;
-        }
-      }
-    }
-  }
 }

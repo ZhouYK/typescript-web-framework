@@ -70,7 +70,7 @@
     "axios": "~0.19.2",
     "classnames": "~2.2.6",
     "femo": "~0.1.1",
-    "path-to-regexp": "~6.1.0",
+    "path-to-regexp": "~3.0.0",
     "react": "~16.8.6",
     "react-dom": "~16.8.6",
     "react-router": "~5.1.2",

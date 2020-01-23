@@ -1,8 +1,8 @@
 import React, {
  ReactElement, useCallback, useEffect, useState,
 } from 'react';
-import { pathToRegexp } from 'path-to-regexp';
-import { RouteComponentProps } from 'react-router';
+import pathToRegexp from 'path-to-regexp';
+import { RouteComponentProps } from 'react-router-dom';
 import { RoadMap } from '@src/pages/model/pagesRoadMap';
 import store from '@src/store';
 import { RecordMenusFunc } from '@src/components/Sider/interface';

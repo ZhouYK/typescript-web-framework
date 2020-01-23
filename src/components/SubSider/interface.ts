@@ -1,5 +1,6 @@
 import { RouteComponentProps } from 'react-router';
-import React, {ReactElement} from 'react';
+import React, { ReactElement } from 'react';
+import { RoadMap } from '@src/pages/model/pagesRoadMap';
 import { SubSider } from '../Routes/interface';
 
 export { Key } from '../../pages/model/pagesRoadMap';
@@ -35,4 +36,14 @@ export const OTHER_NAV_KEY_PREFIX = 'other_nav_key_';
 
 export interface RenderFunc {
   (sider: SubSider, path?: string[], depth?: number): ReactElement[];
+}
+
+export interface RecordRenderFunc {
+  (
+    menus: RoadMap[],
+    path?: string[],
+    subSider?: SubSider,
+    parentHasSider?: boolean,
+    parentHasSubSider?: boolean
+  ): void;
 }

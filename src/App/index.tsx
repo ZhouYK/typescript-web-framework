@@ -1,6 +1,6 @@
-import React, { FC } from 'react';
+import React, { FC, ReactElement } from 'react';
 import { Layout } from 'antd';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import SiderControl from '@src/components/Sider/SiderControl';
 import DispatchRoute from '@src/components/Routes/DispatchRoute';
 import subSiderStyle from '@src/components/SubSider/style.less';
@@ -13,7 +13,7 @@ const { Content } = Layout;
 interface AppProps extends RouteComponentProps {
 }
 
-const App: FC<AppProps> = (props: AppProps) => {
+const App: FC<AppProps> = (props: AppProps): ReactElement => {
   const { ...routeProps } = props;
 
   return (

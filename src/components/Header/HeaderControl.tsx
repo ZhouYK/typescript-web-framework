@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router';
-import { pathToRegexp } from 'path-to-regexp';
+import pathToRegexp from 'path-to-regexp';
 import { RoadMap } from '@src/pages/model/pagesRoadMap';
 import store from '@src/store';
 

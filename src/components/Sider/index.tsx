@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Layout, Menu, Icon } from 'antd';
-import { pathToRegexp } from 'path-to-regexp';
+import pathToRegexp from 'path-to-regexp';
 import React, { ReactElement, useCallback, useRef } from 'react';
 import { RoadMap } from '@src/pages/model/pagesRoadMap';
 import {

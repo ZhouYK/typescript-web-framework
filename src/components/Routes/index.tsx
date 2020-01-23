@@ -1,5 +1,5 @@
 import React, { ReactElement, useState } from 'react';
-import { Route, RouteComponentProps, Switch } from 'react-router';
+import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { road404, RoadMap } from '@src/pages/model/pagesRoadMap';
 import {
 CurContext, KeyPathItem, PermittedRouteFunc, SubSider,

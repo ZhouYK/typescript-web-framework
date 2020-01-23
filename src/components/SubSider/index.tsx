@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
-import { pathToRegexp } from 'path-to-regexp';
+import pathToRegexp from 'path-to-regexp';
 import React, {
-  useMemo, useRef, useState, useEffect, ReactElement,
+  useRef, useState, useEffect, ReactElement, useCallback,
 } from 'react';
 import classnames from 'classnames';
 import {
@@ -113,12 +113,12 @@ const genRenderMenus = (curContext: CurContext): RenderFunc => {
 };
 
 // 获取初始的默认打开的子菜单
-const getDefaultOpenKeys = (sider: SubSider) => {
+const getDefaultOpenKeys = (sider: SubSider): string[] => {
   const defaultOpenKeys: string[] = [];
   if (sider) {
     const { basePath, subSider } = sider;
     if (subSider) {
-      subSider.forEach((item) => {
+      subSider.forEach((item): void => {
         if (item.subPaths && item.defaultOpen) {
           defaultOpenKeys.push(`${basePath}${item.path}`);
         }
@@ -128,18 +128,15 @@ const getDefaultOpenKeys = (sider: SubSider) => {
   return defaultOpenKeys;
 };
 
-const SubLeftSider = (props: SubSiderProps) => {
-  const [curContext] = useState(() => {
-    const initial: CurContext = {
-      keyPaths: [],
-      cachedSider: {
-        basePath: '',
-        subSider: [],
-      },
-      cachedElements: [],
-    };
-    return initial;
-  });
+const SubLeftSider = (props: SubSiderProps): ReactElement => {
+  const [curContext] = useState((): CurContext => ({
+    keyPaths: [],
+    cachedSider: {
+      basePath: '',
+      subSider: [],
+    },
+    cachedElements: [],
+  }));
   const keysRef: RefInstance = useRef([]);
   // 菜单状态
   const keysInitial: State = { openKeys: getDefaultOpenKeys(props.sider), selectedKeys: [] };
@@ -147,8 +144,8 @@ const SubLeftSider = (props: SubSiderProps) => {
   keysRef.current = keys;
 
   // 使用url path匹配keyPaths中的路径
-  const analyzeUrlToKeys = (urlPath: string) => {
-    const arr = curContext.keyPaths.filter((item) => {
+  const analyzeUrlToKeys = (urlPath: string): void => {
+    const arr = curContext.keyPaths.filter((item): boolean => {
       const { keyPath } = item;
       const re = pathToRegexp(keyPath, [], { end: false });
       const result = re.exec(urlPath);
@@ -157,9 +154,9 @@ const SubLeftSider = (props: SubSiderProps) => {
     const map = new Map();
 
     // 同等深度的节点，取路径最长（斜线最多而非字符串长度最长）的节点
-    arr.forEach((road: KeyPathItem) => {
+    arr.forEach((road: KeyPathItem): void => {
       if (!map.has(road.depth)) {
-        const sameDepthArr = arr.filter((road2: KeyPathItem) => road2.depth === road.depth);
+        const sameDepthArr = arr.filter((road2: KeyPathItem): boolean => road2.depth === road.depth);
         map.set(road.depth, getMostEqualPath(sameDepthArr));
       }
     });
@@ -167,7 +164,7 @@ const SubLeftSider = (props: SubSiderProps) => {
     const newArr = Array.from(map.values());
 
     // 按深度进行升序排列
-    newArr.sort((a, b) => a.depth - b.depth);
+    newArr.sort((a, b): number => a.depth - b.depth);
 
     const obj: {
       openKeys: string[];
@@ -180,7 +177,7 @@ const SubLeftSider = (props: SubSiderProps) => {
     if (length >= 1) {
       // 最后一个是高亮的，我们要找的
       const target = newArr[newArr.length - 1];
-      obj.openKeys = newArr.map((n: KeyPathItem) => n.keyPath);
+      obj.openKeys = newArr.map((n: KeyPathItem): string => n.keyPath);
       obj.selectedKeys = [target.keyPath];
     }
     keysUpdater({
@@ -190,13 +187,13 @@ const SubLeftSider = (props: SubSiderProps) => {
   };
 
   // 添加副作用代码
-  useEffect(() => {
-    analyzeUrlToKeys(props.location.pathname, props.location.search);
+  useEffect((): void => {
+    analyzeUrlToKeys(props.location.pathname);
   }, [props.sider, props.location.pathname, props.location.search]);
 
   // 菜单项点击事件
-  const handleItemClick = useMemo(
-    () => (obj: { item: any; key: string; keyPath: string[] }) => {
+  const handleItemClick = useCallback(
+    (obj: { item: any; key: string; keyPath: string[] }): void => {
       // 如果点击跳转外部的 url 则不选中当前点击的 menu
       if (!obj.key.startsWith(EXTERN_KEY_PREFIX) && !obj.key.startsWith(OTHER_NAV_KEY_PREFIX)) {
         keysUpdater({
@@ -209,8 +206,8 @@ const SubLeftSider = (props: SubSiderProps) => {
   );
 
   // 次级菜单展开状态变化事件
-  const handleSubMenuOpenChange = useMemo(
-    () => (oks: string[]) => {
+  const handleSubMenuOpenChange = useCallback(
+    (oks: string[]): void => {
       keysUpdater({
         ...keysRef.current,
         openKeys: oks,

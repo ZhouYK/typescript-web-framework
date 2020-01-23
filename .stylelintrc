@@ -1,3 +1,17 @@
 {
-  "extends": "stylelint-config-standard"
+  "extends": "stylelint-config-standard",
+  "rules": {
+	"selector-pseudo-class-no-unknown": [
+	  true,
+	  {
+		"ignorePseudoClasses": ["export", "global", "local"]
+	  }
+	],
+	"property-no-unknown": null,
+	"font-family-no-missing-generic-family-keyword": true,
+	"property-case": null,
+	"no-descending-specificity": null,
+	"selector-type-no-unknown":null,
+	"unit-no-unknown":null
+  }
 }

@@ -1,7 +1,7 @@
 import React, {
   FC, ReactElement, Suspense, useEffect, useState,
 } from 'react';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router-dom';
 import classnames from 'classnames';
 import { RoadMap } from '@src/pages/model/pagesRoadMap';
 import Routes from './index';

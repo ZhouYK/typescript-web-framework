@@ -1,5 +1,5 @@
-import React, {ErrorInfo, ReactElement, ReactNode} from 'react';
-import { Router } from 'react-router';
+import React, { ErrorInfo, ReactElement, ReactNode } from 'react';
+import { Router } from 'react-router-dom';
 import sentry from '@src/tools/sentry';
 import history from './history';
 
