@@ -55,4 +55,14 @@ export const road404: RoadMap = {
   permissions: [], // 无权限要求
 };
 
+/*
+ * 根路径的路由，比较特殊。类别和404路由一样，不放到pagesRoadmap中
+ * */
+
+export const roadRoot: RoadMap = {
+  path: '/',
+  name: 'root',
+  component: (): any => '根路径路由',
+};
+
 export default pagesRoadMap;
