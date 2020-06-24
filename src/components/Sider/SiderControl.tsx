@@ -3,9 +3,9 @@ import React, {
 } from 'react';
 import pathToRegexp from 'path-to-regexp';
 import { RouteComponentProps } from 'react-router-dom';
-import { RoadMap } from '@src/pages/model/pagesRoadMap';
-import store from '@src/store';
+import pagesRoadMap, { RoadMap } from '@src/pages/model/pagesRoadMap';
 import { RecordMenusFunc } from '@src/components/Sider/interface';
+import { subscribe } from 'femo';
 
 import LeftSider from './index';
 import './style.less';
@@ -65,9 +65,9 @@ const SiderControl = (props: RouteComponentProps): ReactElement => {
     recordMenus: [],
   }));
 
-  const [sider, updateSider] = useState((): RoadMap[] => store.referToState(store.model.pagesRoadMap));
+  const [sider, updateSider] = useState((): RoadMap[] => pagesRoadMap());
 
-  useEffect((): () => void => store.subscribe([store.model.pagesRoadMap], (sider: RoadMap[]): void => {
+  useEffect((): () => void => subscribe([pagesRoadMap], (sider: RoadMap[]): void => {
       updateSider(sider);
     }), []);
 

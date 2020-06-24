@@ -2,8 +2,8 @@ import React, {
  ReactElement, useEffect, useState,
 } from 'react';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
-import { road404, RoadMap, roadRoot } from '@src/pages/model/pagesRoadMap';
-import store from '@src/store';
+import pagesRoadMap, { road404, RoadMap, roadRoot } from '@src/pages/model/pagesRoadMap';
+import { subscribe } from 'femo';
 
 import UndertakeRoute from './UndertakeRoute';
 
@@ -11,8 +11,8 @@ const genRoutes = (routes: RoadMap[]): RoadMap[] => (routes instanceof Array ? [
 
 const DispatchRoute = (_props: RouteComponentProps): ReactElement => {
   // 后续UndertakeRoute中不会再校验road中第一层的权限
-  const [tempRoutes, updateTempRoutes] = useState((): RoadMap[] => genRoutes(store.referToState(store.model.pagesRoadMap)));
-  useEffect((): () => void => store.subscribe([store.model.pagesRoadMap], (routes: RoadMap[]): void => {
+  const [tempRoutes, updateTempRoutes] = useState((): RoadMap[] => genRoutes(pagesRoadMap()));
+  useEffect((): () => void => subscribe([pagesRoadMap], (routes: RoadMap[]): void => {
       updateTempRoutes(genRoutes(routes));
     }), []);
   return (

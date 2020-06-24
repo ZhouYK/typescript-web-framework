@@ -1,5 +1,6 @@
 import React, { PureComponent, ReactElement, RefObject } from 'react';
-import store from '../../store';
+import { subscribe } from 'femo';
+import model from './model';
 import './index.less';
 
 interface Person {
@@ -18,14 +19,16 @@ class DemoClass extends PureComponent<any, State> {
         super(props);
         this.refName = React.createRef();
         this.refCountry = React.createRef();
-        store.subscribe([store.model.demo], (demo): void => {
+        subscribe([model.country, model.person], (country: string, person: Person): void => {
             if (!this.state) {
                 this.state = {
-                    ...demo,
+                    country,
+                    person,
                 };
             } else {
                 this.setState({
-                    ...demo,
+                    country,
+                    person,
                 });
             }
         });
@@ -33,9 +36,9 @@ class DemoClass extends PureComponent<any, State> {
 
     public onClick = async (): Promise<any> => {
         const { value } = this.refName.current;
-        store.model.demo.person({ title: value });
+        model.person({ title: value });
         const { value: country } = this.refCountry.current;
-        store.model.demo.country(country);
+        model.country(country);
     };
 
     public render(): ReactElement {

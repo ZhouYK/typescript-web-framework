@@ -1,8 +1,8 @@
 import React, { ReactElement, useCallback, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router';
 import pathToRegexp from 'path-to-regexp';
-import { RoadMap } from '@src/pages/model/pagesRoadMap';
-import store from '@src/store';
+import pagesRoadMap, { RoadMap } from '@src/pages/model/pagesRoadMap';
+import { subscribe } from 'femo';
 
 import Header from './index';
 
@@ -63,9 +63,9 @@ const HeaderControl = (props: RouteComponentProps): ReactElement => {
       recordRoads: [],
     }));
 
-  const [userRoadMap, updateUserRoadMap] = useState((): RoadMap[] => store.referToState(store.model.pagesRoadMap));
+  const [userRoadMap, updateUserRoadMap] = useState((): RoadMap[] => pagesRoadMap());
 
-  useEffect((): () => void => store.subscribe([store.model.pagesRoadMap], (pagesRoadMap: RoadMap[]): void => {
+  useEffect((): () => void => subscribe([pagesRoadMap], (pagesRoadMap: RoadMap[]): void => {
       updateUserRoadMap(pagesRoadMap);
     }), []);
 

@@ -36,7 +36,7 @@ export interface RoadMap {
   defaultOpen?: boolean; // 控制二级子菜单是否默认展开
 }
 // 由于 pagesRoadMap 有依赖国际化内容，需要延迟 pagesRoadMap 初始化时机
-const pagesRoadMap: RoadMap[] = gluer([
+const pagesRoadMap = gluer([
   {
     name: 'Demos',
     path: '/demos',
