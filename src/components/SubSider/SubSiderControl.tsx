@@ -1,7 +1,7 @@
 import { RouteComponentProps } from 'react-router-dom';
 import React, { ReactElement, useCallback, useEffect } from 'react';
-import pathToRegexp from 'path-to-regexp';
-import { RoadMap } from '@src/pages/model/pagesRoadMap';
+import { pathToRegexp } from 'path-to-regexp';
+import { RoadMap } from '@src/pages/interface';
 import { RecordRenderFunc } from '@src/components/SubSider/interface';
 
 import LeftSubSider from './index';
@@ -29,14 +29,13 @@ interface CurContext {
 }
 
 const genRenderMenus = (curContext: CurContext): RecordRenderFunc => {
-  // @ts-ignore
   // eslint-disable-next-line consistent-return, func-names
   const renderRecordMenus = (
     menus: RoadMap[],
     path: string[] = [],
     subSider?: SubSider,
-    parentHasSider: boolean = true,
-    parentHasSubSider: boolean = true,
+    parentHasSider = true,
+    parentHasSubSider = true,
   ): void => {
     // 第一次调用
     if (path.length === 0) {

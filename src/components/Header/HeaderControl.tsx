@@ -1,31 +1,23 @@
-import React, { ReactElement, useCallback, useEffect } from 'react';
-import { RouteComponentProps } from 'react-router';
-import pathToRegexp from 'path-to-regexp';
-import pagesRoadMap, { RoadMap } from '@src/pages/model/pagesRoadMap';
+import React, {
+  ReactElement, useCallback, useEffect,
+} from 'react';
+import { RouteComponentProps } from 'react-router-dom';
+import { pathToRegexp } from 'path-to-regexp';
+import { RoadMap, RoadMapModuleType } from '@src/pages/interface';
+import roads from '@src/pages/roadMap';
 import { subscribe } from 'femo';
-
-import Header from './index';
+import { extractPagesRoadMapAsArray } from '@src/store';
+import { CurContext, SimpleRoute, WholeProps } from '@src/components/Header/interface';
+import {
+  queryToObject, variablePlaceholderReplace,
+} from '@src/tools/util';
+import MisHeader from './index';
 
 const { useState } = React;
 
-interface WholeProps extends RouteComponentProps {
-  userRoadMap: RoadMap[];
-}
-
-interface SimpleRoute {
-  path: string;
-  hasHeader: boolean;
-}
-
-interface CurContext {
-  cachedRoadMap: RoadMap[];
-  recordRoads: SimpleRoute[];
-}
 
 const genRenderHeader = (curContext: CurContext): (menus: RoadMap[], path?: string[], parentHasHeader?: boolean) => void => {
-  // @ts-ignore
-  // eslint-disable-next-line consistent-return, func-names
-  const renderRecordRoads = function (menus: RoadMap[], path: string[] = [], parentHasHeader: boolean = true): void {
+  const renderRecordRoads = function (menus: RoadMap[], path: string[] = [], parentHasHeader = true): void {
     // 第一次调用
     if (path.length === 0) {
       // 如果sider数据发生了更新才做重新渲染
@@ -43,8 +35,11 @@ const genRenderHeader = (curContext: CurContext): (menus: RoadMap[], path?: stri
         hasHeader = parentHasHeader;
       }
       curContext.recordRoads.push({
+        externUrl: item.externUrl,
+        realPath: item.realPath,
         path: keyPath,
         hasHeader,
+        name: item.name,
       });
       if (item.subPaths && item.subPaths.length !== 0) {
         renderRecordRoads(item.subPaths, path, hasHeader);
@@ -59,15 +54,16 @@ const genRenderHeader = (curContext: CurContext): (menus: RoadMap[], path?: stri
 
 const HeaderControl = (props: RouteComponentProps): ReactElement => {
   const [curContext] = useState((): CurContext => ({
-      cachedRoadMap: [],
-      recordRoads: [],
-    }));
+    cachedRoadMap: [],
+    recordRoads: [],
+  }));
 
-  const [userRoadMap, updateUserRoadMap] = useState((): RoadMap[] => pagesRoadMap());
+  const [userRoadMap, updateUserRoadMap] = useState((): RoadMap[] => extractPagesRoadMapAsArray());
+  const [breadcrumbData, updateBreadcrumbData] = useState({});
 
-  useEffect((): () => void => subscribe([pagesRoadMap], (pagesRoadMap: RoadMap[]): void => {
-      updateUserRoadMap(pagesRoadMap);
-    }), []);
+  useEffect(() => subscribe([roads], (pagesRoadMap: RoadMapModuleType): void => {
+    updateUserRoadMap(extractPagesRoadMapAsArray(pagesRoadMap));
+  }), []);
 
   const mainFn = useCallback((params: WholeProps): SimpleRoute[] => {
     // 渲染menus
@@ -76,13 +72,40 @@ const HeaderControl = (props: RouteComponentProps): ReactElement => {
 
     const { userRoadMap, location } = params;
     renderHeader(userRoadMap);
-    return curContext.recordRoads.filter((item: SimpleRoute): boolean => {
+    const breadcrumbs: { [index: string]: any } = {};
+    const arrMatch = curContext.recordRoads.filter((item: SimpleRoute): boolean => {
       const { path } = item;
+      const breadcrumbRe = pathToRegexp(path, [], { end: false });
+      const breadcrumbResult = breadcrumbRe.exec(location.pathname);
+      // 如果未设置名字，则不展示
+      // 有externUrl也不展示
+      if (breadcrumbResult && item.name && !(item.externUrl)) {
+        let tempName = item.name;
+        const tempPath = `${item.realPath || item.path}${props.location.search}`;
+        // 如果是string，则进行匹配处理
+        if (typeof tempName === 'string') {
+          const queryObj = queryToObject(props.location.search, {}, false);
+          tempName = variablePlaceholderReplace(tempName, queryObj);
+        }
+        if (tempPath in breadcrumbs) {
+          const value = breadcrumbs[tempPath];
+          if (!(value instanceof Array)) {
+            breadcrumbs[tempPath] = [value, tempName];
+          } else {
+            breadcrumbs[tempPath] = [...value, tempName];
+          }
+        } else {
+          breadcrumbs[tempPath] = tempName;
+        }
+      }
       const re = pathToRegexp(path, [], { end: true });
       const result = re.exec(location.pathname);
       return !!result;
     });
-  }, []);
+    updateBreadcrumbData(breadcrumbs);
+    return arrMatch;
+  }, [props.location]);
+
 
   const [headerShow, headerShowUpdater] = useState((): boolean => {
     const arr = mainFn({ ...props, userRoadMap });
@@ -107,7 +130,7 @@ const HeaderControl = (props: RouteComponentProps): ReactElement => {
     headerShowUpdater(result);
   }, [props.location.pathname, props.location.search, userRoadMap]);
 
-  return headerShow ? <Header /> : null;
+  return headerShow ? <MisHeader breadcrumbNameMap={breadcrumbData} { ...props } /> : null;
 };
 
 export default HeaderControl;

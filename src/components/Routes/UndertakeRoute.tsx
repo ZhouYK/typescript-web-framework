@@ -2,10 +2,9 @@ import React, {
   FC, ReactElement, Suspense, useEffect, useState,
 } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import classnames from 'classnames';
-import { RoadMap } from '@src/pages/model/pagesRoadMap';
+import { RoadMap } from '@src/pages/interface';
+import Spinner from '@src/components/Spinner';
 import Routes from './index';
-import SubSiderControl from '../SubSider/SubSiderControl';
 
 interface Props extends RouteComponentProps {
   road: RoadMap;
@@ -14,7 +13,7 @@ interface Props extends RouteComponentProps {
 
 const UndertakeRoute: FC<Props> = (props: Props): ReactElement => {
   const {
-    road, ...routeProps
+    road,
   } = props;
 
   const [routes, routesUpdater] = useState([road]);
@@ -22,19 +21,12 @@ const UndertakeRoute: FC<Props> = (props: Props): ReactElement => {
   useEffect((): void => {
     routesUpdater([road]);
   }, [road]);
-  const loadingEl = <div>加载中</div>;
+  const loadingEl = <Spinner />;
 
   return (
-    <>
-      <SubSiderControl sider={routes} {...routeProps} />
-      <main
-        className={classnames('zyk-route-content')}
-      >
-        <Suspense fallback={loadingEl}>
-          <Routes routes={routes} />
-        </Suspense>
-      </main>
-    </>
+    <Suspense fallback={loadingEl}>
+      <Routes routes={routes} />
+    </Suspense>
   );
 };
 

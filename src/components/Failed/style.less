@@ -1,0 +1,23 @@
+@import (reference) "~@src/theme/index";
+
+.failed {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  :global {
+    .failed-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: @black-2;
+      font-size: 14px;
+    }
+
+    .tip-desc {
+      margin-top: 12px;
+    }
+  }
+}

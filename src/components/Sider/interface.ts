@@ -1,6 +1,6 @@
-import React, {ReactElement} from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import { RouteComponentProps } from 'react-router';
-import { RoadMap } from '../../pages/model/pagesRoadMap';
+import { RoadMap } from '@src/pages/interface';
 
 export const EXTERN_KEY_PREFIX = 'EXTERN_KEY_PREFIX';
 
@@ -17,6 +17,7 @@ export interface KeyPathItem {
   keyPath: string;
   component?: React.Component;
   depth?: number;
+  name?: string | ReactNode;
 }
 
 export interface CurContext {
@@ -35,4 +36,4 @@ export interface RecordMenusFunc {
 
 export interface MenusFunc {
   (menus: RoadMap[], path?: string[], depth?: number): ReactElement[];
-};
+}

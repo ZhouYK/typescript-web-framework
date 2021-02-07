@@ -1,18 +1,19 @@
 import React, { ReactElement, useState } from 'react';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
-import { road404, RoadMap } from '@src/pages/model/pagesRoadMap';
+import { road404 } from '@src/pages/roadMap';
+import { RoadMap } from '@src/pages/interface';
+import CrashPage from '@src/components/CrashPage';
 import {
-CurContext, KeyPathItem, PermittedRouteFunc, SubSider,
+  CurContext, KeyPathItem, PermittedRouteFunc, SubSider,
 } from './interface';
 
 const genPermittedRoutesFn = (curContext: CurContext): PermittedRouteFunc => {
-  // @ts-ignore
   const getPermittedRoutes = (
     roads: RoadMap[],
     path: string[] = [],
     subSider?: SubSider,
-    parentHasSubSider: boolean = true,
-    parentHasSider: boolean = true,
+    parentHasSubSider = true,
+    parentHasSider = true,
     parentFallback: (props: RouteComponentProps) => any = null,
   ): void => {
     if (path.length === 0) {
@@ -74,53 +75,68 @@ const genPermittedRoutesFn = (curContext: CurContext): PermittedRouteFunc => {
 };
 
 const genRenderRoutesFn = (curContext: CurContext, props: Props): (routes: RoadMap[]) => void => (routes: RoadMap[]): void => {
-    if (curContext.cachedRoutes === routes) {
-      return;
-    }
-    // fallbackRoad和404作为兜底
-    // curContext.keyPaths.push(/* fallbackRoad, */road404);
+  if (curContext.cachedRoutes === routes) {
+    return;
+  }
+  // fallbackRoad和404作为兜底
+  // curContext.keyPaths.push(/* fallbackRoad, */road404);
 
-    const finalRoutes = curContext.keyPaths.map((route: KeyPathItem): ReactElement => {
-      if (route.access === false) {
-        // 默认使用通用的404
-        if (!route.fallback) {
-          return null;
-        }
-        // 否则使用自定义的fallback逻辑
-        return (
+  const finalRoutes = curContext.keyPaths.map((route: KeyPathItem): ReactElement => {
+    if (route.access === false) {
+      // 默认使用通用的404
+      if (!route.fallback) {
+        return null;
+      }
+      // 否则使用自定义的fallback逻辑
+      return (
           <Route
             key={ route.path }
             exact
             path={ route.path }
             render={ (props: RouteComponentProps): any => {
               const result = route.fallback(props);
-              return result || null;
+              return (
+                <CrashPage>
+                  {result || null}
+                </CrashPage>
+              );
             } }
           />
-        );
-      }
-      if (route.hasSubSider && route.subSider) {
-        return (
+      );
+    }
+    if (route.hasSubSider && route.subSider) {
+      return (
           <Route
             key={ route.path }
             exact
             path={ route.path }
             render={ (props: RouteComponentProps): ReactElement => {
               const Component = route.component;
-              return <Component { ...props } />;
+              return (
+                <CrashPage>
+                  <Component { ...props } />
+                </CrashPage>
+              );
             } }
           />
-        );
-      }
-      return <Route key={ route.path } exact path={ route.path } component={ route.component }/>;
-    });
-    const final404 = props.road404 || road404;
-    const route404 = <Route key="404" path={ final404.path } component={ final404.component }/>;
+      );
+    }
+    return <Route key={ route.path } exact path={ route.path } component={ (props: RouteComponentProps) => {
+      const Component = route.component;
+      return (
+        <CrashPage>
+          <Component { ...props } />
+        </CrashPage>
+      );
+    }}/>;
+  });
+  const final404 = props.road404 || road404;
+  const route404 = <Route key="404" path={ final404.path } component={ final404.component }/>;
 
-    curContext.routeComponents = [...finalRoutes, route404];
+  curContext.routeComponents = [...finalRoutes, route404];
 
-    curContext.cachedRoutes = routes;
-  };
+  curContext.cachedRoutes = routes;
+};
 
 interface Props {
   road404?: RoadMap;

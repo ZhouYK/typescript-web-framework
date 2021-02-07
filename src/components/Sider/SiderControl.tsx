@@ -1,10 +1,12 @@
 import React, {
- ReactElement, useCallback, useEffect, useState,
+  ReactElement, useCallback, useEffect, useState,
 } from 'react';
-import pathToRegexp from 'path-to-regexp';
+import { pathToRegexp } from 'path-to-regexp';
 import { RouteComponentProps } from 'react-router-dom';
-import pagesRoadMap, { RoadMap } from '@src/pages/model/pagesRoadMap';
+import { RoadMap, RoadMapModuleType } from '@src/pages/interface';
+import { extractPagesRoadMapAsArray } from '@src/store';
 import { RecordMenusFunc } from '@src/components/Sider/interface';
+import pagesRoadMap from '@src/pages/roadMap';
 import { subscribe } from 'femo';
 
 import LeftSider from './index';
@@ -25,9 +27,7 @@ interface CurContext {
 }
 
 const genRenderMenus = (curContext: CurContext): RecordMenusFunc => {
-  // @ts-ignore
-  // eslint-disable-next-line consistent-return, func-names
-  const renderRecordMenus = (menus: RoadMap[], path: string[] = [], parentHasSider: boolean = true): void => {
+  const renderRecordMenus = (menus: RoadMap[], path: string[] = [], parentHasSider = true): void => {
     // 第一次调用
     if (path.length === 0) {
       // 如果sider数据发生了更新才做重新渲染
@@ -65,11 +65,11 @@ const SiderControl = (props: RouteComponentProps): ReactElement => {
     recordMenus: [],
   }));
 
-  const [sider, updateSider] = useState((): RoadMap[] => pagesRoadMap());
+  const [sider, updateSider] = useState((): RoadMap[] => extractPagesRoadMapAsArray());
 
-  useEffect((): () => void => subscribe([pagesRoadMap], (sider: RoadMap[]): void => {
-      updateSider(sider);
-    }), []);
+  useEffect((): () => void => subscribe([pagesRoadMap], (sider: RoadMapModuleType): void => {
+    updateSider(extractPagesRoadMapAsArray(sider));
+  }), []);
 
   const mainFn = useCallback((params: WholeProps): SimpleRoute[] => {
     // 渲染menus
@@ -86,7 +86,6 @@ const SiderControl = (props: RouteComponentProps): ReactElement => {
     });
   }, []);
 
-  // @ts-ignore
   const [siderShow, siderShowUpdater] = useState((): boolean => {
     const arr = mainFn({ ...props, sider });
     // 由于是精确匹配，取数组第一个，遵守先匹配先生效的原则
@@ -110,9 +109,11 @@ const SiderControl = (props: RouteComponentProps): ReactElement => {
     siderShowUpdater(result);
   }, [props.location.pathname, props.location.search, sider]);
 
-  return siderShow ? (
-    <LeftSider history={props.history} location={props.location} match={props.match} sider={sider} />
-  ) : null;
+  return (
+    siderShow ? (
+      <LeftSider history={props.history} location={props.location} match={props.match} sider={sider} />
+    ) : null
+  );
 };
 
 export default SiderControl;

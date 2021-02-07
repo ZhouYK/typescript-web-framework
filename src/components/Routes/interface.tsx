@@ -1,5 +1,5 @@
 import { RouteComponentProps } from 'react-router';
-import { RoadMap } from '@src/pages/model/pagesRoadMap';
+import { RoadMap } from '@src/pages/interface';
 import React from 'react';
 
 export interface Props {

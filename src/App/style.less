@@ -1,7 +1,18 @@
+@import (reference) '~@src/theme/index';
+
+.mainLayout {
+  padding-left: 40px;
+  padding-right: 40px;
+  background: @white;
+  height: 100%;
+  position: relative;
+}
+
 .contentWrap {
   height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
+  background: @white;
 
   & > * {
     height: 100%;
@@ -9,56 +20,4 @@
   }
 
   position: relative;
-}
-
-.app {
-  width: 100vw;
-  height: 100vh;
-  padding: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.top {
-  display: flex;
-  width: 100%;
-  height: 50px;
-  background: #333;
-}
-
-.middle {
-  flex: 1;
-  display: flex;
-}
-
-.left {
-  width: 240px;
-}
-
-.rightContent {
-  flex: 1;
-  background: #f6f6f6;
-  padding: 20px;
-}
-
-.bottom {
-  height: 80px;
-  background: #333;
-  line-height: 80px;
-  font-size: 18px;
-  color: #fff;
-  text-align: center;
-}
-
-:global {
-  .zyk-layout .zyk-layout-has-sider {
-    .zyk-layout-sider {
-      overflow: auto;
-
-      &::-webkit-scrollbar {
-        display: none;
-      }
-    }
-  }
 }

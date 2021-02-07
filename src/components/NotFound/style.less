@@ -1,0 +1,29 @@
+@import (reference) "~@src/theme/index";
+
+.notFound {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  :global {
+    .failed-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: @black-2;
+      font-size: 14px;
+
+      .svg-container {
+        svg {
+          border-radius: 4px;
+        }
+      }
+
+      .tip-desc {
+        margin-top: 12px;
+      }
+    }
+  }
+}

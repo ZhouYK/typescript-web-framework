@@ -1,104 +1,137 @@
 import webpack from 'webpack';
-import ManifestPlugin from 'webpack-manifest-plugin';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import commonConfig, { contentPath } from './common.config';
 import HardSourceWebpackPlugin from 'hard-source-webpack-plugin';
-import packageObj from '../package.json';
+import commonConfig, { contentPath } from './common.config';
 
 const nodeEnv = process.env.NODE_ENV || 'development';
 const devPort = process.env.PORT || '9999';
 const publicPath = '/'; // 可自定义
-const entry = Object.assign({}, commonConfig.entry);
+const entry = { ...commonConfig.entry };
 const config = {
-    devtool: 'eval-source-map',
-    mode: nodeEnv,
-    entry,
-    target: commonConfig.target,
-    output: Object.assign({}, commonConfig.output, {
-        path: contentPath,
-        publicPath,
-        globalObject: 'this',
-    }),
-    module: {
-        rules: [{
-            test: /\.(ts|js)x$/,
-            enforce: 'pre',
-            use: [
-                {
-                    loader: 'eslint-loader',
-                    options: {
-                        emitErrors: true,
-                        failOnHint: true,
-                    },
-                },
-            ],
-        }, {
-            test: /\.less$/,
-            use: [
-                'style-loader',
-                'css-loader',
-                'postcss-loader',
-                {
-                    loader: 'less-loader',
-                    options: {
-                        javascriptEnabled: true,
-                    },
-                },
-            ],
-        },
+  devtool: 'eval-source-map',
+  mode: nodeEnv,
+  entry,
+  target: commonConfig.target,
+  output: {
+    ...commonConfig.output,
+    path: contentPath,
+    publicPath,
+    globalObject: 'this',
+  },
+  module: {
+    rules: [{
+      test: /\.(ts|js)x$/,
+      enforce: 'pre',
+      use: [
         {
-            test: /\.css$/,
-            use: ['style-loader', 'css-loader', 'postcss-loader'],
+          loader: 'eslint-loader',
+          options: {
+            emitErrors: true,
+            failOnHint: true,
+          },
         },
-        ...commonConfig.module.rules,
-        ],
+      ],
+    }, {
+      test: /\.less$/,
+      exclude: /(node_modules)|(global\.less)/,
+      use: [
+        'style-loader',
+        {
+          loader: 'css-loader',
+          options: {
+            modules: true,
+          },
+        },
+        'postcss-loader',
+        {
+          loader: 'less-loader',
+          options: {
+            lessOptions: {
+              javascriptEnabled: true,
+            },
+          },
+        },
+      ],
+    }, {
+      test: /\.less$/,
+      include: /(node_modules)|(global\.less)/,
+      use: [
+        'style-loader',
+        {
+          loader: 'css-loader',
+        },
+        'postcss-loader',
+        {
+          loader: 'less-loader',
+          options: {
+            lessOptions: {
+              javascriptEnabled: true,
+            },
+          },
+        },
+      ],
     },
-    resolve: commonConfig.resolve,
-    externals: commonConfig.externals,
-    watchOptions: {
-        aggregateTimeout: 400,
-        poll: 1000,
-        ignored: /node_modules/,
+    {
+      test: /\.css$/,
+      exclude: /node_modules/,
+      use: ['style-loader', {
+        loader: 'css-loader',
+        options: {
+          modules: true,
+        },
+      }, 'postcss-loader'],
     },
+    {
+      test: /\.css$/,
+      include: /node_modules/,
+      use: ['style-loader', {
+        loader: 'css-loader',
+      }, 'postcss-loader'],
+    },
+    ...commonConfig.module.rules,
+    ],
+  },
+  resolve: commonConfig.resolve,
+  externals: commonConfig.externals,
+  watchOptions: {
+    aggregateTimeout: 400,
+    poll: 1000,
+    ignored: /node_modules/,
+  },
   optimization: {
     ...commonConfig.optimization,
     moduleIds: 'named', // 开发环境使用named，生产使用hashed
   },
-    devServer: {
-        hot: true,
-        host: '0.0.0.0',
-        port: devPort,
-        disableHostCheck: true,
-        contentBase: contentPath,
-        historyApiFallback: true,
-        stats: 'minimal',
-        compress: true,
-        proxy: {},
+  devServer: {
+    hot: true,
+    host: '0.0.0.0',
+    port: devPort,
+    disableHostCheck: true,
+    contentBase: contentPath,
+    historyApiFallback: true,
+    stats: 'minimal',
+    compress: true,
+    proxy: {
+      context: ['/api/'],
+      // target: 'http://172.16.40.96:8080/',
+      target: 'http://172.16.111.5:8080/',
+      headers: {
+        // host: 'cyamis-staging.baicizhan.com',
+        // host: '172.16.111.13',
+      },
+      onProxyReq: (proxyReq, req) => {
+        // let { cookie } = req.headers;
+        // const { host } = req.headers;
+        proxyReq.setHeader('cookie', '');
+      },
     },
-    plugins: [
-      new HardSourceWebpackPlugin(),
-        new webpack.HotModuleReplacementPlugin(),
-        new webpack.DefinePlugin({
-            'process.env.NODE_ENV': JSON.stringify(nodeEnv),
-            'process.env.JENKINS_ENV': JSON.stringify('test'),
-        }),
-        new ManifestPlugin({
-            fileName: 'mapping.json',
-            publicPath,
-            seed: {
-                title: packageObj.name,
-            },
-        }),
-        new HtmlWebpackPlugin({
-            template: './html/index.html',
-            filename: 'index.html',
-            templateParameters: {
-                title: packageObj.name,
-            },
-            inject: true,
-            favicon: 'html/favicon.ico',
-        }),
-        ...commonConfig.plugins,
-    ],
+    open: true,
+  },
+  plugins: [
+    new HardSourceWebpackPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(nodeEnv),
+    }),
+    ...commonConfig.plugins,
+  ],
 };
 export default config;

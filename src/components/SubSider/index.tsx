@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
-import pathToRegexp from 'path-to-regexp';
+import { pathToRegexp } from 'path-to-regexp';
 import React, {
   useRef, useState, useEffect, ReactElement, useCallback,
 } from 'react';
@@ -56,7 +56,7 @@ const getMostEqualPath = (sameDepthRoads: KeyPathItem[]): KeyPathItem => {
 };
 
 const genRenderMenus = (curContext: CurContext): RenderFunc => {
-  const renderMenus = (sider: SubSider, path: string[] = [], depth: number = 1): ReactElement[] => {
+  const renderMenus = (sider: SubSider, path: string[] = [], depth = 1): ReactElement[] => {
     // 第一次调用
     if (path.length === 0) {
       // 如果sider数据发生了更新才做重新渲染
@@ -83,7 +83,6 @@ const genRenderMenus = (curContext: CurContext): RenderFunc => {
         const title = item.name;
         if (item.subPaths && item.subPaths.length !== 0) {
           cachedElements.push(
-            // @ts-ignore
             <SubMenu title={title} key={keyPath}>
               {renderMenus({ basePath, subSider: item.subPaths }, path, depth + 1)}
             </SubMenu>,
@@ -193,7 +192,7 @@ const SubLeftSider = (props: SubSiderProps): ReactElement => {
 
   // 菜单项点击事件
   const handleItemClick = useCallback(
-    (obj: { item: any; key: string; keyPath: string[] }): void => {
+    (obj: { item: any; key: any; keyPath: any[] }): void => {
       // 如果点击跳转外部的 url 则不选中当前点击的 menu
       if (!obj.key.startsWith(EXTERN_KEY_PREFIX) && !obj.key.startsWith(OTHER_NAV_KEY_PREFIX)) {
         keysUpdater({
@@ -207,7 +206,7 @@ const SubLeftSider = (props: SubSiderProps): ReactElement => {
 
   // 次级菜单展开状态变化事件
   const handleSubMenuOpenChange = useCallback(
-    (oks: string[]): void => {
+    (oks: any[]): void => {
       keysUpdater({
         ...keysRef.current,
         openKeys: oks,

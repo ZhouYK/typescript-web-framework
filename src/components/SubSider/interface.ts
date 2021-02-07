@@ -1,9 +1,9 @@
 import { RouteComponentProps } from 'react-router';
 import React, { ReactElement } from 'react';
-import { RoadMap } from '@src/pages/model/pagesRoadMap';
+import { RoadMap } from '@src/pages/roadMap';
 import { SubSider } from '../Routes/interface';
 
-export { Key } from '../../pages/model/pagesRoadMap';
+export { Key } from '../../pages/roadMap';
 export { SubSider } from '../Routes/interface';
 export { EXTERN_KEY_PREFIX } from '../Sider/interface';
 export interface State {

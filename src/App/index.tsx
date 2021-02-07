@@ -3,8 +3,9 @@ import { Layout } from 'antd';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import SiderControl from '@src/components/Sider/SiderControl';
 import DispatchRoute from '@src/components/Routes/DispatchRoute';
-import subSiderStyle from '@src/components/SubSider/style.less';
 import HeaderControl from '@src/components/Header/HeaderControl';
+// import Scrollbar from '@src/components/Scrollbar';
+// import { isMobile } from '@src/tools/util';
 
 import style from './style.less';
 
@@ -15,24 +16,18 @@ interface AppProps extends RouteComponentProps {
 
 const App: FC<AppProps> = (props: AppProps): ReactElement => {
   const { ...routeProps } = props;
-
+  const content = (
+    <Content className={style.mainLayout}>
+      <DispatchRoute { ...routeProps } />
+    </Content>
+  );
   return (
-    <Layout style={{ height: '100%' }}>
-      <HeaderControl {...routeProps} />
-      <Content className={style.contentWrap}>
-        <Layout hasSider>
-          <SiderControl {...routeProps} />
-          <Layout
-            id="page-layout"
-            style={{
-              overflowX: 'auto',
-            }}
-            className={subSiderStyle.subSider}
-          >
-            <DispatchRoute { ...routeProps } />
-          </Layout>
-        </Layout>
-      </Content>
+    <Layout hasSider style={{ height: '100%' }}>
+      <SiderControl {...routeProps} />
+      <Layout className={style.contentWrap}>
+        <HeaderControl {...routeProps} />
+        {content}
+      </Layout>
     </Layout>
   );
 };

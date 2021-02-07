@@ -16,34 +16,34 @@ class DemoClass extends PureComponent<any, State> {
     public refCountry: RefObject<any>;
 
     public constructor(props: any) {
-        super(props);
-        this.refName = React.createRef();
-        this.refCountry = React.createRef();
-        subscribe([model.country, model.person], (country: string, person: Person): void => {
-            if (!this.state) {
-                this.state = {
-                    country,
-                    person,
-                };
-            } else {
-                this.setState({
-                    country,
-                    person,
-                });
-            }
-        });
+      super(props);
+      this.refName = React.createRef();
+      this.refCountry = React.createRef();
+      subscribe([model.country, model.person], (country: string, person: Person): void => {
+        if (!this.state) {
+          this.state = {
+            country,
+            person,
+          };
+        } else {
+          this.setState({
+            country,
+            person,
+          });
+        }
+      });
     }
 
     public onClick = async (): Promise<any> => {
-        const { value } = this.refName.current;
-        model.person({ title: value });
-        const { value: country } = this.refCountry.current;
-        model.country(country);
+      const { value } = this.refName.current;
+      model.person({ title: value });
+      const { value: country } = this.refCountry.current;
+      model.country(country);
     };
 
     public render(): ReactElement {
-        const { person, country } = this.state;
-        return (
+      const { person, country } = this.state;
+      return (
             <div className="demo-container">
                 <form action="/" method="get">
                     <label htmlFor="input">
@@ -66,7 +66,7 @@ class DemoClass extends PureComponent<any, State> {
                     {country}
                 </p>
             </div>
-        );
+      );
     }
 }
 export default DemoClass;

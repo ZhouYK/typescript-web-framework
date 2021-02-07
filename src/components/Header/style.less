@@ -1,0 +1,49 @@
+@import (reference) "~@src/theme/index";
+
+.misHeader {
+  &:global(.ant-layout-header) {
+    background: @main-bg-color;
+    height: 56px;
+    padding: 0 40px;
+    line-height: 56px;
+    //box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.06);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    :global {
+      .mis-header-logo {
+        flex: 0 0 370px;
+      }
+
+      .mis-header-user-info {
+        cursor: pointer;
+
+        &:hover {
+          color: @blue-1;
+        }
+      }
+
+      .mis-header-search {
+        flex: 0 0 430px;
+      }
+
+      .mis-header-placeholder-section {
+        flex: 1 1 auto;
+      }
+
+      .mis-header-user-name {
+        margin-left: 8px;
+      }
+
+      .ant-breadcrumb > span:last-child a {
+        color: @black-1;
+      }
+
+      .ant-breadcrumb > span:last-child {
+        font-weight: 600;
+      }
+    }
+  }
+}

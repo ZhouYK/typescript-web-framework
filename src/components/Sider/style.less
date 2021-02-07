@@ -1,14 +1,91 @@
-@import (reference) "../../theme/index";
-@siderWidth: 56px;
+@import (reference) "~@src/theme/index";
+
+@siderWidth: 200px;
 
 :export {
   siderwidth: @siderWidth;
 }
 
-.zykMenuSider {
-  padding-top: 16px;
-  bottom: 0;
-  background: white;
-  box-shadow: 0 1px 4px 0 rgba(31, 35, 41, 0.05);
-  z-index: 100;
+:global {
+  .ant-menu-submenu-popup.ant-menu-dark .ant-menu-sub {
+    background: @black-4;
+  }
+}
+
+.misSider {
+  &:global(.ant-layout-sider) {
+    background: @black-4;
+  }
+
+  :global {
+    .ant-layout-sider-trigger {
+      background: @black-4;
+    }
+
+    .ant-menu-dark {
+      background: @black-4;
+
+      .ant-menu-sub {
+        background: @black-4;
+      }
+    }
+
+    .ant-menu-dark .ant-menu-item.ant-menu-item-selected a {
+      color: @white;
+    }
+
+    .mis-logo {
+      color: @white;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      height: 56px;
+      padding-left: 24px;
+      cursor: pointer;
+
+      .mis-logo-png {
+        background-image: url("../../assets/img/logo.png");
+        width: 36px;
+        height: 36px;
+        background-repeat: no-repeat;
+        background-size: contain;
+        flex-shrink: 0;
+      }
+
+      .mis-logo-placeholder {
+        width: 12px;
+        flex-shrink: 0;
+      }
+
+      .mis-logo-text {
+        font-weight: 600;
+        font-family: misBold, sans-serif;
+        flex-shrink: 0;
+      }
+    }
+    //.ant-menu-item:hover {
+    //  color: @main-hover-color;
+    //
+    //  .anticon {
+    //    color: @main-hover-color !important;
+    //  }
+    //
+    //  a {
+    //    color: @main-hover-color !important;
+    //  }
+    //}
+  }
+
+  &:global(.ant-layout-sider-collapsed) {
+    :global {
+      .mis-logo {
+        width: 80px;
+
+        .mis-logo-placeholder,
+        .mis-logo-text {
+          display: none;
+        }
+      }
+    }
+  }
 }
