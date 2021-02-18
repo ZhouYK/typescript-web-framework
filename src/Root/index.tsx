@@ -11,7 +11,7 @@ import NotFound from '@src/components/NotFound';
 import { User } from '@src/api/interface';
 import { ApiCode } from '@src/tools/request/interface';
 import permissionModel from '@src/model/permission';
-import { extractPagesRoadMapAsArray, extractPagesRoadMapKeys } from '@src/store';
+import { extractPagesRoadMapAsArray, extractPagesRoadMapKeys } from '@src/pages/aroundRoadMap';
 import { findUserPathRoadMap } from '@src/tools/auth';
 import pagesRoadMap from '@src/pages/roadMap';
 import history from './history';

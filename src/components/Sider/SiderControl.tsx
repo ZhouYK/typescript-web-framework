@@ -4,7 +4,7 @@ import React, {
 import { pathToRegexp } from 'path-to-regexp';
 import { RouteComponentProps } from 'react-router-dom';
 import { RoadMap, RoadMapModuleType } from '@src/pages/interface';
-import { extractPagesRoadMapAsArray } from '@src/store';
+import { extractPagesRoadMapAsArray } from '@src/pages/aroundRoadMap';
 import { RecordMenusFunc } from '@src/components/Sider/interface';
 import pagesRoadMap from '@src/pages/roadMap';
 import { subscribe } from 'femo';

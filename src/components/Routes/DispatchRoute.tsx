@@ -4,7 +4,7 @@ import React, {
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import pagesRoadMap, { road404 /* roadRoot */ } from '@src/pages/roadMap';
 import { RoadMap, RoadMapModuleType } from '@src/pages/interface';
-import { extractPagesRoadMapAsArray } from '@src/store';
+import { extractPagesRoadMapAsArray } from '@src/pages/aroundRoadMap';
 import { subscribe } from 'femo';
 
 import UndertakeRoute from './UndertakeRoute';
