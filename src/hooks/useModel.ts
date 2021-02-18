@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { subscribe } from 'femo';
+import { GluerReturn, subscribe } from 'femo';
 
-const useModel = <T>(model: any, handleFnc?: (data: any) => any): [T, (data: any) => void] => {
+const useModel = <T, D>(model: GluerReturn<T, D>, handleFnc?: (data: any) => any, resetWhenUnmount?: boolean): [T, (data: T) => void] => {
   const [state, updateState] = useState(() => {
     const tmpState = model();
     if (handleFnc) {
@@ -10,13 +10,21 @@ const useModel = <T>(model: any, handleFnc?: (data: any) => any): [T, (data: any
     return tmpState;
   });
 
-  useEffect(() => subscribe([model], (modelData: any) => {
-    if (handleFnc) {
-      updateState(handleFnc(modelData));
-    } else {
-      updateState(modelData);
-    }
-  }), [model, handleFnc]);
+  useEffect(() => {
+    const unsub = subscribe([model], (modelData: any) => {
+      if (handleFnc) {
+        updateState(handleFnc(modelData));
+      } else {
+        updateState(modelData);
+      }
+    });
+    return () => {
+      unsub();
+      if (resetWhenUnmount) {
+        model.reset();
+      }
+    };
+  }, [model, handleFnc]);
 
   return [state, updateState];
 };

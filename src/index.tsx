@@ -1,5 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
+import { ConfigProvider } from 'antd';
+import zh from 'antd/lib/locale/zh_CN';
 import Root from './Root';
 import App from './App';
 
@@ -16,7 +18,9 @@ if (window.Promise && !window.Promise.prototype.finally) {
 }
 render(
     <Root>
+      <ConfigProvider locale={zh}>
         <App />
+      </ConfigProvider>
     </Root>,
     document.getElementById('bd'),
 );
