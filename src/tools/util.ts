@@ -138,17 +138,25 @@ export const getSafe = (target: any, keyPath: string): any => {
 export const debounce = (fn: Function, delay: number): (...args: any[]) => void => {
   let timer: NodeJS.Timer;
   return (...args: any[]): void => {
-    clearTimeout(timer);
+    if (timer) {
+      clearTimeout(timer);
+    }
     timer = setTimeout(() => {
       fn(...args);
+      timer = null;
     }, delay);
   };
 };
 
-export const throttle = (fn: Function, period: number) => (...args: any[]): void => {
-  setTimeout(() => {
-    fn(...args);
-  }, period);
+export const throttle = (fn: Function, period: number) => {
+  let pre = Date.now();
+  return (...args: any[]): void => {
+    const now = Date.now();
+    if (now - pre > period) {
+      pre = now;
+      fn(...args);
+    }
+  };
 };
 
 /**
