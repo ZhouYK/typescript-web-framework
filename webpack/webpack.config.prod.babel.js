@@ -137,7 +137,7 @@ const getConfig = (publicPath, env) => ({
     new webpack.SourceMapDevToolPlugin({
       filename: '[file].map',
       test: /\.(js|ts)x?$/,
-      append: '\n//# sourceMappingURL=https://cyamis.baicizhan.com/js/[url]',
+      append: '\n//# sourceMappingURL=[url]',
     }),
     ...commonConfig.plugins,
   ],

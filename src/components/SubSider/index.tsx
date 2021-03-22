@@ -230,7 +230,7 @@ const SubLeftSider = (props: SubSiderProps): ReactElement => {
       className={classnames('zyk-layout-sider', {
         'zyk-sub-sider-without-top-sider': !hasSider,
       })}
-      width={hasSider ? style.siderWidth : style.siderWidth - style.paddingOneSide}
+      width={hasSider ? style.siderwidth : style.siderwidth - style.paddingoneside}
     >
       <Menu
         ref={siderMenu}

@@ -40,15 +40,15 @@ const Root = (props: RootProps): ReactElement => {
 
   useEffect(() => {
     updateReady(ReadyState.success);
-    userModel.info(() => common.getUserInfo().then((res) => {
-      updateReady(ReadyState.success);
-      return getSafe(res, 'data');
-    }).catch((err: any) => {
-      const code = getSafe(err, 'code');
-      if (code !== ApiCode.needLogin) {
-        updateReady(ReadyState.fail);
-      }
-    }));
+    // userModel.info(() => common.getUserInfo().then((res) => {
+    //   updateReady(ReadyState.success);
+    //   return getSafe(res, 'data');
+    // }).catch((err: any) => {
+    //   const code = getSafe(err, 'code');
+    //   if (code !== ApiCode.needLogin) {
+    //     updateReady(ReadyState.fail);
+    //   }
+    // }));
   }, []);
 
   if (ready === ReadyState.pending) {

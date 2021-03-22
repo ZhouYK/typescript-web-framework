@@ -8,7 +8,7 @@ import {
   State, KeyPathItem, CurContext, RefInstance, Props, EXTERN_KEY_PREFIX, MenusFunc,
 } from './interface';
 
-import * as style from './style.less';
+import style from './style.less';
 
 const { useState, useEffect } = React;
 const { SubMenu } = Menu;
@@ -179,7 +179,7 @@ const LeftSider = (props: Props): ReactElement => {
   return (
     <Sider
       className={style.misSider}
-      width={style.siderWidth}
+      width={style.siderwidth}
       collapsible
       collapsed={collapsed}
       onCollapse={onCollapse}

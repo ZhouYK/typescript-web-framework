@@ -1,4 +1,5 @@
 import React, {
+  lazy,
   ReactElement,
 } from 'react';
 import { RoadMap } from '@src/pages/interface';
@@ -6,20 +7,18 @@ import { gluer } from 'femo';
 import NotFound from '@src/components/NotFound';
 import { Redirect } from 'react-router-dom';
 import { getSafe } from '@src/tools/util';
-import Demo from '@src/pages/Demo';
 
 export interface Key {
   [index: string]: any;
 }
 
-// 这里的 key 不重要，切记
 // 操作的是直接提取值成数组 extractPagesRoadMapAsArray
 const roadMap = gluer({
   welcome: {
     name: '',
     path: '/',
     visible: false,
-    component: Demo,
+    component: lazy(() => import('./Demo')),
   },
 });
 
