@@ -1,5 +1,5 @@
 import { ComponentType, ReactNode } from 'react';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router-dom';
 
 export type Permission = Set<any> | any[];
 
@@ -30,25 +30,4 @@ export interface RoadMap {
 
 export interface RoadMapModuleType {
   [index: string]: RoadMap;
-}
-
-export enum Loading {
-  success = 1,
-  failed = -1,
-  pending = 0,
-}
-
-export enum OwnerTypes {
-  employee = 'employee',
-  leader = 'leader',
-  hr = 'hr',
-  cooperator = 'cooperator',
-  manager = 'manager',
-}
-
-export enum FileType {
-  FINAL = 'FINAL', // 上传的
-  AUTOGEN = 'AUTOGEN', // 自动生成的
-  STAFF_REPORT = 'STAFF_REPORT', // 一阶段上传报告
-  RETHINK = 'RETHINK', // 反思和总结自动生成的汇总文件
 }

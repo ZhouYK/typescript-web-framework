@@ -4,6 +4,7 @@ import { ConfigProvider } from 'antd';
 import zh from 'antd/lib/locale/zh_CN';
 import Root from './Root';
 import App from './App';
+import './global.less';
 
 if (window.Promise && !window.Promise.prototype.finally) {
   window.Promise.prototype.finally = function (fn: () => void): Promise<any> {

@@ -1,14 +1,13 @@
 import React from 'react';
 import classnames from 'classnames';
-import { Scrollbar } from '@zyk/components';
-import { debounce, get, isArray } from 'lodash';
-import Clamp from '../Clamp';
-import { ExternalStageCount, PipelineProps, PipelineState, StageCount, ExternalStageCountId } from './interface';
+import Scrollbar from '@src/components/Scrollbar';
+import Clamp from '@src/components/Clamp';
+import { debounce, getSafe } from '@src/tools/util';
+import {
+  ExternalStageCount, PipelineProps, PipelineState, StageCount, ExternalStageCountId,
+} from './interface';
 import style from './style.less';
 import Empty from '../Empty';
-import ProgressDivider from '../../assets/svg/progress-divider.svg';
-import PreSvg from '../../assets/svg/prev.svg';
-import NextSvg from '../../assets/svg/next.svg';
 
 class Pipeline extends React.Component<PipelineProps, PipelineState> {
   scrollOnEveryClick = 120;
@@ -49,15 +48,13 @@ class Pipeline extends React.Component<PipelineProps, PipelineState> {
     return state;
   }
 
-  isEmpty = (value: any) => {
-    return value === null || value === undefined || value === '' || (isArray(value) && value.length === 0);
-  };
+  isEmpty = (value: any) => value === null || value === undefined || value === '' || (value instanceof Array && value.length === 0);
 
   isResponse = () => this.props.layout === 'response';
 
   isInteractive = () => this.props.mode === 'interactive';
 
-  isItemDisabled = (item: StageCount | ExternalStageCount) => get(item, 'disabled');
+  isItemDisabled = (item: StageCount | ExternalStageCount) => getSafe(item, 'disabled');
 
   onItemClick = (item: StageCount | ExternalStageCount) => () => {
     if (this.isItemDisabled(item)) return;
@@ -65,20 +62,20 @@ class Pipeline extends React.Component<PipelineProps, PipelineState> {
       active: item,
     });
     if (this.props.onClick && this.isInteractive()) {
-      this.props.onClick(get(item, 'stage_id'), item);
+      this.props.onClick(getSafe(item, 'stage_id'), item);
     }
   };
 
   getActiveItemId = () => {
     const { active } = this.state;
     if (
-      typeof active === 'string' ||
-      active === ExternalStageCountId.Active ||
-      active === ExternalStageCountId.Reject
+      typeof active === 'string'
+      || active === ExternalStageCountId.Active
+      || active === ExternalStageCountId.Reject
     ) {
       return active;
     }
-    return get(active, 'stage_id');
+    return getSafe(active, 'stage_id');
   };
 
   genAProp = (item: StageCount | ExternalStageCount) => {
@@ -98,28 +95,28 @@ class Pipeline extends React.Component<PipelineProps, PipelineState> {
     const count = result.length;
     const activeItemId = this.getActiveItemId();
     return result.map((stage: StageCount, index: number) => {
-      const value = get(stage, 'count');
+      const value = getSafe(stage, 'count');
       const aProp = this.genAProp(stage);
       return (
         <li
           onClick={this.onItemClick(stage)}
           className={classnames('pipeline-process-list-item', {
             'pipeline-process-list-item-active':
-              this.isInteractive() && !this.isItemDisabled(stage) && activeItemId === get(stage, 'stage_id'),
+              this.isInteractive() && !this.isItemDisabled(stage) && activeItemId === getSafe(stage, 'stage_id'),
             'pipeline-process-list-item-disabled': this.isItemDisabled(stage),
           })}
-          key={get(stage, 'stage_id')}
+          key={getSafe(stage, 'stage_id')}
         >
           <a {...aProp}>
             <span className="pipeline-process-list-item-count">
               {this.isEmpty(value) ? <Empty /> : <Clamp label={`${value}`} />}
             </span>
             <span className="pipeline-process-list-item-name">
-              <Clamp label={get(stage, 'stage_i18n_name') || get(stage, 'stage_name')} />
+              <Clamp label={getSafe(stage, 'stage_i18n_name') || getSafe(stage, 'stage_name')} />
             </span>
             {index === count - 1 ? null : (
               <i className="pipeline-process-list-item-divider">
-                <ProgressDivider />
+                <span>分隔</span>
               </i>
             )}
             {this.isInteractive() && !this.isItemDisabled(stage) ? (
@@ -133,6 +130,7 @@ class Pipeline extends React.Component<PipelineProps, PipelineState> {
 
   detectOverflow = debounce(() => {
     if (this.processList.current) {
+      // eslint-disable-next-line no-underscore-dangle
       this.processDom = this.processList.current._container;
       const { scrollWidth, offsetWidth } = this.processDom;
       let overflow = false;
@@ -157,8 +155,8 @@ class Pipeline extends React.Component<PipelineProps, PipelineState> {
   }
 
   componentDidUpdate(preProps: PipelineProps): void {
-    const preStageCountLength = get(preProps, 'stage_count_list.length') || 0;
-    const curStageCountLength = get(this.props, 'stage_count_list.length') || 0;
+    const preStageCountLength = getSafe(preProps, 'stage_count_list.length') || 0;
+    const curStageCountLength = getSafe(this.props, 'stage_count_list.length') || 0;
     if (preStageCountLength !== curStageCountLength) {
       this.detectOverflow();
     }
@@ -183,33 +181,31 @@ class Pipeline extends React.Component<PipelineProps, PipelineState> {
     // }
   };
 
-  renderPre = () => {
-    return (
+  renderPre = () => (
       <>
         <i
           onClick={this.animateMove('left')}
           className="pipeline-process-list-item-direction pipeline-process-list-item-pre"
         >
-          <PreSvg />
+          <span>
+            向前
+          </span>
         </i>
         <i className="pipeline-process-list-item-direction pipeline-process-list-item-pre-fake" />
       </>
-    );
-  };
+  );
 
-  renderNext = () => {
-    return (
+  renderNext = () => (
       <>
         <i
           onClick={this.animateMove('right')}
           className="pipeline-process-list-item-direction pipeline-process-list-item-next"
         >
-          <NextSvg />
+          <span>向后</span>
         </i>
         <i className="pipeline-process-list-item-direction pipeline-process-list-item-next-fake" />
       </>
-    );
-  };
+  );
 
   renderExternal = () => {
     const { external_count_list } = this.props;
@@ -219,19 +215,19 @@ class Pipeline extends React.Component<PipelineProps, PipelineState> {
       return (
         <section
           onClick={this.onItemClick(item)}
-          key={get(item, 'stage_i18n_name')}
+          key={getSafe(item, 'stage_i18n_name')}
           className={classnames('pipeline-process-item-count-row', {
             'pipeline-process-item-count-row-active':
-              this.isInteractive() && !this.isItemDisabled(item) && activeItemId === get(item, 'stage_id'),
+              this.isInteractive() && !this.isItemDisabled(item) && activeItemId === getSafe(item, 'stage_id'),
             'pipeline-process-item-count-row-disabled': this.isItemDisabled(item),
           })}
         >
           <a {...aProp}>
             <span className="pipeline-process-item-count">
-              {this.isEmpty(get(item, 'count')) ? <Empty /> : <Clamp label={`${get(item, 'count')}`} />}
+              {this.isEmpty(getSafe(item, 'count')) ? <Empty /> : <Clamp label={`${getSafe(item, 'count')}`} />}
             </span>
             <span className="pipeline-process-item-name">
-              <Clamp label={get(item, 'stage_i18n_name')} />
+              <Clamp label={getSafe(item, 'stage_i18n_name')} />
             </span>
             {this.isInteractive() && !this.isItemDisabled(item) ? (
               <span className="pipeline-process-item-count-row-flag" />

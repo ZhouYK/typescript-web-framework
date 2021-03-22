@@ -8,4 +8,18 @@ const publicPaths = {
   local: './',
 };
 
-export default (env = 'prod') => getConfig(publicPaths[env], env);
+export default (env = { prod: true }) => {
+  let publicPath = publicPaths.prod;
+  if (env.dev) {
+    publicPath = publicPaths.dev;
+  } else if (env.test) {
+    publicPath = publicPaths.test;
+  } else if (env.stage) {
+    publicPath = publicPaths.stage;
+  } else if (env.prod) {
+    publicPath = publicPaths.prod;
+  } else if (env.local) {
+    publicPath = publicPaths.local;
+  }
+  return getConfig(publicPath, env);
+};

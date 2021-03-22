@@ -28,9 +28,6 @@ const rules = [{
   loader: 'file-loader',
 }, {
   test: /\.svg(\?v=\d+\.\d+\.\d+)?$/i,
-  issuer: {
-    test: /\.tsx?$/,
-  },
   use: [{
     loader: 'babel-loader',
     options: {
@@ -50,19 +47,19 @@ const plugins = [
     template: './html/index.html',
     filename: 'index.html',
     templateParameters: {
-      title: 'MIS',
+      title: '脚手架',
     },
     chunksSortMode: 'manual',
-    chunks: ['runtime', 'base', 'uis', 'mis_style', 'index'],
-    favicon: 'html/favicon.ico',
+    chunks: ['runtime', 'base', 'uis', 'style', 'index'],
+    favicon: './html/favicon.ico',
   }),
 ];
 const config = {
   entry,
   target: 'web',
   output: {
-    filename: process.env.NODE_ENV === 'development' ? 'js/[name].[hash].js' : 'js/[name].[chunkhash].js',
-    chunkFilename: 'js/[name].[chunkhash].js',
+    filename: process.env.NODE_ENV === 'development' ? 'js/[name].js' : 'js/[name].[chunkhash:16].js',
+    chunkFilename: process.env.NODE_ENV === 'development' ? 'js/[name].js' : 'js/[id].[contenthash:16].js',
     // 这个会影响externals的配置
     // libraryTarget: 'umd',
   },
@@ -78,14 +75,20 @@ const config = {
     symlinks: false,
   },
   optimization: {
-    chunkIds: 'named',
-    moduleIds: 'hashed',
+    chunkIds: 'deterministic',
+    moduleIds: 'deterministic',
     runtimeChunk: {
       name: 'runtime',
     },
     splitChunks: {
       automaticNameDelimiter: '_',
       cacheGroups: {
+        style: {
+          name: 'style',
+          chunks: 'all',
+          test: /\.(css|less)$/,
+          enforce: true,
+        },
         base: {
           test: /[\\/]node_modules[\\/]((?!antd|@ant-design).)+[\\/]/,
           name: 'base',

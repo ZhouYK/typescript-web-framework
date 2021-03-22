@@ -18,8 +18,8 @@ import style from './style.less';
 const { Header } = Layout;
 
 const MisHeader: FC<Props> = (props: Props) => {
-  const [userInfo, updateUserInfo] = useState((): User.SummaryInfo => userModel.info());
-  useEffect(() => subscribe([userModel.info], (info: User.SummaryInfo) => {
+  const [userInfo, updateUserInfo] = useState((): User.BasicInfo => userModel.info());
+  useEffect(() => subscribe([userModel.info], (info: User.BasicInfo) => {
     updateUserInfo(info);
   }), []);
 
@@ -62,8 +62,8 @@ const MisHeader: FC<Props> = (props: Props) => {
         overlay={overlay}
       >
         <section className='mis-header-user-info'>
-          <Avatar src={getSafe(userInfo, 'user_info.thumbnail')} />
-          <span className='mis-header-user-name'>{ getSafe(userInfo, 'user_info.name') }</span>
+          <Avatar src={getSafe(userInfo, 'thumbnail')} />
+          <span className='mis-header-user-name'>{ getSafe(userInfo, 'name') }</span>
         </section>
       </Dropdown>
     </Header>

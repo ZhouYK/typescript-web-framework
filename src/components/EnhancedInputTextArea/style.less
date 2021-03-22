@@ -1,0 +1,37 @@
+@import (reference) "~@src/theme/index";
+
+// 这里fake-placeholder的显示和外层容器App里面mainLayout的z-index有关。必须设置为z-index: 0，
+// fake-placeholder才会展示
+.textarea {
+  position: relative;
+
+  &:global(.data-edits) {
+    :global {
+      textarea {
+        background-color: @white !important;
+      }
+
+      .fake-placeholder {
+        visibility: hidden;
+      }
+    }
+  }
+
+  :global {
+    textarea {
+      background-color: transparent !important;
+    }
+
+    .fake-placeholder {
+      position: absolute;
+      z-index: -1;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: @white;
+      padding: 4px 11px;
+      color: #bfbfbf;
+      white-space: pre-line;
+    }
+  }
+}

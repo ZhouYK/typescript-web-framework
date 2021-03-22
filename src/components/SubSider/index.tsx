@@ -87,7 +87,7 @@ const genRenderMenus = (curContext: CurContext): RenderFunc => {
               {renderMenus({ basePath, subSider: item.subPaths }, path, depth + 1)}
             </SubMenu>,
           );
-          // 跳转到非 zyk 页面的链接，渲染一个 a 标签
+          // 跳转到外部页面的链接，渲染一个 a 标签
         } else if (item.externUrl) {
           cachedElements.push(
             <MenuItem key={`${EXTERN_KEY_PREFIX}-${item.externUrl}`} title={title} className="zyk-menu-extern-item">

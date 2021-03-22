@@ -1,4 +1,3 @@
-import path from 'path';
 import webpack from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import OptimizeCssPlugin from 'optimize-css-assets-webpack-plugin';
@@ -133,7 +132,7 @@ const getConfig = (publicPath, env) => ({
       'process.env.NODE_ENV': JSON.stringify(nodeEnv),
     }),
     new MiniCssExtractPlugin({
-      filename: 'css/[name].[contenthash].css',
+      filename: 'css/[name].[contenthash:16].css',
     }),
     new webpack.SourceMapDevToolPlugin({
       filename: '[file].map',

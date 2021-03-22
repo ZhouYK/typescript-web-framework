@@ -31,7 +31,7 @@ interface CachedState {
 }
 
 interface UrlFunc {
-  (TargetComponent: React.ComponentType<any>): ComponentClass;
+  <P>(TargetComponent: React.ComponentType<P>): ComponentClass<P>;
 }
 
 /**
@@ -42,7 +42,7 @@ interface UrlFunc {
  * initialQuery 会用于didMount时兜底的初始参数，需要体现出页面需要的全量的查询变量，体现页面所需query的真实情况：需要哪些数据以及这些数据的类型
  * 注入的query属性会根据initialQuery中的类型进行数据转换
  */
-const urlInspector = (initialQuery: Query): UrlFunc => (TargetComponent: React.ComponentType<any>): ComponentClass => {
+const urlInspector = (initialQuery: Query): UrlFunc => (TargetComponent: React.ComponentType<any>): ComponentClass<any> => {
   class UrlInspector extends React.Component<UrlInspectorReceivedProps, UrlInspectorState> {
     public state = {
       query: { ...initialQuery },

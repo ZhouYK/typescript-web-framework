@@ -54,7 +54,6 @@ const genPermittedRoutesFn = (curContext: CurContext): PermittedRouteFunc => {
       if (item.subPaths && item.subPaths.length !== 0) {
         getPermittedRoutes(item.subPaths, path, undefined, hasSubSider, hasSider, fallback);
       } else if (item.leafPaths && item.leafPaths.length !== 0) {
-        // 针对ats-x的菜单结构，做的特化处理
         if (path.length === 1) {
           getPermittedRoutes(
             item.leafPaths,
@@ -144,7 +143,6 @@ interface Props {
 }
 
 const Routes: React.FC<Props> = (props: Props): ReactElement => {
-  // const { loadingStatus } = props;
   const [curContext] = useState((): CurContext => ({
     keyPaths: [],
     cachedRoutes: [],

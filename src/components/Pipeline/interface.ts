@@ -1,5 +1,3 @@
-import { JobDetailPermissions } from '../../pages/Job/JobDetail/interface';
-
 export interface ItemProps {
   disabled?: boolean;
   href?: string;

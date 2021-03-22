@@ -1,5 +1,4 @@
 import webpack from 'webpack';
-import HardSourceWebpackPlugin from 'hard-source-webpack-plugin';
 import commonConfig, { contentPath } from './common.config';
 
 const nodeEnv = process.env.NODE_ENV || 'development';
@@ -99,6 +98,7 @@ const config = {
   },
   optimization: {
     ...commonConfig.optimization,
+    chunkIds: 'named', // 开发环境使用named，生产使用hashed
     moduleIds: 'named', // 开发环境使用named，生产使用hashed
   },
   devServer: {
@@ -113,7 +113,7 @@ const config = {
     proxy: {
       context: ['/api/'],
       // target: 'http://172.16.40.96:8080/',
-      target: 'http://172.16.111.5:8080/',
+      target: 'http://127.0.0.1:3000/',
       headers: {
         // host: 'cyamis-staging.baicizhan.com',
         // host: '172.16.111.13',
@@ -121,13 +121,12 @@ const config = {
       onProxyReq: (proxyReq, req) => {
         // let { cookie } = req.headers;
         // const { host } = req.headers;
-        proxyReq.setHeader('cookie', '');
+        // proxyReq.setHeader('cookie', '');
       },
     },
     open: true,
   },
   plugins: [
-    new HardSourceWebpackPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(nodeEnv),
     }),
