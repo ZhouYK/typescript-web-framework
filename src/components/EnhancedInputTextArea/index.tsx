@@ -8,12 +8,15 @@ import classNames from 'classnames';
 import { getSafe } from '@src/tools/util';
 import style from './style.less';
 
+// 目前不能传autoSize，因为要做placeholder的高度适配。二者有冲突
 interface Props extends TextAreaProps {
   placeholder?: any;
   useTextHeight?: boolean;
 }
+// 这里antd里面textarea最小高度是32，需要做限制;
+const minHeight = 32;
 // 使用该组件时需要注意容器组件的背景色
-const EnhancedInputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
+const InputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
   const { placeholder, useTextHeight, ...rest } = props;
   const textareaRef = useRef<any>();
   const placeholderRef = useRef<HTMLDivElement>();
@@ -21,15 +24,22 @@ const EnhancedInputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
   const textareaDom = useRef<{dom: any}>({ dom: null });
   const timer = useRef<NodeJS.Timer>();
   const mutationObserver = useRef<MutationObserver>();
+  const calcHeightRef = useRef<Function>();
 
-  const calcHeight = useCallback((times = 20) => {
+  const calcHeight = useCallback((times = 10) => {
     if (!rest.value) {
       if (!textareaDom.current.dom) {
         textareaDom.current.dom = ReactDom.findDOMNode(textareaRef.current);
       }
       if (!useTextHeight && textareaDom.current.dom && placeholderRef.current) {
-        const textHeight = getSafe(textareaDom, 'current.dom.offsetHeight');
-        const placeHeight = getSafe(placeholderRef, 'current.offsetHeight');
+        let textHeight = getSafe(textareaDom, 'current.dom.offsetHeight');
+        let placeHeight = getSafe(placeholderRef, 'current.offsetHeight');
+        if (placeHeight < minHeight) {
+          placeHeight = minHeight;
+        }
+        if (textHeight < minHeight) {
+          textHeight = minHeight;
+        }
         // 外部textarea的值为空才会调用这个
         if (textHeight < placeHeight || textHeight > placeHeight) {
           let count = 0;
@@ -37,13 +47,15 @@ const EnhancedInputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
             if (count >= times) return;
             count += 1;
             textareaDom.current.dom.style.cssText = `height: ${placeHeight}px!important`;
-            timer.current = setTimeout(fn, 50);
+            timer.current = setTimeout(fn, 16);
           };
           fn();
         }
       }
     }
   }, [rest.value, useTextHeight]);
+
+  calcHeightRef.current = calcHeight;
   const displacePlaceholder = useCallback((value: any) => {
     updateHidePlaceholder(value);
     calcHeight();
@@ -63,13 +75,18 @@ const EnhancedInputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
     // @ts-ignore
     const MutationObserver = window.MutationObserver || window.webkitMutationObserver || window.MozMutationObserver;
     if (MutationObserver && !mutationObserver.current && textareaDom.current.dom) {
-      mutationObserver.current = new MutationObserver(() => {
-        clearTimeout(timer.current);
-        calcHeight();
+      mutationObserver.current = new MutationObserver((mutation: MutationRecord[]) => {
+        if (mutation instanceof Array) {
+          const tm = mutation.find((m) => m.target === textareaDom.current.dom);
+          if (tm && tm.type === 'attributes' && tm.attributeName === 'style') {
+            clearTimeout(timer.current);
+            calcHeightRef.current();
+          }
+        }
       });
       mutationObserver.current.observe(textareaDom.current.dom, {
-        childList: true,
-        subtree: true,
+        childList: false,
+        subtree: false,
         attributes: true,
       });
     }
@@ -79,7 +96,7 @@ const EnhancedInputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
         mutationObserver.current = null;
       }
     };
-  }, [calcHeight]);
+  }, []);
 
   return (
     <section className={classNames(style.textarea, {
@@ -93,8 +110,8 @@ const EnhancedInputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
   );
 };
 
-EnhancedInputTextArea.defaultProps = {
+InputTextArea.defaultProps = {
   useTextHeight: false,
 };
 
-export default EnhancedInputTextArea;
+export default InputTextArea;

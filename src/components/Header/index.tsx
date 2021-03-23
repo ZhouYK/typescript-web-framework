@@ -1,12 +1,11 @@
 import React, {
-  FC, useEffect, useState,
+  FC,
 } from 'react';
 import {
   Layout, Avatar, Breadcrumb, Dropdown, Menu,
 } from 'antd';
 import userModel from '@src/model/user';
-import { subscribe } from 'femo';
-import { User } from '@src/api/interface';
+import { useModel } from 'femo';
 import { getSafe } from '@src/tools/util';
 import {
   Props,
@@ -18,11 +17,7 @@ import style from './style.less';
 const { Header } = Layout;
 
 const MisHeader: FC<Props> = (props: Props) => {
-  const [userInfo, updateUserInfo] = useState((): User.BasicInfo => userModel.info());
-  useEffect(() => subscribe([userModel.info], (info: User.BasicInfo) => {
-    updateUserInfo(info);
-  }), []);
-
+  const [userInfo] = useModel(userModel);
   const breadcrumbs = Object.keys(props.breadcrumbNameMap).map((key: string) => {
     const names = props.breadcrumbNameMap[key];
     if (names instanceof Array) {
