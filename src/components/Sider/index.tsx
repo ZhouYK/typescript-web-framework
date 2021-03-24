@@ -187,7 +187,7 @@ const LeftSider = (props: Props): ReactElement => {
       <header className='mis-logo' onClick={backHome}>
         <section className='mis-logo-png' />
         <section className='mis-logo-placeholder' />
-        <span className='mis-logo-text'>MIS</span>
+        <span className='mis-logo-text'>脚手架</span>
       </header>
       <Menu
         openKeys={openKeys}
