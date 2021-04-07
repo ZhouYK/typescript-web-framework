@@ -2,7 +2,7 @@ import React, { ReactElement, useState } from 'react';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { road404 } from '@src/pages/roadMap';
 import { RoadMap } from '@src/pages/interface';
-import CrashPage from '@src/components/CrashPage';
+import CrashPage from '@src/components/Crash';
 import {
   CurContext, KeyPathItem, PermittedRouteFunc, SubSider,
 } from './interface';
