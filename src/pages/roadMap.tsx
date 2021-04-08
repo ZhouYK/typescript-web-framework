@@ -15,10 +15,18 @@ export interface Key {
 // 操作的是直接提取值成数组 extractPagesRoadMapAsArray
 const roadMap = gluer({
   welcome: {
-    name: '',
-    path: '/',
-    visible: false,
+    name: 'Demo',
+    path: '/demo',
     component: lazy(() => import('./Demo')),
+  },
+  three: {
+    name: 'three示例',
+    path: '/three',
+    subPaths: [{
+      name: '元素周期表',
+      path: '/periodic',
+      component: lazy(() => import('./Three/Periodic')),
+    }],
   },
 });
 

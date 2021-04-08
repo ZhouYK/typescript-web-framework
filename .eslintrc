@@ -39,6 +39,7 @@
     "plugin:jest/recommended"
   ],
   "rules": {
+    "no-lone-blocks": 0,
     "no-param-reassign": 0,
     "no-shadow": 0,
     "no-console": 0,

@@ -66,6 +66,7 @@
     "ie >= 9"
   ],
   "dependencies": {
+    "@types/three": "~0.127.0",
     "antd": "~4.12.2",
     "axios": "~0.21.1",
     "classnames": "~2.2.6",
@@ -75,6 +76,7 @@
     "react-dom": "~17.0.1",
     "react-perfect-scrollbar": "~1.5.8",
     "react-router-dom": "~5.2.0",
+    "three": "~0.127.0",
     "ua-parser-js": "~0.7.24"
   },
   "devDependencies": {
