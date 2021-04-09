@@ -8,3 +8,4 @@ client/**/*.js
 client/**/*.jsx
 *.log
 dist/
+.eslintcache
