@@ -26,6 +26,10 @@ const roadMap = gluer({
       name: '元素周期表',
       path: '/periodic',
       component: lazy(() => import('./Three/Periodic')),
+    }, {
+      name: '可拖动',
+      path: '/draggable',
+      component: lazy(() => import('./Three/Drag')),
     }],
   },
 });

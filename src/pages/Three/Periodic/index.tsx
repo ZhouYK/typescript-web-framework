@@ -5,7 +5,7 @@ import * as THREE from 'three';
 // @ts-ignore
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min';
 import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer';
-import './style.less';
+import style from './style.less';
 
 interface Props {
 
@@ -136,7 +136,6 @@ const PeriodicTable: FC<Props> = (_props: PropsWithChildren<Props>) => {
   const container = useRef<HTMLDivElement>(null);
 
   const [camera] = useState(() => {
-    console.log('THREE', THREE);
     const tmpCamera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
     tmpCamera.position.z = 3000;
     return tmpCamera;
@@ -255,6 +254,7 @@ const PeriodicTable: FC<Props> = (_props: PropsWithChildren<Props>) => {
     transform(targets.table, 2000);
     animate();
     return () => {
+      TWEEN.removeAll();
       window.removeEventListener('resize', onWindowResize);
     };
   }, []);
@@ -319,7 +319,7 @@ const PeriodicTable: FC<Props> = (_props: PropsWithChildren<Props>) => {
   });
 
   return (
-    <section className='periodic'>
+    <section className={style.periodic}>
       <section className='container' ref={container} />
       {elements}
       <section className='btn-row'>
