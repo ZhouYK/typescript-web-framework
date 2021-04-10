@@ -30,6 +30,10 @@ const roadMap = gluer({
       name: '可拖动',
       path: '/draggable',
       component: lazy(() => import('./Three/Drag')),
+    }, {
+      name: '曲线跟随拖动',
+      path: '/drag-with-line',
+      component: lazy(() => import('./Three/DragWithLine')),
     }],
   },
 });
