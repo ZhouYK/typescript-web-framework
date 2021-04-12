@@ -34,6 +34,10 @@ const roadMap = gluer({
       name: '曲线跟随拖动',
       path: '/drag-with-line',
       component: lazy(() => import('./Three/DragWithLine')),
+    }, {
+      name: '流程图拖动',
+      path: '/flow-drag',
+      component: lazy(() => import('./Three/Flow')),
     }],
   },
 });
@@ -57,7 +61,7 @@ export const roadRoot: RoadMap = {
   component: (): any => {
     const roads = roadMap();
     return (
-      <Redirect to={ getSafe(roads, 'hr.path') } />
+      <Redirect to={ getSafe(roads, 'welcome.path') } />
     );
   },
 };

@@ -6,29 +6,34 @@ import {
   CatmullRomCurve3, Line, Material, WebGLRenderer,
 } from 'three';
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
+import { CSS3DObject, CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer';
+import { Flow } from './interface'
+import Node from './Node';
 import style from './style.less';
+import {gluer} from "femo";
 
 interface Props {
-
+  data: Flow.Node[];
 }
-const splinePointsLength = 4;
+const splinePointsLength = 3;
 const ARC_SEGMENTS = 200;
 
-const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
+const DragWithLine: FC<Props> = (props: PropsWithChildren<Props>) => {
+
+  const { data } = props;
   const containerRef = React.createRef<HTMLDivElement>();
   const canvasRef = React.createRef<HTMLCanvasElement>();
   const rendererRef = useRef<WebGLRenderer>();
+  const twoDRendererRef = useRef<CSS3DRenderer>();
   const curveRef = useRef<CatmullRomCurve3>();
   const curveLineMeshRef = useRef<Line>();
+  const [material] = useState(() => new THREE.MeshBasicMaterial({ color: 'transparent' }));
 
   const [point] = useState(() => new THREE.Vector3());
-  const [positions] = useState([]);
-  const [splineHelperObjects] = useState([]);
-  const [geometry] = useState(() => new THREE.BoxGeometry(20, 20, 20));
-
+  const [splineHelperObjects] = useState(() => gluer([]));
   const [scene] = useState(() => {
     const tmpScene = new THREE.Scene();
-    tmpScene.background = new THREE.Color(0xf0f0f0);
+    tmpScene.background = new THREE.Color(0xffffff);
     return tmpScene;
   });
   const [camera] = useState(() => {
@@ -55,28 +60,42 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     return helper;
   });
 
-  const addSplineObject = useCallback(() => {
-    const material = new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff });
-    const object = new THREE.Mesh(geometry, material);
+  const addSplineObject = useCallback((refData: Flow.DataWithDom) => {
+    const { dom, data } = refData;
+    const object = new THREE.Mesh(new THREE.PlaneGeometry(dom.clientWidth, dom.clientHeight, ~~dom.clientWidth, ~~dom.clientHeight), material);
     object.position.x = Math.random() * 1000 - 500;
     object.position.y = Math.random() * 600;
-    object.position.z = Math.random() * 800 - 400;
+    object.position.z = 0;
+    object.userData = { ...data };
     return object;
   }, []);
 
-  const genObjects = useCallback(() => {
-    for (let i = 0; i < splinePointsLength; i += 1) {
-      const p = addSplineObject();
-      scene.add(p);
+  const refFn = useCallback((refData: Flow.DataWithDom) => {
+    const { dom, data } = refData;
+    if (dom) {
+      const p = addSplineObject(refData);
+      const domObj = new CSS3DObject(dom);
+      domObj.position.set(0, 1, 0);
+      p.add(domObj);
       splineHelperObjects.push(p);
-      positions.push(p.position);
+    } else {
+      const target = splineHelperObjects.find((obj) => {
+        const { userData } = obj;
+        return userData.id === data.id;
+      });
+      for (let i = 0; i < splineHelperObjects.length; i += 1) {
+        const obj = splineHelperObjects[i];
+        const { userData } = obj;
+          if (userData.id === obj.id) {
+            splineHelperObjects
+            break;
+          }
+      }
     }
   }, []);
 
-
   const drawLine = useCallback(() => {
-    genObjects();
-    curveRef.current = new THREE.CatmullRomCurve3(positions);
+    curveRef.current = new THREE.CatmullRomCurve3(splineHelperObjects.map((obj) => obj.position));
     const curvePoints = curveRef.current.getPoints(ARC_SEGMENTS - 1);
     const curveGeometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
     curveLineMeshRef.current = new THREE.Line(curveGeometry, new THREE.LineBasicMaterial({
@@ -105,39 +124,72 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     const needResize = width !== canvas.width || height !== canvas.height;
     if (needResize) {
       rendererRef.current.setSize(width, height, false);
+      twoDRendererRef.current.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     }
     return needResize;
   }, []);
 
   const render = useCallback(() => {
+    console.log('drag');
     if (displayToPixel()) {
       const canvas = rendererRef.current.domElement;
       camera.aspect = canvas.width / canvas.height;
       camera.updateProjectionMatrix();
     }
     rendererRef.current.render(scene, camera);
+    twoDRendererRef.current.render(scene, camera);
     updateSplineOutline();
   }, []);
 
+  const dragRender = useCallback(() => {
+    render();
+  }, []);
 
   useEffect(() => {
     scene.add(plane);
     scene.add(helper);
     drawLine();
     rendererRef.current = new THREE.WebGLRenderer({ antialias: true, canvas: canvasRef.current });
-    const dragControl = new DragControls([...splineHelperObjects], camera, rendererRef.current.domElement);
-    dragControl.addEventListener('drag', render);
-    // @ts-ignore
-    scene.add(dragControl);
+    twoDRendererRef.current = new CSS3DRenderer();
+    twoDRendererRef.current.domElement.className = style.hc;
+    twoDRendererRef.current.domElement.style.position = 'absolute';
+    twoDRendererRef.current.domElement.style.top = '0px';
+    containerRef.current.appendChild(twoDRendererRef.current.domElement);
+    const dragControl = new DragControls([...splineHelperObjects], camera, twoDRendererRef.current.domElement);
+    dragControl.addEventListener('drag', dragRender);
+    dragControl.addEventListener('dragstart', (event) => {
+      // eslint-disable-next-line no-undef
+      console.log('dragStart', event);
+      const targetDom = event.object.children[0].element;
+      if (targetDom.className.indexOf('move') === -1) {
+        targetDom.className = `${targetDom.className} move`;
+      }
+    });
+    dragControl.addEventListener('dragend', (event) => {
+      // eslint-disable-next-line no-undef
+      console.log('dragend', event);
+      const targetDom = event.object.children[0].element;
+      targetDom.className = targetDom.className.replace('move', '');
+    });
     render();
     return () => {
-      dragControl.removeEventListener('drag', render);
+      dragControl.deactivate();
     };
   }, []);
+
+  const elements: any = [];
+  for (let i = 0; i < splinePointsLength; i += 1) {
+    elements.push(
+      <Node key={i} number={i} symbol={i} details={i} ref={getRefDom} />,
+    );
+  }
 
   return (
     <section ref={containerRef} className={style.withLine}>
       <canvas ref={canvasRef} />
+      {
+        elements
+      }
     </section>
   );
 };
