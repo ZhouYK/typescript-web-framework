@@ -173,6 +173,14 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     updateData(internalData);
   }, [data]);
 
+  const modifyItem = useCallback(() => {
+    // eslint-disable-next-line no-bitwise
+    const index = ~~(data.length * Math.random());
+    const str = `${Date.now()}`;
+    data[index].name = `${str.substring(str.length - 6)}变化`;
+    updateData([...data]);
+  }, [data]);
+
   useEffect(() => {
     if (flagRef.current) {
       createLine(splineHelperObjects);
@@ -201,6 +209,7 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
   return (
     <>
       <button onClick={addItem}>新增</button>
+      <button onClick={modifyItem}>随机修改</button>
       <section ref={containerRef} className={style.withLine}>
         <canvas ref={canvasRef} />
       </section>
