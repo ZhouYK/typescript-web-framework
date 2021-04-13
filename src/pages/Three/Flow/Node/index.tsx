@@ -6,17 +6,21 @@ import { Flow } from '../interface';
 import style from './style.less';
 
 interface Props {
-  number: number;
-  symbol: any;
-  details: any;
   data: Flow.Node;
   refFn: Flow.RefFn;
+  delItem?: (node: Flow.Node) => void;
 }
 
 const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
   const {
-    number, symbol, details, data, refFn,
+    data, refFn, delItem,
   } = props;
+
+  const onDel = useCallback(() => {
+    if (delItem) {
+      delItem(data);
+    }
+  }, [delItem, data]);
 
   const refFnCall = useCallback((dom: HTMLElement) => {
     refFn({
@@ -24,17 +28,17 @@ const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
       data,
     });
   }, [refFn]);
+
   return (
     <div ref={refFnCall} className={classNames(style.node, 'node-element')} style={{ backgroundColor: `rgba(0, 127, 127, ${Math.random() * 0.5 + 0.25})` }}>
-      <div className='number'>
-        { number }
-      </div>
       <div className='symbol'>
-        { symbol }
+        { data.name }
       </div>
-      <div className='details'>
-        { details }
-      </div>
+      {
+        delItem ? (
+          <button onClick={onDel}>删除</button>
+        ) : null
+      }
     </div>
   );
 };

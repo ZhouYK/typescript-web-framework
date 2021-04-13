@@ -3,34 +3,41 @@ import React, {
 } from 'react';
 import * as THREE from 'three';
 import {
-  CatmullRomCurve3, Line, Material, WebGLRenderer,
+  Material, Object3D, WebGLRenderer,
 } from 'three';
-import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import { CSS3DObject, CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer';
-import { Flow } from './interface'
+import useLine from '@src/pages/Three/Flow/useLine';
+import useDragControl from '@src/pages/Three/Flow/useDragControl';
+import { getSafe } from '@src/tools/util';
+import { Flow } from './interface';
 import Node from './Node';
 import style from './style.less';
-import {gluer} from "femo";
+import nodeStyle from './Node/style.less';
 
 interface Props {
-  data: Flow.Node[];
 }
-const splinePointsLength = 3;
 const ARC_SEGMENTS = 200;
 
-const DragWithLine: FC<Props> = (props: PropsWithChildren<Props>) => {
-
-  const { data } = props;
-  const containerRef = React.createRef<HTMLDivElement>();
-  const canvasRef = React.createRef<HTMLCanvasElement>();
+const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
+  const flagRef = useRef(false);
+  const [data, updateData] = useState(() => ([{
+    id: '1',
+    name: '测试1',
+  }, {
+    id: '2',
+    name: '测试2',
+  }, {
+    id: '3',
+    name: '测试3',
+  }]));
+  const containerRef = useRef<HTMLDivElement>();
+  const canvasRef = useRef<HTMLCanvasElement>();
+  const reactContainerRef = useRef<HTMLDivElement>();
   const rendererRef = useRef<WebGLRenderer>();
   const twoDRendererRef = useRef<CSS3DRenderer>();
-  const curveRef = useRef<CatmullRomCurve3>();
-  const curveLineMeshRef = useRef<Line>();
   const [material] = useState(() => new THREE.MeshBasicMaterial({ color: 'transparent' }));
 
-  const [point] = useState(() => new THREE.Vector3());
-  const [splineHelperObjects] = useState(() => gluer([]));
+  const [splineHelperObjects] = useState<Object3D[]>([]);
   const [scene] = useState(() => {
     const tmpScene = new THREE.Scene();
     tmpScene.background = new THREE.Color(0xffffff);
@@ -60,9 +67,8 @@ const DragWithLine: FC<Props> = (props: PropsWithChildren<Props>) => {
     return helper;
   });
 
-  const addSplineObject = useCallback((refData: Flow.DataWithDom) => {
-    const { dom, data } = refData;
-    const object = new THREE.Mesh(new THREE.PlaneGeometry(dom.clientWidth, dom.clientHeight, ~~dom.clientWidth, ~~dom.clientHeight), material);
+  const addSplineObject = useCallback((data: Flow.Node) => {
+    const object = new THREE.Mesh(new THREE.PlaneGeometry(nodeStyle.width, nodeStyle.height, nodeStyle.width, nodeStyle.height), material);
     object.position.x = Math.random() * 1000 - 500;
     object.position.y = Math.random() * 600;
     object.position.z = 0;
@@ -73,49 +79,27 @@ const DragWithLine: FC<Props> = (props: PropsWithChildren<Props>) => {
   const refFn = useCallback((refData: Flow.DataWithDom) => {
     const { dom, data } = refData;
     if (dom) {
-      const p = addSplineObject(refData);
-      const domObj = new CSS3DObject(dom);
-      domObj.position.set(0, 1, 0);
+      const clonedDom = dom;
+      const p = addSplineObject(data);
+      const domObj = new CSS3DObject(clonedDom as HTMLElement);
       p.add(domObj);
+      scene.add(p);
       splineHelperObjects.push(p);
     } else {
-      const target = splineHelperObjects.find((obj) => {
-        const { userData } = obj;
-        return userData.id === data.id;
-      });
       for (let i = 0; i < splineHelperObjects.length; i += 1) {
         const obj = splineHelperObjects[i];
         const { userData } = obj;
-          if (userData.id === obj.id) {
-            splineHelperObjects
-            break;
-          }
+        if (userData.id === data.id) {
+          // 组件卸载时，也从场景中去掉对应的3d对象
+          scene.remove(obj);
+          splineHelperObjects.splice(i, 1);
+          break;
+        }
       }
     }
   }, []);
 
-  const drawLine = useCallback(() => {
-    curveRef.current = new THREE.CatmullRomCurve3(splineHelperObjects.map((obj) => obj.position));
-    const curvePoints = curveRef.current.getPoints(ARC_SEGMENTS - 1);
-    const curveGeometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
-    curveLineMeshRef.current = new THREE.Line(curveGeometry, new THREE.LineBasicMaterial({
-      color: 0xff0000,
-      opacity: 0.35,
-    }));
-    scene.add(curveLineMeshRef.current);
-  }, []);
-
-  const updateSplineOutline = useCallback(() => {
-    const curveLineMesh = curveLineMeshRef.current;
-    const curve = curveRef.current;
-    const linePositions = curveLineMesh.geometry.attributes.position;
-    for (let i = 0; i < ARC_SEGMENTS; i += 1) {
-      const t = i / (ARC_SEGMENTS - 1);
-      curve.getPoint(t, point);
-      linePositions.setXYZ(i, point.x, point.y, point.z);
-    }
-    linePositions.needsUpdate = true;
-  }, []);
+  const { createLine, updateLinePositions: updateSplineOutline } = useLine(scene, ARC_SEGMENTS);
 
   const displayToPixel = useCallback(() => {
     const canvas = rendererRef.current.domElement;
@@ -130,7 +114,6 @@ const DragWithLine: FC<Props> = (props: PropsWithChildren<Props>) => {
   }, []);
 
   const render = useCallback(() => {
-    console.log('drag');
     if (displayToPixel()) {
       const canvas = rendererRef.current.domElement;
       camera.aspect = canvas.width / canvas.height;
@@ -139,58 +122,96 @@ const DragWithLine: FC<Props> = (props: PropsWithChildren<Props>) => {
     rendererRef.current.render(scene, camera);
     twoDRendererRef.current.render(scene, camera);
     updateSplineOutline();
-  }, []);
+  }, [updateSplineOutline]);
 
-  const dragRender = useCallback(() => {
-    render();
-  }, []);
-
-  useEffect(() => {
-    scene.add(plane);
-    scene.add(helper);
-    drawLine();
-    rendererRef.current = new THREE.WebGLRenderer({ antialias: true, canvas: canvasRef.current });
-    twoDRendererRef.current = new CSS3DRenderer();
-    twoDRendererRef.current.domElement.className = style.hc;
-    twoDRendererRef.current.domElement.style.position = 'absolute';
-    twoDRendererRef.current.domElement.style.top = '0px';
-    containerRef.current.appendChild(twoDRendererRef.current.domElement);
-    const dragControl = new DragControls([...splineHelperObjects], camera, twoDRendererRef.current.domElement);
-    dragControl.addEventListener('drag', dragRender);
-    dragControl.addEventListener('dragstart', (event) => {
-      // eslint-disable-next-line no-undef
-      console.log('dragStart', event);
+  const { createDragControl } = useDragControl(camera, {
+    dragstart: (event) => {
       const targetDom = event.object.children[0].element;
       if (targetDom.className.indexOf('move') === -1) {
         targetDom.className = `${targetDom.className} move`;
       }
-    });
-    dragControl.addEventListener('dragend', (event) => {
-      // eslint-disable-next-line no-undef
-      console.log('dragend', event);
+    },
+    dragend: (event) => {
       const targetDom = event.object.children[0].element;
       targetDom.className = targetDom.className.replace('move', '');
+    },
+    drag: render,
+  });
+
+  const getElementFromObject3D = useCallback((obj3d: Object3D) => getSafe(obj3d, 'children[0].element'), []);
+
+  const delItem = useCallback((item: Flow.Node) => {
+    const internalData = [...data];
+    let flag = false;
+    let targetDom: HTMLElement = null;
+    for (let j = 0; j < splineHelperObjects.length; j += 1) {
+      const obj = splineHelperObjects[j];
+      if (obj.userData.id === item.id) {
+        targetDom = getElementFromObject3D(obj);
+        flag = true;
+        break;
+      }
+    }
+    for (let i = 0; i < internalData.length; i += 1) {
+      if (internalData[i].id === item.id) {
+        internalData.splice(i, 1);
+        if (flag) {
+          reactContainerRef.current.appendChild(targetDom);
+        }
+        updateData(internalData);
+        break;
+      }
+    }
+  }, [data]);
+
+  const addItem = useCallback(() => {
+    const internalData = [...data];
+    internalData.push({
+      id: `${Date.now()}`,
+      name: `新增${internalData.length}`,
     });
+    updateData(internalData);
+  }, [data]);
+
+  useEffect(() => {
+    if (flagRef.current) {
+      createLine(splineHelperObjects);
+      createDragControl(splineHelperObjects, twoDRendererRef.current.domElement);
+      render();
+    } else {
+      flagRef.current = true;
+    }
+  }, [data]);
+
+  useEffect(() => {
+    scene.add(plane);
+    scene.add(helper);
+    createLine(splineHelperObjects);
+    rendererRef.current = new THREE.WebGLRenderer({ antialias: true, canvas: canvasRef.current });
+    twoDRendererRef.current = new CSS3DRenderer();
+    twoDRendererRef.current.domElement.style.position = 'absolute';
+    twoDRendererRef.current.domElement.style.top = '0px';
+    containerRef.current.appendChild(twoDRendererRef.current.domElement);
+    createDragControl(splineHelperObjects, twoDRendererRef.current.domElement);
     render();
-    return () => {
-      dragControl.deactivate();
-    };
+    window.addEventListener('resize', render);
+    return () => window.removeEventListener('resize', render);
   }, []);
 
-  const elements: any = [];
-  for (let i = 0; i < splinePointsLength; i += 1) {
-    elements.push(
-      <Node key={i} number={i} symbol={i} details={i} ref={getRefDom} />,
-    );
-  }
-
   return (
-    <section ref={containerRef} className={style.withLine}>
-      <canvas ref={canvasRef} />
-      {
-        elements
-      }
-    </section>
+    <>
+      <button onClick={addItem}>新增</button>
+      <section ref={containerRef} className={style.withLine}>
+        <canvas ref={canvasRef} />
+      </section>
+      <section ref={reactContainerRef} className='react-view'>
+         {
+          data.map((n) => (
+            <Node delItem={delItem} data={n} refFn={refFn} key={n.id} />
+          ))
+         }
+      </section>
+    </>
   );
 };
 
