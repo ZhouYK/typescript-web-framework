@@ -36,6 +36,7 @@ const useLine = (scene: Scene, ARC_SEGMENTS: number) => {
 
   const updateLinePositions = useCallback(() => {
     const curveLineMesh = lineRef.current;
+    if (!curveLineMesh) return;
     const curve = curve3Ref.current;
     const linePositions = curveLineMesh.geometry.attributes.position;
     for (let i = 0; i < ARC_SEGMENTS; i += 1) {

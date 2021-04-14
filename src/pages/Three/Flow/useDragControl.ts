@@ -21,6 +21,7 @@ const useDragControl = (camera: Camera, eventsObject: Events) => {
       flagRef.current = rendererDomElement;
     }
     dragControlRef.current?.dispose();
+    if (!object3dArr.length) return;
     dragControlRef.current = new DragControls([...object3dArr], camera, rendererDomElement);
     Object.keys(eventsObject).forEach((k) => {
       dragControlRef.current.addEventListener(k, eventsRef.current[k as Keys]);
