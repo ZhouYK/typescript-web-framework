@@ -9,6 +9,7 @@ interface Props {
   data: Flow.Node;
   refFn?: Flow.RefFn;
   delItem?: (node: Flow.Node) => void;
+  clickItem?: (node: Flow.Node) => void;
 }
 
 const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
@@ -32,7 +33,7 @@ const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
   }, [refFn]);
 
   return (
-    <div ref={refFnCall } className={classNames(style.node, 'node-element')} style={{ backgroundColor: 'rgba(0, 127, 127, 0.5)' }}>
+    <div ref={refFnCall } className={classNames(style.node, 'node-element')}>
       <div className='symbol'>
         { data.name }
       </div>

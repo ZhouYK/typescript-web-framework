@@ -1,16 +1,5 @@
 @import (reference) "~@src/theme/index";
-
-@width: 120;
-@height: 160;
-
-@widthPx: 120px;
-@heightPx: 160px;
-
-
-:export {
-  width: @width;
-  height: @height;
-}
+@import (reference) '../style';
 
 .node {
   width: @widthPx;
@@ -36,7 +25,7 @@
       top: 40px;
       left: 0px;
       right: 0px;
-      font-size: 24px;
+      font-size: 18px;
       font-weight: bold;
       color: rgba(255,255,255,0.75);
       text-shadow: 0 0 10px rgba(0,255,255,0.95);

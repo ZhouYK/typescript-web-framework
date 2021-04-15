@@ -17,7 +17,6 @@ import { Flow } from './interface';
 import Node from './Node';
 import ListNode, { type } from './ListNode';
 import style from './style.less';
-import nodeStyle from './Node/style.less';
 
 interface Props {
 }
@@ -37,6 +36,7 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     name: '测试3',
   }]);
   const [data, updateData] = useState<Flow.Node[]>(() => []);
+  const [curItem, updateItem] = useState<Flow.Node>();
   const containerRef = useRef<HTMLDivElement>();
   const canvasRef = useRef<HTMLCanvasElement>();
   const reactContainerRef = useRef<HTMLDivElement>();
@@ -69,7 +69,7 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
   });
 
   const addSplineObject = useCallback((data: Flow.Node) => {
-    const object = new THREE.Mesh(new THREE.PlaneGeometry(nodeStyle.width, nodeStyle.height, nodeStyle.width, nodeStyle.height), material);
+    const object = new THREE.Mesh(new THREE.PlaneGeometry(style.width, style.height, style.width, style.height), material);
     const p = new Vector2();
     const size = rendererRef.current.getSize(p);
     console.log('size', size);
@@ -94,9 +94,9 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     }
 
     // eslint-disable-next-line no-bitwise
-    object.position.x = diffX * devicePixelRatio - size.x / 2 + 60;
+    object.position.x = diffX * devicePixelRatio - size.x / 2 + (style.width / 2);
     // eslint-disable-next-line no-bitwise
-    object.position.y = size.y / 2 - diffY * devicePixelRatio - 80;
+    object.position.y = size.y / 2 - diffY * devicePixelRatio - (style.height / 2);
     // object.position.y = 0;
     // object.position.x = 0;
     object.position.z = 0;
@@ -229,6 +229,21 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     updateList([...list]);
   }, [list]);
 
+  const clickItem = useCallback((item: Flow.Node) => {
+    updateItem(item);
+  }, []);
+
+  const saveItem = useCallback((item: Flow.Node) => {
+    const internalData = [...data];
+    for (let i = 0; i < internalData.length; i += 1) {
+      if (item.id === internalData[i].id) {
+        internalData[i] = { ...item };
+        break;
+      }
+    }
+    updateData(internalData);
+  }, [data]);
+
   const doRender = useCallback(() => {
     createLine(splineHelperObjects);
     createDragControl(splineHelperObjects, twoDRendererRef.current.domElement);
@@ -273,6 +288,8 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
       }
     },
   }), [data]);
+
+
   return (
 
   <section className={style.area}>
@@ -303,7 +320,9 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
         </section>
       </section>
     </section>
-    <section className='edit-place'></section>
+    <section className='edit-place'>
+      
+    </section>
   </section>
 
   );

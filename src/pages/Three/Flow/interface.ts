@@ -1,9 +1,17 @@
 export namespace Flow {
+
   export interface Node {
     id: string;
-    name: string;
+    name: string; // 视频名称
+    time_point?: number; // 控制时间点（秒）
+    switch_case?: Case[]; // 判断条件
     x?: number; // 拖拽放入时的坐标
     y?: number; // 拖拽放入时的坐标
+  }
+
+  export interface Case {
+    formal: string;
+    node: Node;
   }
 
   export interface DataWithDom {
