@@ -7,6 +7,7 @@ import {
   Material, Object3D, Vector2, WebGLRenderer,
 } from 'three';
 import { CSS3DObject, CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer';
+// import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
 import useLine from '@src/pages/Three/Flow/useLine';
 import useDragControl from '@src/pages/Three/Flow/useDragControl';
 import { getSafe } from '@src/tools/util';
@@ -20,7 +21,8 @@ import nodeStyle from './Node/style.less';
 
 interface Props {
 }
-const ARC_SEGMENTS = 200;
+const ARC_SEGMENTS = 1000;
+const { devicePixelRatio } = window;
 
 const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
   const flagRef = useRef(false);
@@ -40,6 +42,7 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
   const reactContainerRef = useRef<HTMLDivElement>();
   const rendererRef = useRef<WebGLRenderer>();
   const twoDRendererRef = useRef<CSS3DRenderer>();
+  const dropMeasureRef = useRef<HTMLDivElement>();
   const [material] = useState(() => new THREE.MeshBasicMaterial({ color: 'transparent' }));
 
   const [splineHelperObjects] = useState<Object3D[]>([]);
@@ -49,14 +52,17 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     return tmpScene;
   });
   const [camera] = useState(() => {
-    const tmpCamera = new THREE.PerspectiveCamera(70, 2, 1, 10000);
-    tmpCamera.position.set(0, 0, 1000);
+    const tmpCamera = new THREE.OrthographicCamera(0, 0, 0, 0, 1, 1000);
+    tmpCamera.position.set(0, 0, 100);
+    tmpCamera.zoom = 1;
     return tmpCamera;
   });
   const [helper] = useState(() => {
-    const helper = new THREE.GridHelper(1000, 10);
-    helper.position.y = 0;
+    const helper = new THREE.GridHelper(2000, 100);
+    // helper.position.y = 0;
+    // helper.position.x = 0;
     helper.rotation.x = Math.PI / 2;
+    // helper.position.z = 0;
     (helper.material as Material).opacity = 0.25;
     (helper.material as Material).transparent = true;
     return helper;
@@ -67,12 +73,33 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     const p = new Vector2();
     const size = rendererRef.current.getSize(p);
     console.log('size', size);
-    // object.position.x = (data.x - 300 - (size.x / window.devicePixelRatio) + 120);
-    // object.position.x = (data.x - 300 - (size.x / window.devicePixelRatio) + 120);
-    object.position.y = 0;
-    object.position.x = 0;
+    // drop target的坐标
+    const {
+      x: dropTargetX, y: dropTargetY, width, height,
+    } = dropMeasureRef.current.getBoundingClientRect();
+
+    let diffX = data.x - dropTargetX;
+    let diffY = data.y - dropTargetY;
+
+    if (diffX < 0) {
+      diffX = 0;
+    } else if (diffX > width) {
+      diffX = width;
+    }
+
+    if (diffY < 0) {
+      diffY = 0;
+    } else if (diffY > height) {
+      diffY = height;
+    }
+
+    // eslint-disable-next-line no-bitwise
+    object.position.x = diffX * devicePixelRatio - size.x / 2 + 60;
+    // eslint-disable-next-line no-bitwise
+    object.position.y = size.y / 2 - diffY * devicePixelRatio - 80;
+    // object.position.y = 0;
+    // object.position.x = 0;
     object.position.z = 0;
-    console.log(data, object.position);
     object.userData = { ...data };
     return object;
   }, []);
@@ -104,21 +131,30 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
 
   const displayToPixel = useCallback(() => {
     const canvas = rendererRef.current.domElement;
-    const width = containerRef.current.clientWidth * window.devicePixelRatio;
-    const height = containerRef.current.clientHeight * window.devicePixelRatio;
+    const width = containerRef.current.clientWidth * devicePixelRatio;
+    const height = containerRef.current.clientHeight * devicePixelRatio;
     const needResize = width !== canvas.width || height !== canvas.height;
     if (needResize) {
       rendererRef.current.setSize(width, height, false);
       twoDRendererRef.current.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+      // twoDRendererRef.current.setSize(width, height);
     }
     return needResize;
   }, []);
 
+  const resizeCamera = useCallback(() => {
+    const canvas = rendererRef.current.domElement;
+    // camera.aspect = canvas.width / canvas.height;
+    camera.left = -canvas.width / 2;
+    camera.right = canvas.width / 2;
+    camera.top = canvas.height / 2;
+    camera.bottom = -canvas.height / 2;
+    camera.updateProjectionMatrix();
+  }, []);
+
   const render = useCallback(() => {
     if (displayToPixel()) {
-      const canvas = rendererRef.current.domElement;
-      camera.aspect = canvas.width / canvas.height;
-      camera.updateProjectionMatrix();
+      resizeCamera();
     }
     rendererRef.current.render(scene, camera);
     twoDRendererRef.current.render(scene, camera);
@@ -214,6 +250,7 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     twoDRendererRef.current.domElement.style.position = 'absolute';
     twoDRendererRef.current.domElement.style.top = '0px';
     containerRef.current.appendChild(twoDRendererRef.current.domElement);
+    resizeCamera();
     doRender();
     window.addEventListener('resize', render);
     return () => window.removeEventListener('resize', render);
@@ -222,7 +259,7 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
   const [, drop] = useDrop(() => ({
     accept: type,
     drop(item: Flow.Node, monitor) {
-      const delta = monitor.getDifferenceFromInitialOffset();
+      const delta = monitor.getSourceClientOffset();
       // console.log('drop', item, delta);
       let flag = false;
       for (let i = 0; i < data.length; i += 1) {
@@ -236,7 +273,6 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
       }
     },
   }), [data]);
-  console.log('data', data);
   return (
 
   <section className={style.area}>
@@ -254,15 +290,17 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
       </section>
     </section>
     <section ref={drop} className='workspace'>
-      <section ref={containerRef} className='withLine'>
-        <canvas ref={canvasRef} />
-      </section>
-      <section ref={reactContainerRef} className='react-view'>
-        {
-          data.map((n) => (
-            <Node delItem={delItem} data={n} refFn={refFn} key={n.id} />
-          ))
-        }
+      <section ref={dropMeasureRef} className='drop-measure-container'>
+        <section ref={containerRef} className='withLine'>
+          <canvas ref={canvasRef} />
+        </section>
+        <section ref={reactContainerRef} className='react-view'>
+          {
+            data.map((n) => (
+              <Node delItem={delItem} data={n} refFn={refFn} key={n.id} />
+            ))
+          }
+        </section>
       </section>
     </section>
     <section className='edit-place'></section>
