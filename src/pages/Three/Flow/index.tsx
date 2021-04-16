@@ -7,7 +7,6 @@ import {
   Material, Object3D, Vector2, WebGLRenderer,
 } from 'three';
 import { CSS3DObject, CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer';
-// import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
 import useLine from '@src/pages/Three/Flow/useLine';
 import useDragControl from '@src/pages/Three/Flow/useDragControl';
 import { DndProvider, useDrop } from 'react-dnd';
