@@ -10,9 +10,11 @@ import { CSS3DObject, CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRe
 // import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
 import useLine from '@src/pages/Three/Flow/useLine';
 import useDragControl from '@src/pages/Three/Flow/useDragControl';
-import { getSafe } from '@src/tools/util';
 import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import useNodeResult from '@src/pages/Three/Flow/Node/useNodeResult';
+import useListNodeResult from '@src/pages/Three/Flow/ListNode/useListNodeResult';
+import { Empty } from 'antd';
 import { Flow } from './interface';
 import Node from './Node';
 import ListNode, { type } from './ListNode';
@@ -25,18 +27,6 @@ const { devicePixelRatio } = window;
 
 const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
   const flagRef = useRef(false);
-  const [list, updateList] = useState(() => [{
-    id: '1',
-    name: '测试1',
-  }, {
-    id: '2',
-    name: '测试2',
-  }, {
-    id: '3',
-    name: '测试3',
-  }]);
-  const [data, updateData] = useState<Flow.Node[]>(() => []);
-  const [curItem, updateItem] = useState<Flow.Node>();
   const containerRef = useRef<HTMLDivElement>();
   const canvasRef = useRef<HTMLCanvasElement>();
   const reactContainerRef = useRef<HTMLDivElement>();
@@ -72,7 +62,6 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     const object = new THREE.Mesh(new THREE.PlaneGeometry(style.width, style.height, style.width, style.height), material);
     const p = new Vector2();
     const size = rendererRef.current.getSize(p);
-    console.log('size', size);
     // drop target的坐标
     const {
       x: dropTargetX, y: dropTargetY, width, height,
@@ -175,74 +164,10 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     drag: render,
   });
 
-  const getElementFromObject3D = useCallback((obj3d: Object3D) => getSafe(obj3d, 'children[0].element'), []);
-
-  const delItem = useCallback((item: Flow.Node) => {
-    const internalData = [...data];
-    let flag = false;
-    let targetDom: HTMLElement = null;
-    for (let j = 0; j < splineHelperObjects.length; j += 1) {
-      const obj = splineHelperObjects[j];
-      if (obj.userData.id === item.id) {
-        targetDom = getElementFromObject3D(obj);
-        flag = true;
-        break;
-      }
-    }
-    for (let i = 0; i < internalData.length; i += 1) {
-      if (internalData[i].id === item.id) {
-        internalData.splice(i, 1);
-        if (flag) {
-          reactContainerRef.current.appendChild(targetDom);
-        }
-        updateData(internalData);
-        break;
-      }
-    }
-  }, [data]);
-
-
-  const delItemFromList = useCallback((item: Flow.Node) => {
-    const internalList = [...list];
-    for (let i = 0; i < internalList.length; i += 1) {
-      if (internalList[i].id === item.id) {
-        internalList.splice(i, 1);
-        updateList(internalList);
-        break;
-      }
-    }
-  }, [list]);
-  const addItem = useCallback(() => {
-    const internalList = [...list];
-    internalList.push({
-      id: `${Date.now()}`,
-      name: `新增${internalList.length}`,
-    });
-    updateList(internalList);
-  }, [list]);
-
-  const modifyItem = useCallback(() => {
-    // eslint-disable-next-line no-bitwise
-    const index = ~~(list.length * Math.random());
-    const str = `${Date.now()}`;
-    list[index].name = `${str.substring(str.length - 6)}变化`;
-    updateList([...list]);
-  }, [list]);
-
-  const clickItem = useCallback((item: Flow.Node) => {
-    updateItem(item);
-  }, []);
-
-  const saveItem = useCallback((item: Flow.Node) => {
-    const internalData = [...data];
-    for (let i = 0; i < internalData.length; i += 1) {
-      if (item.id === internalData[i].id) {
-        internalData[i] = { ...item };
-        break;
-      }
-    }
-    updateData(internalData);
-  }, [data]);
+  // 绘图区域相关数据和事件
+  const nodeResult = useNodeResult(splineHelperObjects, reactContainerRef);
+  // 左侧列表相关数据和事件
+  const listNodeResult = useListNodeResult();
 
   const doRender = useCallback(() => {
     createLine(splineHelperObjects);
@@ -256,7 +181,7 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     } else {
       flagRef.current = true;
     }
-  }, [data]);
+  }, [nodeResult.data]);
 
   useEffect(() => {
     scene.add(helper);
@@ -275,32 +200,31 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     accept: type,
     drop(item: Flow.Node, monitor) {
       const delta = monitor.getSourceClientOffset();
-      // console.log('drop', item, delta);
       let flag = false;
-      for (let i = 0; i < data.length; i += 1) {
-        if (item.id === data[i].id) {
+      for (let i = 0; i < nodeResult.data.length; i += 1) {
+        if (item.id === nodeResult.data[i].id) {
           flag = true;
           return;
         }
       }
       if (!flag) {
-        updateData([...data, { ...item, ...delta }]);
+        nodeResult.updateData([...nodeResult.data, { ...item, ...delta }]);
       }
     },
-  }), [data]);
+  }), [nodeResult.data]);
 
 
   return (
 
   <section className={style.area}>
     <section className='list'>
-      <button onClick={addItem}>新增</button>
-      <button onClick={modifyItem}>随机修改</button>
+      <button onClick={listNodeResult.addItem}>新增</button>
+      <button onClick={listNodeResult.modifyItem}>随机修改</button>
       <section>
         {
-          list.map((n) => (
+          listNodeResult.list.map((n) => (
             <section className='node-wrap' key={n.id}>
-              <ListNode delItem={delItemFromList} data={n}/>
+              <ListNode delItem={listNodeResult.delItemFromList} data={n}/>
             </section>
           ))
         }
@@ -313,15 +237,17 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
         </section>
         <section ref={reactContainerRef} className='react-view'>
           {
-            data.map((n) => (
-              <Node delItem={delItem} data={n} refFn={refFn} key={n.id} />
+            nodeResult.data.map((n) => (
+              <Node clickItem={nodeResult.clickItem} delItem={nodeResult.delItem} data={n} refFn={refFn} key={n.id} />
             ))
           }
         </section>
       </section>
     </section>
     <section className='edit-place'>
-      
+      {
+        nodeResult.curItem ? <nodeResult.FormComp node={nodeResult.curItem} saveItem={nodeResult.saveItem} /> : <Empty />
+      }
     </section>
   </section>
 

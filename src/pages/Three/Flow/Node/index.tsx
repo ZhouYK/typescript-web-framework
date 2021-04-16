@@ -14,10 +14,12 @@ interface Props {
 
 const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
   const {
-    data, refFn, delItem,
+    data, refFn, delItem, clickItem,
   } = props;
 
-  const onDel = useCallback(() => {
+  const onDel = useCallback((evt) => {
+    evt.stopPropagation();
+    evt.cancelBubble = true;
     if (delItem) {
       delItem(data);
     }
@@ -32,8 +34,12 @@ const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
     }
   }, [refFn]);
 
+  const onClickItem = useCallback(() => {
+    clickItem(data);
+  }, [clickItem, data]);
+
   return (
-    <div ref={refFnCall } className={classNames(style.node, 'node-element')}>
+    <div onClick={onClickItem} ref={refFnCall } className={classNames(style.node, 'node-element')}>
       <div className='symbol'>
         { data.name }
       </div>

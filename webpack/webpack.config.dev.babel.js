@@ -103,7 +103,7 @@ const config = {
   },
   devServer: {
     hot: true,
-    host: '0.0.0.0',
+    host: '127.0.0.1',
     port: devPort,
     disableHostCheck: true,
     contentBase: contentPath,

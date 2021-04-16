@@ -16,14 +16,13 @@ interface Props extends TextAreaProps {
 // 这里antd里面textarea最小高度是32，需要做限制;
 const minHeight = 32;
 // 使用该组件时需要注意容器组件的背景色
-const InputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
+const EnhancedInputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
   const { placeholder, useTextHeight, ...rest } = props;
   const textareaRef = useRef<any>();
   const placeholderRef = useRef<HTMLDivElement>();
   const [hidePlaceholder, updateHidePlaceholder] = useState(true);
   const textareaDom = useRef<{dom: any}>({ dom: null });
   const timer = useRef<NodeJS.Timer>();
-  const mutationObserver = useRef<MutationObserver>();
   const calcHeightRef = useRef<Function>();
 
   const calcHeight = useCallback((times = 10) => {
@@ -72,30 +71,12 @@ const InputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
   }, [rest.value]);
 
   useEffect(() => {
-    // @ts-ignore
-    const MutationObserver = window.MutationObserver || window.webkitMutationObserver || window.MozMutationObserver;
-    if (MutationObserver && !mutationObserver.current && textareaDom.current.dom) {
-      mutationObserver.current = new MutationObserver((mutation: MutationRecord[]) => {
-        if (mutation instanceof Array) {
-          const tm = mutation.find((m) => m.target === textareaDom.current.dom);
-          if (tm && tm.type === 'attributes' && tm.attributeName === 'style') {
-            clearTimeout(timer.current);
-            calcHeightRef.current();
-          }
-        }
-      });
-      mutationObserver.current.observe(textareaDom.current.dom, {
-        childList: false,
-        subtree: false,
-        attributes: true,
-      });
-    }
-    return () => {
-      if (mutationObserver.current) {
-        mutationObserver.current.disconnect();
-        mutationObserver.current = null;
-      }
+    const resizeHandler = () => {
+      clearTimeout(timer.current);
+      calcHeightRef.current();
     };
+    window.addEventListener('resize', resizeHandler);
+    return () => window.removeEventListener('resize', resizeHandler);
   }, []);
 
   return (
@@ -110,8 +91,8 @@ const InputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
   );
 };
 
-InputTextArea.defaultProps = {
+EnhancedInputTextArea.defaultProps = {
   useTextHeight: false,
 };
 
-export default InputTextArea;
+export default EnhancedInputTextArea;
