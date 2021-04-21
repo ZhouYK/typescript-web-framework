@@ -1,4 +1,6 @@
-import { useCallback, useRef, useState } from 'react';
+import {
+  useCallback, useEffect, useRef, useState,
+} from 'react';
 
 const useLoadingDelay = (initialLoading = false, showDelay = 0, hideDelay = 500): [boolean, (flag: boolean) => void] => {
   const [loading, updateLoading] = useState(initialLoading);
@@ -25,6 +27,11 @@ const useLoadingDelay = (initialLoading = false, showDelay = 0, hideDelay = 500)
       }, hideDelay);
     }
   }, [timerRef]);
+
+  useEffect(() => () => {
+    clearTimeout(timerRef.current.showTimer);
+    clearTimeout(timerRef.current.hideTimer);
+  }, []);
 
   return [loading, updateLoadingDelay];
 };
