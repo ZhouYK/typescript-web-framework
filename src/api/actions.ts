@@ -1,10 +1,10 @@
-import {
-  get,
-} from '@src/tools/request';
-import {
-  User,
-} from '@src/api/interface';
-import { commonUrls } from './urls';
+// import {
+//   get,
+// } from '@src/tools/request';
+// import {
+//   User,
+// } from '@src/api/interface';
+// import { commonUrls } from './urls';
 
 export const common = {
   // 获取用户信息

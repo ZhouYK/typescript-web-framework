@@ -11,7 +11,7 @@ const rules = [{
   test: /\.(ts|js)x?$/,
   include: [
     path.resolve(__dirname, '../src'),
-    /node_modules[\\/](antd)|(pinyin)/,
+    /node_modules[\\/](antd)|(pinyin)|(three)/,
   ],
   use: [{
     loader: 'babel-loader',
