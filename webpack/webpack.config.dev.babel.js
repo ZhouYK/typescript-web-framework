@@ -1,14 +1,20 @@
 import webpack from 'webpack';
+import WebpackBar from 'webpackbar';
 import commonConfig, { contentPath } from './common.config';
 
 const nodeEnv = process.env.NODE_ENV || 'development';
 const devPort = process.env.PORT || '9999';
 const publicPath = '/'; // 可自定义
 const entry = { ...commonConfig.entry };
+const bar = new WebpackBar({
+  color: '#ffda00',
+  profile: true,
+});
 const config = {
   devtool: 'eval-source-map',
   mode: nodeEnv,
   entry,
+  cache: commonConfig.cache,
   target: commonConfig.target,
   output: {
     ...commonConfig.output,
@@ -18,18 +24,6 @@ const config = {
   },
   module: {
     rules: [{
-      test: /\.(ts|js)x$/,
-      enforce: 'pre',
-      use: [
-        {
-          loader: 'eslint-loader',
-          options: {
-            emitErrors: true,
-            failOnHint: true,
-          },
-        },
-      ],
-    }, {
       test: /\.less$/,
       exclude: /(node_modules)|(global\.less)/,
       use: [
@@ -38,6 +32,7 @@ const config = {
           loader: 'css-loader',
           options: {
             modules: true,
+            sourceMap: false,
           },
         },
         'postcss-loader',
@@ -47,6 +42,7 @@ const config = {
             lessOptions: {
               javascriptEnabled: true,
             },
+            sourceMap: false,
           },
         },
       ],
@@ -57,6 +53,9 @@ const config = {
         'style-loader',
         {
           loader: 'css-loader',
+          options: {
+            sourceMap: false,
+          },
         },
         'postcss-loader',
         {
@@ -65,6 +64,7 @@ const config = {
             lessOptions: {
               javascriptEnabled: true,
             },
+            sourceMap: false,
           },
         },
       ],
@@ -76,6 +76,7 @@ const config = {
         loader: 'css-loader',
         options: {
           modules: true,
+          sourceMap: false,
         },
       }, 'postcss-loader'],
     },
@@ -84,6 +85,9 @@ const config = {
       include: /node_modules/,
       use: ['style-loader', {
         loader: 'css-loader',
+        options: {
+          sourceMap: false,
+        },
       }, 'postcss-loader'],
     },
     ...commonConfig.module.rules,
@@ -103,13 +107,15 @@ const config = {
   },
   devServer: {
     hot: true,
-    host: '127.0.0.1',
+    host: '0.0.0.0',
     port: devPort,
     disableHostCheck: true,
     contentBase: contentPath,
     historyApiFallback: true,
-    stats: 'minimal',
+    stats: 'errors-only',
     compress: true,
+    useLocalIp: true,
+    // quiet: true,
     proxy: {
       context: ['/api/'],
       // target: 'http://172.16.40.96:8080/',
@@ -127,10 +133,12 @@ const config = {
     open: true,
   },
   plugins: [
+    bar,
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(nodeEnv),
     }),
     ...commonConfig.plugins,
   ],
+  stats: 'normal',
 };
 export default config;

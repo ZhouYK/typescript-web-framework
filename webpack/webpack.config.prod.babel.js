@@ -10,6 +10,7 @@ const nodeEnv = process.env.NODE_ENV || 'production';
 const getConfig = (publicPath, env) => ({
   mode: nodeEnv,
   devtool: 'source-map',
+  cache: commonConfig.cache,
   entry: commonConfig.entry,
   output: {
     ...commonConfig.output,
@@ -18,18 +19,6 @@ const getConfig = (publicPath, env) => ({
   },
   module: {
     rules: [{
-      test: /\.(ts|js)x$/,
-      enforce: 'pre',
-      use: [
-        {
-          loader: 'eslint-loader',
-          options: {
-            emitErrors: true,
-            failOnHint: true,
-          },
-        },
-      ],
-    }, {
       test: /\.less$/,
       exclude: /(node_modules)|(global\.less)/,
       use: [{
@@ -38,6 +27,7 @@ const getConfig = (publicPath, env) => ({
         loader: 'css-loader',
         options: {
           modules: true,
+          sourceMap: false,
         },
       }, {
         loader: 'postcss-loader',
@@ -47,6 +37,7 @@ const getConfig = (publicPath, env) => ({
           lessOptions: {
             javascriptEnabled: true,
           },
+          sourceMap: false,
         },
       }],
     }, {
@@ -56,6 +47,9 @@ const getConfig = (publicPath, env) => ({
         loader: MiniCssExtractPlugin.loader,
       }, {
         loader: 'css-loader',
+        options: {
+          sourceMap: false,
+        },
       }, {
         loader: 'postcss-loader',
       }, {
@@ -64,6 +58,7 @@ const getConfig = (publicPath, env) => ({
           lessOptions: {
             javascriptEnabled: true,
           },
+          sourceMap: false,
         },
       }],
     }, {
@@ -75,6 +70,7 @@ const getConfig = (publicPath, env) => ({
         loader: 'css-loader',
         options: {
           modules: true,
+          sourceMap: false,
         },
       }, {
         loader: 'postcss-loader',
@@ -86,6 +82,9 @@ const getConfig = (publicPath, env) => ({
         loader: MiniCssExtractPlugin.loader,
       }, {
         loader: 'css-loader',
+        options: {
+          sourceMap: false,
+        },
       }, {
         loader: 'postcss-loader',
       }],
@@ -137,10 +136,10 @@ const getConfig = (publicPath, env) => ({
     new webpack.SourceMapDevToolPlugin({
       filename: '[file].map',
       test: /\.(js|ts)x?$/,
-      append: '\n//# sourceMappingURL=[url]',
+      append: '\n//# sourceMappingURL=https://xxx/[url]',
     }),
     ...commonConfig.plugins,
   ],
-  stats: 'normal',
+  stats: 'errors-only',
 });
 export default getConfig;

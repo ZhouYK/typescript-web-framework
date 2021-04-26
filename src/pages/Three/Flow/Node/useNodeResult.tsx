@@ -8,7 +8,6 @@ import { Object3D } from 'three';
 import { getSafe } from '@src/tools/util';
 import useResult from '@src/hooks/useResult';
 
-
 const useNodeResult = (splineHelperObjects: Object3D[], reactContainerRef: RefObject<HTMLElement>) => {
   const [data, updateData] = useState<Flow.Node[]>(() => []);
   const [curItem, updateItem] = useState<Flow.Node>();
@@ -31,7 +30,6 @@ const useNodeResult = (splineHelperObjects: Object3D[], reactContainerRef: RefOb
   const clickItem = useCallback((item: Flow.Node) => {
     updateItem(item);
   }, [curItem, saveItem]);
-
 
   const delItem = useCallback((item: Flow.Node) => {
     const internalData = [...data];
@@ -59,7 +57,6 @@ const useNodeResult = (splineHelperObjects: Object3D[], reactContainerRef: RefOb
       updateItem(null);
     }
   }, [data, curItem, splineHelperObjects, reactContainerRef]);
-
 
   useEffect(() => {
     updateFormComp(() => genComp());

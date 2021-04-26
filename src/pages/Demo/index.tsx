@@ -10,12 +10,14 @@ interface State {
     person: Person;
     country: string;
 }
+interface Props {
+}
 class DemoClass extends PureComponent<any, State> {
     public refName: RefObject<any>;
 
     public refCountry: RefObject<any>;
 
-    public constructor(props: any) {
+    public constructor(props: Props) {
       super(props);
       this.refName = React.createRef();
       this.refCountry = React.createRef();

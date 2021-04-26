@@ -4,7 +4,6 @@ import {
 } from 'react';
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
 
-
 type Keys = 'dragstart' | 'drag' | 'dragend' | 'hoveron' | 'hoveroff';
 type Events = {
   [key in Keys]?: (event: Event) => void;

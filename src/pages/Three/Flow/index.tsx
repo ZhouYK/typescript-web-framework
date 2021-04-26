@@ -212,7 +212,6 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     },
   }), [nodeResult.data]);
 
-
   return (
 
   <section className={style.area}>

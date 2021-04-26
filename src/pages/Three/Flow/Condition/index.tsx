@@ -45,7 +45,6 @@ const Condition: FC<Props> = (props: PropsWithChildren<Props>) => {
     }
   }, [onChange, value]);
 
-
   return (
     <section>
       <section>

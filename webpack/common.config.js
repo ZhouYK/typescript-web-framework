@@ -1,5 +1,6 @@
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import ESLintWebpackPlugin from 'eslint-webpack-plugin';
 
 export const contentPath = path.resolve(__dirname, '../dist');
 // 这里可以路径前一个名称作为页面区分
@@ -16,6 +17,7 @@ const rules = [{
     loader: 'babel-loader',
     options: {
       cacheDirectory: true,
+      cacheCompression: false,
     },
   }, {
     loader: 'ts-loader',
@@ -32,6 +34,7 @@ const rules = [{
     loader: 'babel-loader',
     options: {
       cacheDirectory: true,
+      cacheCompression: false,
     },
   }, {
     loader: 'ts-loader',
@@ -53,6 +56,9 @@ const plugins = [
     chunks: ['runtime', 'base', 'uis', 'style', 'index'],
     favicon: './html/favicon.ico',
   }),
+  new ESLintWebpackPlugin({
+    extensions: ['js', 'jsx', 'tsx', 'ts'],
+  }),
 ];
 const config = {
   entry,
@@ -62,6 +68,13 @@ const config = {
     chunkFilename: process.env.NODE_ENV === 'development' ? 'js/[name].js' : 'js/[id].[contenthash:16].js',
     // 这个会影响externals的配置
     // libraryTarget: 'umd',
+  },
+  cache: {
+    type: 'filesystem', // memory,
+    buildDependencies: {
+      config: [__filename],
+    },
+    maxAge: 5184000000 * 12, // 允许未使用的缓存留在文件系统缓存中的时间：一年
   },
   module: {
     rules,

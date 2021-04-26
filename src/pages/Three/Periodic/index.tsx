@@ -158,7 +158,6 @@ const PeriodicTable: FC<Props> = (_props: PropsWithChildren<Props>) => {
     grid: [],
   });
 
-
   const render = useCallback(() => {
     camera.aspect = container.current.clientWidth / container.current.clientHeight;
     camera.updateProjectionMatrix();
@@ -271,7 +270,6 @@ const PeriodicTable: FC<Props> = (_props: PropsWithChildren<Props>) => {
   const onClickGrid = useCallback(() => {
     transform(targets.grid, 2000);
   }, []);
-
 
   const elementRef = useCallback((i: number) => (ref: HTMLDivElement) => {
     // todo 这里ref可能为null

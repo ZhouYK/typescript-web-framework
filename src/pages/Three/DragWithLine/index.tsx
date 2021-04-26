@@ -73,7 +73,6 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     }
   }, []);
 
-
   const drawLine = useCallback(() => {
     genObjects();
     curveRef.current = new THREE.CatmullRomCurve3(positions);
@@ -118,7 +117,6 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     rendererRef.current.render(scene, camera);
     updateSplineOutline();
   }, []);
-
 
   useEffect(() => {
     scene.add(plane);

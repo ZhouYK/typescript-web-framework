@@ -22,8 +22,8 @@
   },
   "scripts": {
     "test": "jest --no-cache",
-    "start": "cross-env NODE_OPTIONS=--max_old_space_size=4096 NODE_ENV=development webpack serve --hot --config ./webpack/webpack.config.dev.babel.js",
-    "build": "cross-env NODE_ENV=production webpack --env local --config  ./webpack/webpack.config.babel.js",
+    "start": "NODE_OPTIONS=--max_old_space_size=4096 NODE_ENV=development PORT=8989 webpack serve --hot --progress --config ./webpack/webpack.config.dev.babel.js",
+    "build": "NODE_ENV=production webpack --env local --profile --progress --config  ./webpack/webpack.config.babel.js && cp ./WW_verify_YELzj3Y4FH69wXSj.txt ./dist",
     "build:prod": "cross-env NODE_ENV=production webpack --env prod --config  ./webpack/webpack.config.babel.js",
     "build:stage": "cross-env NODE_ENV=production webpack --env stage --config  ./webpack/webpack.config.babel.js",
     "build:test": "cross-env NODE_ENV=production webpack --env test --config  ./webpack/webpack.config.babel.js",
@@ -107,11 +107,11 @@
     "eslint-config-airbnb-base": "~14.2.1",
     "eslint-config-prettier": "~8.1.0",
     "eslint-import-resolver-alias": "~1.1.2",
-    "eslint-loader": "~4.0.2",
     "eslint-plugin-import": "~2.22.1",
     "eslint-plugin-jest": "~23.10.0",
     "eslint-plugin-react": "~7.23.2",
     "eslint-plugin-react-hooks": "~4.2.0",
+    "eslint-webpack-plugin": "~2.5.4",
     "file-loader": "~6.0.0",
     "html-webpack-plugin": "~5.2.0",
     "husky": "~6.0.0",
@@ -127,11 +127,12 @@
     "stylelint": "~13.3.3",
     "stylelint-config-standard": "~20.0.0",
     "ts-jest": "~26.5.0",
-    "ts-loader": "~9.0.2",
+    "ts-loader": "~9.1.1",
     "typescript": "~4.2.4",
     "uglifyjs-webpack-plugin": "~2.2.0",
-    "webpack": "~5.24.2",
-    "webpack-cli": "~4.5.0",
-    "webpack-dev-server": "~3.11.2"
+    "webpack": "~5.35.1",
+    "webpack-cli": "~4.6.0",
+    "webpack-dev-server": "~3.11.2",
+    "webpackbar": "~5.0.0-3"
   }
 }

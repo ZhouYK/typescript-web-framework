@@ -106,7 +106,7 @@ export const isMobile = (): boolean => /Mobi|Android|webOS|iPhone|iPad|iPod|Blac
 export const getSafe = (target: any, keyPath: string): any => {
   try {
     // const regex = /^\[\d\]$/;
-    const mixRegex = /^.*\[\d\]$/;
+    const mixRegex = /^.*\[\d]$/;
     const rest = keyPath.split('.');
     let temp = target;
     rest.forEach((key: string) => {
@@ -135,7 +135,7 @@ export const getSafe = (target: any, keyPath: string): any => {
   }
 };
 
-export const debounce = (fn: Function, delay: number): (...args: any[]) => void => {
+export const debounce = (fn: (...args: any[]) => any, delay: number): (...args: any[]) => void => {
   let timer: NodeJS.Timer;
   return (...args: any[]): void => {
     if (timer) {
@@ -148,7 +148,7 @@ export const debounce = (fn: Function, delay: number): (...args: any[]) => void 
   };
 };
 
-export const throttle = (fn: Function, period: number) => {
+export const throttle = (fn: (...args: any[]) => any, period: number) => {
   let pre = Date.now();
   return (...args: any[]): void => {
     const now = Date.now();
@@ -171,7 +171,6 @@ export const getYMDhm = (date: any): string => {
 };
 
 export const getMD = (date: any): string => moment(date).format('MM-DD');
-
 
 export const genAxiosCancelSource = (): CancelTokenSource => axios.CancelToken.source();
 
@@ -325,7 +324,6 @@ export const parseJsonString = <T>(jsonString: string): T => {
   }
   return result;
 };
-
 
 export const luhnCheck = (card_number: string) => {
   if (!(/^[0-9]{16}$/).test(card_number)) {

@@ -15,7 +15,6 @@ import MisHeader from './index';
 
 const { useState } = React;
 
-
 const genRenderHeader = (curContext: CurContext): (menus: RoadMap[], path?: string[], parentHasHeader?: boolean) => void => {
   const renderRecordRoads = function (menus: RoadMap[], path: string[] = [], parentHasHeader = true): void {
     // 第一次调用
@@ -105,7 +104,6 @@ const HeaderControl = (props: RouteComponentProps): ReactElement => {
     updateBreadcrumbData(breadcrumbs);
     return arrMatch;
   }, [props.location]);
-
 
   const [headerShow, headerShowUpdater] = useState((): boolean => {
     const arr = mainFn({ ...props, userRoadMap });
