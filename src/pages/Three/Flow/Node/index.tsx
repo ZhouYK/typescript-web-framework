@@ -43,11 +43,6 @@ const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
       <div className='symbol'>
         { data.name }
       </div>
-      {
-        delItem ? (
-          <button onClick={onDel}>删除</button>
-        ) : null
-      }
     </div>
   );
 };

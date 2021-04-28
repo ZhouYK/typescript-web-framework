@@ -1,11 +1,10 @@
 @import (reference) "~@src/theme/index";
 
-@width: 240;
-@height: 60;
+@width: 292;
+@height: 54;
 
-@widthPx: 240px;
-@heightPx: 60px;
-
+@widthPx: 292px;
+@heightPx: 54px;
 
 :export {
   width: @width;
@@ -18,37 +17,79 @@
   justify-content: flex-start;
   width: 100%;
   height: 100%;
+
   :global {
     .list {
-      flex: 0 0 300px;
+      flex: 0 0 320px;
       height: 100%;
+
+      .video-area {
+        height: 250px;
+        background: #000;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .video-list {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 24px;
+
+        .operation {
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          width: @widthPx;
+
+          .search-input-wrap {
+            flex: 1 1 auto;
+          }
+
+          .search-input {
+            width: 182px;
+          }
+
+          .btn-wrap {
+            flex: 1 1 auto;
+            text-align: right;
+          }
+        }
+      }
+
       .node-wrap {
         margin-top: 12px;
         margin-bottom: 12px;
       }
     }
+
     .workspace {
       flex: 1 0 600px;
       height: calc(100% - 120px);
       border: 1px solid black;
+
       .drop-measure-container {
         width: 100%;
         height: 100%;
       }
+
       .withLine {
         width: 100%;
         height: 100%;
         position: relative;
+
         canvas {
           width: 100%;
           height: auto;
           position: absolute;
         }
       }
+
       .react-view {
         display: none;
         height: 0;
-
       }
     }
 
@@ -58,4 +99,3 @@
     }
   }
 }
-

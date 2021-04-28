@@ -1,6 +1,11 @@
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ESLintWebpackPlugin from 'eslint-webpack-plugin';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import reactRefreshBabel from 'react-refresh/babel';
+import reactRefreshTs from 'react-refresh-typescript';
+
+const isDevelopment = process.env.NODE_ENV === 'development';
 
 export const contentPath = path.resolve(__dirname, '../dist');
 // 这里可以路径前一个名称作为页面区分
@@ -18,11 +23,17 @@ const rules = [{
     options: {
       cacheDirectory: true,
       cacheCompression: false,
+      plugins: [
+        isDevelopment && reactRefreshBabel,
+      ].filter(Boolean),
     },
   }, {
     loader: 'ts-loader',
     options: {
       transpileOnly: true,
+      getCustomTransformers: () => ({
+        before: isDevelopment ? [reactRefreshTs()] : [],
+      }),
     },
   }],
 }, {
@@ -59,7 +70,8 @@ const plugins = [
   new ESLintWebpackPlugin({
     extensions: ['js', 'jsx', 'tsx', 'ts'],
   }),
-];
+  isDevelopment && new ReactRefreshWebpackPlugin(),
+].filter(Boolean);
 const config = {
   entry,
   target: 'web',

@@ -13,7 +13,10 @@ import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import useNodeResult from '@src/pages/Three/Flow/Node/useNodeResult';
 import useListNodeResult from '@src/pages/Three/Flow/ListNode/useListNodeResult';
-import { Empty } from 'antd';
+import {
+  Button, Empty, Input,
+} from 'antd';
+import { getSafe } from '@src/tools/util';
 import { Flow } from './interface';
 import Node from './Node';
 import ListNode, { type } from './ListNode';
@@ -212,18 +215,32 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     },
   }), [nodeResult.data]);
 
+  const [currentListNode, updateCurrentListNode] = useState<Flow.Node>(null);
+  const clickListNode = useCallback((node: Flow.Node) => {
+    updateCurrentListNode(node);
+  }, []);
+
   return (
 
   <section className={style.area}>
     <section className='list'>
-      <button onClick={listNodeResult.addItem}>新增</button>
-      <button onClick={listNodeResult.modifyItem}>随机修改</button>
-      <section>
+      <section className='video-area'>
+        <section>{ getSafe(currentListNode, 'name') }</section>
+      </section>
+      <section className='video-list'>
+        <section className='operation'>
+          <section className='search-input-wrap'>
+            <section className='search-input'>
+              <Input.Search placeholder='搜索视频' />
+            </section>
+          </section>
+          <section className='btn-wrap'>
+            <Button type='primary' onClick={listNodeResult.addItem}>上传视频</Button>
+          </section>
+        </section>
         {
           listNodeResult.list.map((n) => (
-            <section className='node-wrap' key={n.id}>
-              <ListNode delItem={listNodeResult.delItemFromList} data={n}/>
-            </section>
+            <ListNode isActive={getSafe(currentListNode, 'id') === n.id} onClick={clickListNode} key={n.id} delItem={listNodeResult.delItemFromList} data={n}/>
           ))
         }
       </section>

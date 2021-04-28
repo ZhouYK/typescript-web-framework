@@ -3,18 +3,21 @@ import React, {
 } from 'react';
 import { useDrag } from 'react-dnd';
 import classNames from 'classnames';
+import { PlaySquareOutlined } from '@ant-design/icons';
 import { Flow } from '../interface';
 import style from './style.less';
 
 interface Props {
   data: Flow.Node;
+  isActive?: boolean;
   delItem?: (node: Flow.Node) => void;
+  onClick?: (node: Flow.Node) => void;
 }
 export const type = 'list-node';
 
 const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
   const {
-    data, delItem,
+    data, delItem, onClick, isActive,
   } = props;
 
   const [collected, drag] = useDrag(() => ({
@@ -34,18 +37,24 @@ const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
       delItem(data);
     }
   }, [delItem, data]);
+
+  const handleClick = useCallback(() => {
+    if (onClick) {
+      onClick(data);
+    }
+  }, [onClick, data]);
   // console.log('collected', collected);
 
   return (
-    <div role={type} ref={drag} className={classNames(style.node, 'node-element')} style={{ backgroundColor: 'rgba(0, 127, 127, 0.5)' }}>
+    <div onClick={handleClick} role={type} ref={drag} className={classNames(style.node, 'node-element', {
+      active: isActive,
+    })}>
+      <div className='icon'>
+        <PlaySquareOutlined />
+      </div>
       <div className='symbol'>
         { data.name }
       </div>
-      {
-        delItem ? (
-          <button onClick={onDel}>删除</button>
-        ) : null
-      }
     </div>
   );
 };
