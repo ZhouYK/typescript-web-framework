@@ -61,7 +61,10 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
   });
 
   const addSplineObject = useCallback((data: Flow.Node) => {
-    const object = new THREE.Mesh(new THREE.PlaneGeometry(style.width * devicePixelRatio, style.height * devicePixelRatio, style.width * devicePixelRatio, style.height * devicePixelRatio), material);
+    const rw = style.width * devicePixelRatio;
+    const rh = style.height * devicePixelRatio;
+
+    const object = new THREE.Mesh(new THREE.PlaneGeometry(rw, rh, rw, rh), material);
     const p = new Vector2();
     const size = rendererRef.current.getSize(p);
     // drop target的坐标
@@ -85,9 +88,9 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     }
 
     // eslint-disable-next-line no-bitwise
-    object.position.x = diffX * devicePixelRatio - size.x / 2 + (style.width / 2);
+    object.position.x = diffX * devicePixelRatio - size.x / 2 + (rw / 2);
     // eslint-disable-next-line no-bitwise
-    object.position.y = size.y / 2 - diffY * devicePixelRatio - (style.height / 2);
+    object.position.y = size.y / 2 - diffY * devicePixelRatio - (rh / 2);
     // object.position.y = 0;
     // object.position.x = 0;
     object.position.z = 0;
