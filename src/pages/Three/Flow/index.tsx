@@ -253,7 +253,7 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
         <section ref={reactContainerRef} className='react-view'>
           {
             nodeResult.data.map((n) => (
-              <Node clickItem={nodeResult.clickItem} delItem={nodeResult.delItem} data={n} refFn={refFn} key={n.id} />
+              <Node isActive={getSafe(nodeResult, 'curItem.id') === n.id} clickItem={nodeResult.clickItem} delItem={nodeResult.delItem} data={n} refFn={refFn} key={n.id} />
             ))
           }
         </section>
