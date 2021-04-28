@@ -1,18 +1,23 @@
 import React, { FC, PropsWithChildren, useCallback } from 'react';
 import { Flow } from '@src/pages/Three/Flow/interface';
-import { Button, Form, InputNumber } from 'antd';
+import {
+  Button, Form, InputNumber, Tooltip,
+} from 'antd';
 import ConditionField from '@src/pages/Three/Flow/Fields/Condition';
 import { getSafe } from '@src/tools/util';
 import { useDerivedStateToModelFromProps, useIndividualModel } from 'femo';
+import { DeleteOutlined, PlaySquareOutlined } from '@ant-design/icons';
 import fieldNames from '../Fields/fieldNames';
+import style from './style.less';
 
 export interface Props {
   saveItem?: (item: Flow.Node) => void;
+  delItem?: (item: Flow.Node) => void;
   node: Flow.Node;
 }
 
 const NodeForm: FC<Props> = (props: PropsWithChildren<Props>) => {
-  const { node, saveItem } = props;
+  const { node, saveItem, delItem } = props;
   const [form] = Form.useForm();
 
   const [, casesModel] = useIndividualModel<Flow.Case[]>(getSafe(node, 'switch_case') || []);
@@ -48,14 +53,35 @@ const NodeForm: FC<Props> = (props: PropsWithChildren<Props>) => {
     });
   }, [form, node, saveItem]);
 
+  const deleteItem = useCallback(() => {
+    if (delItem) {
+      delItem(node);
+    }
+  }, [delItem]);
+
   return (
-    <section>
-      <h4>{ getSafe(node, 'name') }</h4>
+    <section className={style.nodeForm}>
+      <section className='video-name'>
+        <section className='icon'>
+          <PlaySquareOutlined />
+        </section>
+        <section className='symbol'>
+          { getSafe(node, 'name') }
+        </section>
+        <Tooltip
+          title='删除'
+        >
+          <section className='delete' onClick={deleteItem}>
+            <DeleteOutlined />
+          </section>
+        </Tooltip>
+      </section>
       <Form
         form={form}
         preserve={false}
         hideRequiredMark
         colon={false}
+        layout='vertical'
       >
         <Form.Item
           name={fieldNames.time_point}

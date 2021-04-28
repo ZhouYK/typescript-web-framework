@@ -221,51 +221,51 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
   }, []);
 
   return (
-
-  <section className={style.area}>
-    <section className='list'>
-      <section className='video-area'>
-        <section>{ getSafe(currentListNode, 'name') }</section>
-      </section>
-      <section className='video-list'>
-        <section className='operation'>
-          <section className='search-input-wrap'>
-            <section className='search-input'>
-              <Input.Search placeholder='搜索视频' />
-            </section>
+    <section className={style.area}>
+      <section className='list'>
+        <section className='list-inner'>
+          <section className='video-area'>
+            <section>{ getSafe(currentListNode, 'name') }</section>
           </section>
-          <section className='btn-wrap'>
-            <Button type='primary' onClick={listNodeResult.addItem}>上传视频</Button>
+          <section className='video-list'>
+            <section className='operation'>
+              <section className='search-input-wrap'>
+                <section className='search-input'>
+                  <Input.Search placeholder='搜索视频' />
+                </section>
+              </section>
+              <section className='btn-wrap'>
+                <Button type='primary' onClick={listNodeResult.addItem}>上传视频</Button>
+              </section>
+            </section>
+            {
+              listNodeResult.list.map((n) => (
+                <ListNode isActive={getSafe(currentListNode, 'id') === n.id} onClick={clickListNode} key={n.id} delItem={listNodeResult.delItemFromList} data={n}/>
+              ))
+            }
           </section>
         </section>
+      </section>
+      <section ref={drop} className='workspace'>
+        <section ref={dropMeasureRef} className='drop-measure-container'>
+          <section ref={containerRef} className='withLine'>
+            <canvas ref={canvasRef} />
+          </section>
+          <section ref={reactContainerRef} className='react-view'>
+            {
+              nodeResult.data.map((n) => (
+                <Node isActive={getSafe(nodeResult, 'curItem.id') === n.id} clickItem={nodeResult.clickItem} data={n} refFn={refFn} key={n.id} />
+              ))
+            }
+          </section>
+        </section>
+      </section>
+      <section className='edit-place'>
         {
-          listNodeResult.list.map((n) => (
-            <ListNode isActive={getSafe(currentListNode, 'id') === n.id} onClick={clickListNode} key={n.id} delItem={listNodeResult.delItemFromList} data={n}/>
-          ))
+          nodeResult.curItem ? <nodeResult.FormComp node={nodeResult.curItem} saveItem={nodeResult.saveItem} delItem={nodeResult.delItem}/> : <section className='edit-place-empty'><Empty /></section>
         }
       </section>
     </section>
-    <section ref={drop} className='workspace'>
-      <section ref={dropMeasureRef} className='drop-measure-container'>
-        <section ref={containerRef} className='withLine'>
-          <canvas ref={canvasRef} />
-        </section>
-        <section ref={reactContainerRef} className='react-view'>
-          {
-            nodeResult.data.map((n) => (
-              <Node isActive={getSafe(nodeResult, 'curItem.id') === n.id} clickItem={nodeResult.clickItem} delItem={nodeResult.delItem} data={n} refFn={refFn} key={n.id} />
-            ))
-          }
-        </section>
-      </section>
-    </section>
-    <section className='edit-place'>
-      {
-        nodeResult.curItem ? <nodeResult.FormComp node={nodeResult.curItem} saveItem={nodeResult.saveItem} /> : <Empty />
-      }
-    </section>
-  </section>
-
   );
 };
 
