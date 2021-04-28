@@ -61,7 +61,7 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
   });
 
   const addSplineObject = useCallback((data: Flow.Node) => {
-    const object = new THREE.Mesh(new THREE.PlaneGeometry(style.width, style.height, style.width, style.height), material);
+    const object = new THREE.Mesh(new THREE.PlaneGeometry(style.width * devicePixelRatio, style.height * devicePixelRatio, style.width * devicePixelRatio, style.height * devicePixelRatio), material);
     const p = new Vector2();
     const size = rendererRef.current.getSize(p);
     // drop target的坐标
@@ -254,7 +254,7 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
           <section ref={reactContainerRef} className='react-view'>
             {
               nodeResult.data.map((n) => (
-                <Node isActive={getSafe(nodeResult, 'curItem.id') === n.id} clickItem={nodeResult.clickItem} data={n} refFn={refFn} key={n.id} />
+                <Node devicePixelRatio={devicePixelRatio} isActive={getSafe(nodeResult, 'curItem.id') === n.id} clickItem={nodeResult.clickItem} data={n} refFn={refFn} key={n.id} />
               ))
             }
           </section>

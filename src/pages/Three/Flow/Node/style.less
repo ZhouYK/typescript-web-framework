@@ -1,9 +1,12 @@
 @import (reference) "~@src/theme/index";
 @import (reference) '../style';
 
+@iconMarginLeft: 16px;
+@iconFontSize: 24px;
+@nameMarginLeft: 12px;
+@nameFontSize: 14px;
+
 .node {
-  width: @widthPx;
-  height: @heightPx;
   box-shadow: @box-shadow;
   border: 1px solid @border-color;
   text-align: center;
@@ -16,6 +19,108 @@
   margin-top: 12px;
   border-radius: 8px;
   background: #fff;
+
+  &:global(.scale-1) {
+    width: @widthPx;
+    height: @heightPx;
+
+    :global {
+      .icon {
+        margin-left: @iconMarginLeft;
+        font-size: @iconFontSize;
+      }
+
+      .symbol {
+        margin-left: @nameMarginLeft;
+        font-size: @nameFontSize;
+      }
+    }
+  }
+
+  &:global(.scale-2) {
+    width: @widthPx * 2;
+    height: @heightPx * 2;
+
+    :global {
+      .icon {
+        margin-left: @iconMarginLeft * 2;
+        font-size: @iconFontSize * 2;
+      }
+
+      .symbol {
+        margin-left: @nameMarginLeft * 2;
+        font-size: @nameFontSize * 2;
+      }
+    }
+  }
+
+  &:global(.scale-3) {
+    width: @widthPx * 3;
+    height: @heightPx * 3;
+
+    :global {
+      .icon {
+        margin-left: @iconMarginLeft * 3;
+        font-size: @iconFontSize * 3;
+      }
+
+      .symbol {
+        margin-left: @nameMarginLeft * 3;
+        font-size: @nameFontSize * 3;
+      }
+    }
+  }
+
+  &:global(.scale-4) {
+    width: @widthPx * 4;
+    height: @heightPx * 4;
+
+    :global {
+      .icon {
+        margin-left: @iconMarginLeft * 4;
+        font-size: @iconFontSize * 4;
+      }
+
+      .symbol {
+        margin-left: @nameMarginLeft * 4;
+        font-size: @nameFontSize * 4;
+      }
+    }
+  }
+
+  &:global(.scale-5) {
+    width: @widthPx * 5;
+    height: @heightPx * 5;
+
+    :global {
+      .icon {
+        margin-left: @iconMarginLeft * 5;
+        font-size: @iconFontSize * 5;
+      }
+
+      .symbol {
+        margin-left: @nameMarginLeft * 5;
+        font-size: @nameFontSize * 5;
+      }
+    }
+  }
+
+  &:global(.scale-6) {
+    width: @widthPx * 6;
+    height: @heightPx * 6;
+
+    :global {
+      .icon {
+        margin-left: @iconMarginLeft * 6;
+        font-size: @iconFontSize * 6;
+      }
+
+      .symbol {
+        margin-left: @nameMarginLeft * 6;
+        font-size: @nameFontSize * 6;
+      }
+    }
+  }
 
   &:hover {
     background-color: @gray-3;
@@ -32,16 +137,5 @@
 
   &:global(.move) {
     cursor: move;
-  }
-
-  :global {
-    .icon {
-      margin-left: 16px;
-      font-size: 24px;
-    }
-
-    .symbol {
-      margin-left: 12px;
-    }
   }
 }

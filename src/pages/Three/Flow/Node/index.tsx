@@ -12,11 +12,12 @@ interface Props {
   isActive?: boolean;
   delItem?: (node: Flow.Node) => void;
   clickItem?: (node: Flow.Node) => void;
+  devicePixelRatio: number;
 }
 
 const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
   const {
-    data, refFn, delItem, clickItem, isActive,
+    data, refFn, delItem, clickItem, isActive, devicePixelRatio,
   } = props;
 
   const onDel = useCallback((evt) => {
@@ -43,6 +44,7 @@ const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
   return (
     <div onClick={onClickItem} ref={refFnCall } className={classNames(style.node, 'node-element', {
       active: isActive,
+      [`scale-${devicePixelRatio}`]: true,
     })}>
       <div className='icon'>
         <PlaySquareOutlined />
