@@ -35,3 +35,7 @@ const onChange = (value: any) => {
     id: '前端生成的唯一id',
   });
 };
+
+const onRemoteReciever = (value: any) => {
+  pusher.inputLocal(value);
+};

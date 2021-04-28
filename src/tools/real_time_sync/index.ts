@@ -24,6 +24,7 @@ export const decreaseVersion = (version: number) => version - 1;
 
 interface InitReturnType {
   input: (d: SyncData) => Promise<any>;
+  inputLocal: (d: SyncData) => Promise<any>;
   output: () => Promise<SyncData[]>;
   detach: () => void;
 }
@@ -67,6 +68,7 @@ const rt_sync = (namespace: string): RtSyncReturnType => {
       // 需要做用户提示
       if (newData.code === Code.versionIsLow) {
         // 当前失败的数据位于本地队列的最右，则对用户进行提示
+        // todo
         const last = localQueue[localQueue.length - 1];
         if (last.id === data.id) {
           console.log('服务端有新数据，是否覆盖本地？');
@@ -113,6 +115,7 @@ const rt_sync = (namespace: string): RtSyncReturnType => {
       const data = { ...d };
       const last = localQueue[localQueue.length - 1];
       if ((last && last.version) !== d.version) {
+        // todo
         // 本地比服务端低或者本地高于服务端，都需要提供给用户一个预览功能，让用户确认以何种方式覆盖本地
         const yes = false;
         let newLast = null;
