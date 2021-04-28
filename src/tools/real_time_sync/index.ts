@@ -20,6 +20,7 @@ export interface SyncData<T = any> {
 }
 
 export const increaseVersion = (version: number) => version + 1;
+export const decreaseVersion = (version: number) => version - 1;
 
 interface InitReturnType {
   input: (d: SyncData) => Promise<any>;
@@ -44,43 +45,19 @@ const rt_sync = (namespace: string): RtSyncReturnType => {
     // localQueue的原则是version递增的
     let localQueue: SyncData[] = null;
 
-    const inputLocal = async <T>(d: SyncData<T>) => {
-      if (!localQueue) {
-        localQueue = (await forage.getItem(key)) || [];
-      }
-      const data = { ...d };
-      const last = localQueue[localQueue.length - 1];
-      if (last && last.version !== d.version) {
-        // 这里需要保证遵守localQueue中version的递增原则
-        // todo 当用户选择了低版本时应该如何处理？
-        return Promise.reject({
-          local: last,
-          current: d,
-        });
-      }
-      let flag = false;
-      // 如果版本和id都存在于本地数据中，则认为此次提交无效
-      for (let i = 0; i < localQueue.length; i += 1) {
-        const d = localQueue[i];
-        if (d.id === data.id && d.version === data.version) {
-          flag = true;
-          console.warn('请注意：传入数据的version和id都已存在于本地');
-        }
-      }
-      if (flag) {
-        return last;
-      }
-      localQueue.push(data);
-      await forage.setItem(key, localQueue);
-      return data;
-    };
-    // 外部传入数据
+    // 本地 -> 服务端
     // 刚传入数据的status应该为unknown
     const input = async <T>(d: SyncData<T>) => {
       if (!localQueue) {
         localQueue = (await forage.getItem(key)) || [];
       }
       const data = { ...d };
+      const last = localQueue[localQueue.length - 1];
+      // 这里需要保证遵守localQueue中version的递增原则
+      if ((last && last.version) < d.version) {
+        console.warn('请注意：传入数据的version小于本地最新的version');
+        return;
+      }
       localQueue.push(data);
       await forage.setItem(key, localQueue);
 
@@ -117,11 +94,90 @@ const rt_sync = (namespace: string): RtSyncReturnType => {
         const index = localQueue.indexOf(data);
         if (index < localQueue.length - 1) {
           localQueue.splice(index, 1);
+        } else {
+          data.code = Code.failed;
         }
       } else if (newData.code === Code.success) {
         data.version = newData.version;
         data.code = newData.code;
       }
+      await forage.setItem(key, localQueue);
+    };
+
+    // 服务端 -> 本地
+    // d为服务端拉取的数据
+    const inputLocal = async <T>(d: SyncData<T>) => {
+      if (!localQueue) {
+        localQueue = (await forage.getItem(key)) || [];
+      }
+      const data = { ...d };
+      const last = localQueue[localQueue.length - 1];
+      if ((last && last.version) !== d.version) {
+        // 本地比服务端低或者本地高于服务端，都需要提供给用户一个预览功能，让用户确认以何种方式覆盖本地
+        const yes = false;
+        let newLast = null;
+        // 本地比服务端低
+        if (last.version < d.version) {
+          console.warn('服务端版本高于本地版本，是否覆盖本地版本？');
+          // 服务端覆盖本地
+          if (yes) {
+            newLast = { ...data, code: Code.success };
+            localQueue.push(newLast);
+            await forage.setItem(key, localQueue);
+            updateState(newLast);
+            return;
+          }
+          // 本地覆盖服务端
+          // 这里需要保证遵守localQueue中version的递增原则，本地version需变为比服务端大的version
+          delete last.code;
+          newLast = {
+            ...last,
+            version: increaseVersion(d.version),
+          };
+          await input(newLast);
+          return;
+        }
+        // 本地比服务端高
+        console.warn('本地版本高于服务端版本，是否覆盖服务端版本？');
+        if (yes) {
+          // 以本地为主，去覆盖服务端
+          localQueue.pop();
+          delete last.code;
+          await input(last);
+          return;
+        }
+        newLast = { ...data, code: Code.success };
+        // 服务端覆盖本地
+        localQueue.push(newLast);
+        const { length } = localQueue;
+        let startVersion = 0;
+        for (let i = 0; i < length; i += 1) {
+          const reverseIndex = length - 1 - i;
+          const item = localQueue[reverseIndex];
+          if (reverseIndex === length - 1) {
+            startVersion = item.version;
+          } else {
+            startVersion = decreaseVersion(startVersion);
+            item.version = startVersion;
+          }
+        }
+        await forage.setItem(key, localQueue);
+        updateState(newLast);
+        return;
+      }
+      let flag = false;
+      // 如果版本和id都存在于本地数据中，则认为此次提交无效
+      for (let i = 0; i < localQueue.length; i += 1) {
+        const d = localQueue[i];
+        if (d.id === data.id && d.version === data.version) {
+          flag = true;
+          console.warn('请注意：传入数据的version和id都已存在于本地');
+        }
+      }
+      if (flag) {
+        return;
+      }
+      localQueue.push(data);
       await forage.setItem(key, localQueue);
     };
 
