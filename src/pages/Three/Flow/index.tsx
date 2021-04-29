@@ -241,11 +241,13 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
                 <Button type='primary' onClick={listNodeResult.addItem}>上传视频</Button>
               </section>
             </section>
-            {
-              listNodeResult.list.map((n) => (
-                <ListNode isActive={getSafe(currentListNode, 'id') === n.id} onClick={clickListNode} key={n.id} delItem={listNodeResult.delItemFromList} data={n}/>
-              ))
-            }
+            <section className='list-node-wrap'>
+              {
+                (listNodeResult.list && listNodeResult.list.length !== 0) ? listNodeResult.list.map((n) => (
+                  <ListNode isActive={getSafe(currentListNode, 'id') === n.id} onClick={clickListNode} key={n.id} delItem={listNodeResult.delItemFromList} data={n}/>
+                )) : <Empty />
+              }
+            </section>
           </section>
         </section>
       </section>

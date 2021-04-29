@@ -3,7 +3,8 @@ import React, {
 } from 'react';
 import { useDrag } from 'react-dnd';
 import classNames from 'classnames';
-import { PlaySquareOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlaySquareOutlined } from '@ant-design/icons';
+import { Tooltip } from 'antd';
 import { Flow } from '../interface';
 import style from './style.less';
 
@@ -32,7 +33,8 @@ const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
     }),
   }));
 
-  const onDel = useCallback(() => {
+  const onDel = useCallback((evt: React.MouseEvent) => {
+    evt.stopPropagation();
     if (delItem) {
       delItem(data);
     }
@@ -55,6 +57,13 @@ const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
       <div className='symbol'>
         { data.name }
       </div>
+      <Tooltip
+        title='删除'
+      >
+        <section className='delete' onClick={onDel}>
+          <DeleteOutlined />
+        </section>
+      </Tooltip>
     </div>
   );
 };
