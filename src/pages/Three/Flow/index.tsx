@@ -17,6 +17,7 @@ import {
   Button, Empty, Input,
 } from 'antd';
 import { getSafe } from '@src/tools/util';
+import JSVideo from '@src/pages/Three/Flow/Video';
 import { Flow } from './interface';
 import Node from './Node';
 import ListNode, { type } from './ListNode';
@@ -35,6 +36,7 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
   const rendererRef = useRef<WebGLRenderer>();
   const twoDRendererRef = useRef<CSS3DRenderer>();
   const dropMeasureRef = useRef<HTMLDivElement>();
+
   const [material] = useState(() => new THREE.MeshBasicMaterial({ color: 'transparent' }));
 
   const [splineHelperObjects] = useState<Object3D[]>([]);
@@ -228,7 +230,7 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
       <section className='list'>
         <section className='list-inner'>
           <section className='video-area'>
-            <section>{ getSafe(currentListNode, 'name') }</section>
+            <JSVideo type='mp4' video={currentListNode} />
           </section>
           <section className='video-list'>
             <section className='operation'>

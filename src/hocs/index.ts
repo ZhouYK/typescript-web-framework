@@ -1,2 +1,2 @@
 export { default as urlInspector } from './urlInspector';
-export { default as securityCrash } from './securityCrash';
+export { default as safeCrash } from './safeCrash';

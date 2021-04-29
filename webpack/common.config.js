@@ -39,6 +39,17 @@ const rules = [{
 }, {
   test: /\.(png|jpe?g|gif)$/i,
   loader: 'file-loader',
+  options: {
+    outputPath: 'imgs',
+    publicPath: '/imgs',
+  },
+}, {
+  test: /\.(ttf|eot|otf|woff)$/i,
+  loader: 'file-loader',
+  options: {
+    outputPath: 'fonts',
+    publicPath: '/fonts',
+  },
 }, {
   test: /\.svg(\?v=\d+\.\d+\.\d+)?$/i,
   use: [{
@@ -115,7 +126,7 @@ const config = {
           enforce: true,
         },
         base: {
-          test: /[\\/]node_modules[\\/]((?!antd|@ant-design).)+[\\/]/,
+          test: /[\\/]node_modules[\\/]((?!antd|@ant-design|flv\.js).)+[\\/]/,
           name: 'base',
           chunks: 'all',
           enforce: true,

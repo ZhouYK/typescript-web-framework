@@ -1,7 +1,7 @@
 import React, { FC, PropsWithChildren, useCallback } from 'react';
 import { Flow } from '@src/pages/Three/Flow/interface';
 import {
-  Button, Form, InputNumber, Tooltip,
+  Button, Form, Input, InputNumber, Switch, Tooltip,
 } from 'antd';
 import ConditionField from '@src/pages/Three/Flow/Fields/Condition';
 import { getSafe } from '@src/tools/util';
@@ -84,8 +84,14 @@ const NodeForm: FC<Props> = (props: PropsWithChildren<Props>) => {
         layout='vertical'
       >
         <Form.Item
+          name={fieldNames.open}
+          label='开启互动'
+        >
+          <Switch />
+        </Form.Item>
+        <Form.Item
           name={fieldNames.time_point}
-          label='控制时间点'
+          label='控制时间'
           rules={[{
             required: true,
             message: '请输入（秒）',
