@@ -1,5 +1,12 @@
 export namespace Flow {
 
+  // 资源视频
+  export interface ResourceNode {
+    id: string;
+    name: string;
+  }
+
+  // 节点视频
   export interface Node {
     id: string;
     name: string; // 视频名称

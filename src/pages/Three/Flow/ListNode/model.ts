@@ -1,6 +1,7 @@
 import { gluer } from 'femo';
+import { Flow } from '@src/pages/Three/Flow/interface';
 
-const list = gluer([{
+const list = gluer<Flow.ResourceNode[]>([{
   id: '1',
   name: '测试1',
 }, {

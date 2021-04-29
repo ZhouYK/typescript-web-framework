@@ -9,10 +9,10 @@ import { Flow } from '../interface';
 import style from './style.less';
 
 interface Props {
-  data: Flow.Node;
+  data: Flow.ResourceNode;
   isActive?: boolean;
-  delItem?: (node: Flow.Node) => void;
-  onClick?: (node: Flow.Node) => void;
+  delItem?: (node: Flow.ResourceNode) => void;
+  onClick?: (node: Flow.ResourceNode) => void;
 }
 export const type = 'list-node';
 

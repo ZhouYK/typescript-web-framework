@@ -6,7 +6,7 @@ import listModel from './model';
 const useListNodeResult = () => {
   const [list, updateList] = useState(() => listModel());
 
-  const delItemFromList = useCallback((item: Flow.Node) => {
+  const delItemFromList = useCallback((item: Flow.ResourceNode) => {
     const internalList = [...list];
     for (let i = 0; i < internalList.length; i += 1) {
       if (internalList[i].id === item.id) {

@@ -218,8 +218,8 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     },
   }), [nodeResult.data]);
 
-  const [currentListNode, updateCurrentListNode] = useState<Flow.Node>(null);
-  const clickListNode = useCallback((node: Flow.Node) => {
+  const [currentListNode, updateCurrentListNode] = useState<Flow.ResourceNode>(null);
+  const clickListNode = useCallback((node: Flow.ResourceNode) => {
     updateCurrentListNode(node);
   }, []);
 
