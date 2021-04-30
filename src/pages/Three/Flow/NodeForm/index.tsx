@@ -1,12 +1,13 @@
 import React, { FC, PropsWithChildren, useCallback } from 'react';
 import { Flow } from '@src/pages/Three/Flow/interface';
 import {
-  Button, Form, Input, InputNumber, Switch, Tooltip,
+  Button, Form, Switch, Tooltip,
 } from 'antd';
 import ConditionField from '@src/pages/Three/Flow/Fields/Condition';
 import { getSafe } from '@src/tools/util';
 import { useDerivedStateToModelFromProps, useIndividualModel } from 'femo';
 import { DeleteOutlined, PlaySquareOutlined } from '@ant-design/icons';
+import TimePointField from '@src/pages/Three/Flow/Fields/TimePoint';
 import fieldNames from '../Fields/fieldNames';
 import style from './style.less';
 
@@ -86,20 +87,21 @@ const NodeForm: FC<Props> = (props: PropsWithChildren<Props>) => {
         <Form.Item
           name={fieldNames.open}
           label='开启互动'
+          valuePropName='checked'
         >
           <Switch />
         </Form.Item>
-        <Form.Item
+        <TimePointField
           name={fieldNames.time_point}
           label='控制时间'
           rules={[{
             required: true,
             message: '请输入（秒）',
           }]}
+          node={node}
           initialValue={getSafe(node, 'time_point')}
-        >
-          <InputNumber min={1}/>
-        </Form.Item>
+        />
+
         <Form.Item
           label='判断条件'
         >

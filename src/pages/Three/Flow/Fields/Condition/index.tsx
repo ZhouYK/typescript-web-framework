@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren } from 'react';
 import { FormItemProps, Form } from 'antd';
-import Condition from '@src/pages/Three/Flow/Condition';
+import Condition from '@src/pages/Three/Flow/components/Condition';
 
 interface Props extends Omit<FormItemProps, 'children'>{
 
