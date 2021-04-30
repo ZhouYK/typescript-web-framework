@@ -24,16 +24,16 @@ const formatTime = (value: number) => {
   const minute = Math.floor((intValue - hour * 3600) / 60);
   const second = intValue - hour * 3600 - minute * 60;
   let hourStr = `${hour}`;
-  if (hour < 9) {
+  if (hour < 10) {
     hourStr = `0${hourStr}`;
   }
   let minuteStr = `${minute}`;
-  if (minute < 9) {
+  if (minute < 10) {
     minuteStr = `0${minuteStr}`;
   }
 
   let secondStr = `${second}`;
-  if (second < 9) {
+  if (second < 10) {
     secondStr = `0${secondStr}`;
   }
   return `${hourStr}:${minuteStr}:${secondStr}`;
