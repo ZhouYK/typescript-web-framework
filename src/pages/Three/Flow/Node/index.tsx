@@ -2,7 +2,9 @@ import React, {
   FC, PropsWithChildren, useCallback,
 } from 'react';
 import classNames from 'classnames';
-import { PlaySquareOutlined } from '@ant-design/icons';
+import { PlaySquareOutlined, MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { useDerivedModel } from 'femo';
+import { getSafe } from '@src/tools/util';
 import { Flow } from '../interface';
 import style from './style.less';
 
@@ -20,6 +22,7 @@ const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
     data, refFn, delItem, clickItem, isActive, devicePixelRatio,
   } = props;
 
+  // @ts-ignore
   const onDel = useCallback((evt) => {
     evt.stopPropagation();
     evt.cancelBubble = true;
@@ -41,18 +44,37 @@ const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
     clickItem(data);
   }, [clickItem, data]);
 
+  const [canDelete] = useDerivedModel(() => {
+    const parents = getSafe(data, 'parents') || [];
+    return !!parents.length;
+  }, data, (nextSource, prevSource, state) => {
+    const nextParents = getSafe(nextSource, 'parents');
+    const prevParents = getSafe(prevSource, 'parents');
+    if (nextParents !== prevParents) {
+      return !!getSafe(nextParents, 'length');
+    }
+    return state;
+  });
+
   return (
-    <div onClick={onClickItem} ref={refFnCall } className={classNames(style.node, 'node-element', {
-      active: isActive,
-      [`scale-${devicePixelRatio}`]: true,
-    })}>
-      <div className='icon'>
-        <PlaySquareOutlined />
+    <section ref={refFnCall} className={classNames(style.node, `scale-${devicePixelRatio}`)}>
+      <div onClick={onClickItem} className={classNames('node-element', {
+        active: isActive,
+      })}>
+        <div className='icon'>
+          <PlaySquareOutlined />
+        </div>
+        <div className='symbol'>
+          { data.name }
+        </div>
       </div>
-      <div className='symbol'>
-        { data.name }
-      </div>
-    </div>
+      {
+        canDelete ? <section className='can-minus'><MinusCircleOutlined /></section> : null
+      }
+      <section className='can-plus'>
+        <PlusCircleOutlined />
+      </section>
+    </section>
   );
 };
 

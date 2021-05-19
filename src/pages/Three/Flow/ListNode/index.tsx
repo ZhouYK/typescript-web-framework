@@ -21,12 +21,12 @@ const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
     data, delItem, onClick, isActive,
   } = props;
 
-  const [collected, drag] = useDrag(() => ({
+  const [/* collected */, drag] = useDrag(() => ({
     type,
     item: data,
-    end: (item, monitor) => {
-      // console.log('end', monitor.getDropResult(), item);
-    },
+    // end: (item, monitor) => {
+    //    console.log('end', monitor.getDropResult(), item);
+    // },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
       handlerId: monitor.getHandlerId(),

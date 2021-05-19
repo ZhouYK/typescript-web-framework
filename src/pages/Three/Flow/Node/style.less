@@ -5,137 +5,236 @@
 @iconFontSize: 24px;
 @nameMarginLeft: 12px;
 @nameFontSize: 14px;
+@iconFontSize: 12px;
 
 .node {
-  box-shadow: @box-shadow;
-  border: 1px solid @border-color;
-  text-align: center;
-  line-height: normal;
-  cursor: default;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin-top: 12px;
-  background: #fff;
-  border-radius: 8px;
-
   &:global(.scale-1) {
-    width: @widthPx;
-    height: @heightPx;
-
     :global {
-      .icon {
-        margin-left: @iconMarginLeft;
+      .node-element {
+        width: @widthPx;
+        height: @heightPx;
+
+        .icon {
+          margin-left: @iconMarginLeft;
+          font-size: @iconFontSize;
+        }
+
+        .symbol {
+          margin-left: @nameMarginLeft;
+          font-size: @nameFontSize;
+        }
+      }
+
+      .can-minus {
         font-size: @iconFontSize;
       }
 
-      .symbol {
-        margin-left: @nameMarginLeft;
-        font-size: @nameFontSize;
+      .can-plus {
+        font-size: @iconFontSize;
       }
     }
   }
 
   &:global(.scale-2) {
-    width: @widthPx * 2;
-    height: @heightPx * 2;
-
     :global {
-      .icon {
-        margin-left: @iconMarginLeft * 2;
+      .node-element {
+        width: @widthPx * 2;
+        height: @heightPx * 2;
+
+        .icon {
+          margin-left: @iconMarginLeft * 2;
+          font-size: @iconFontSize * 2;
+        }
+
+        .symbol {
+          margin-left: @nameMarginLeft * 2;
+          font-size: @nameFontSize * 2;
+        }
+      }
+
+      .can-minus {
         font-size: @iconFontSize * 2;
       }
 
-      .symbol {
-        margin-left: @nameMarginLeft * 2;
-        font-size: @nameFontSize * 2;
+      .can-plus {
+        font-size: @iconFontSize * 2;
       }
     }
   }
 
   &:global(.scale-3) {
-    width: @widthPx * 3;
-    height: @heightPx * 3;
-
     :global {
-      .icon {
-        margin-left: @iconMarginLeft * 3;
+      .node-element {
+        width: @widthPx * 3;
+        height: @heightPx * 3;
+
+        .icon {
+          margin-left: @iconMarginLeft * 3;
+          font-size: @iconFontSize * 3;
+        }
+
+        .symbol {
+          margin-left: @nameMarginLeft * 3;
+          font-size: @nameFontSize * 3;
+        }
+      }
+
+      .can-minus {
         font-size: @iconFontSize * 3;
       }
 
-      .symbol {
-        margin-left: @nameMarginLeft * 3;
-        font-size: @nameFontSize * 3;
+      .can-plus {
+        font-size: @iconFontSize * 3;
       }
     }
   }
 
   &:global(.scale-4) {
-    width: @widthPx * 4;
-    height: @heightPx * 4;
-
     :global {
-      .icon {
-        margin-left: @iconMarginLeft * 4;
+      .node-element {
+        width: @widthPx * 4;
+        height: @heightPx * 4;
+
+        .icon {
+          margin-left: @iconMarginLeft * 4;
+          font-size: @iconFontSize * 4;
+        }
+
+        .symbol {
+          margin-left: @nameMarginLeft * 4;
+          font-size: @nameFontSize * 4;
+        }
+      }
+
+      .can-minus {
         font-size: @iconFontSize * 4;
       }
 
-      .symbol {
-        margin-left: @nameMarginLeft * 4;
-        font-size: @nameFontSize * 4;
+      .can-plus {
+        font-size: @iconFontSize * 4;
       }
     }
   }
 
   &:global(.scale-5) {
-    width: @widthPx * 5;
-    height: @heightPx * 5;
-
     :global {
-      .icon {
-        margin-left: @iconMarginLeft * 5;
+      .node-element {
+        width: @widthPx * 5;
+        height: @heightPx * 5;
+
+        .icon {
+          margin-left: @iconMarginLeft * 5;
+          font-size: @iconFontSize * 5;
+        }
+
+        .symbol {
+          margin-left: @nameMarginLeft * 5;
+          font-size: @nameFontSize * 5;
+        }
+      }
+
+      .can-minus {
         font-size: @iconFontSize * 5;
       }
 
-      .symbol {
-        margin-left: @nameMarginLeft * 5;
-        font-size: @nameFontSize * 5;
+      .can-plus {
+        font-size: @iconFontSize * 5;
       }
     }
   }
 
   &:global(.scale-6) {
-    width: @widthPx * 6;
-    height: @heightPx * 6;
-
     :global {
-      .icon {
-        margin-left: @iconMarginLeft * 6;
+      .node-element {
+        width: @widthPx * 6;
+        height: @heightPx * 6;
+
+        .icon {
+          margin-left: @iconMarginLeft * 6;
+          font-size: @iconFontSize * 6;
+        }
+
+        .symbol {
+          margin-left: @nameMarginLeft * 6;
+          font-size: @nameFontSize * 6;
+        }
+      }
+
+      .can-minus {
         font-size: @iconFontSize * 6;
       }
 
-      .symbol {
-        margin-left: @nameMarginLeft * 6;
-        font-size: @nameFontSize * 6;
+      .can-plus {
+        font-size: @iconFontSize * 6;
       }
     }
   }
 
-  &:hover {
-    background-color: @gray-3;
-    cursor: pointer;
-  }
+  :global {
+    .node-element {
+      box-shadow: @box-shadow;
+      border: 1px solid @border-color;
+      text-align: center;
+      line-height: normal;
+      cursor: default;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin-top: 12px;
+      background: #fff;
+      border-radius: 8px;
 
-  &:global(.active) {
-    border: 1px solid @blue-1;
-  }
+      &:hover {
+        background-color: @gray-3;
+        cursor: pointer;
+      }
 
-  &:focus {
-    background: @blue-3;
-  }
+      &.active {
+        border: 1px solid @blue-1;
+      }
 
-  &:global(.move) {
-    cursor: move;
+      &:focus {
+        background: @blue-3;
+      }
+
+      &.move {
+        cursor: move;
+      }
+    }
+
+    .can-minus {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      transform: translate3d(-50%, 0, 0);
+      background: @white;
+      border-radius: 50%;
+      z-index: 99;
+      color: @black-3;
+      display: flex;
+
+      &:hover {
+        color: @blue-1;
+        cursor: pointer;
+      }
+    }
+
+    .can-plus {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translate3d(-50%, 50%, 0);
+      background: @white;
+      border-radius: 50%;
+      z-index: 99;
+      color: @black-3;
+      display: flex;
+
+      &:hover {
+        color: @blue-1;
+        cursor: pointer;
+      }
+    }
   }
 }

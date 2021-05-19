@@ -12,6 +12,7 @@ export namespace Flow {
     id: string;
     name: string; // 视频名称
     url: string;
+    parents?: Node[];
     time_point?: number; // 控制时间点（秒）
     switch_case?: Case[]; // 判断条件
     x?: number; // 拖拽放入时的坐标
