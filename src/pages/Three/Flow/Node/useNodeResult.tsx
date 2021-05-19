@@ -15,7 +15,9 @@ const useNodeResult = (splineHelperObjects: Object3D[], reactContainerRef: RefOb
     const internalData = [...data];
     for (let i = 0; i < internalData.length; i += 1) {
       if (item.id === internalData[i].id) {
-        internalData[i] = { ...item };
+        // 不做引用的更新
+        Object.assign(internalData[i], item);
+        // internalData[i] = { ...item };
         break;
       }
     }
@@ -29,7 +31,7 @@ const useNodeResult = (splineHelperObjects: Object3D[], reactContainerRef: RefOb
   const [FormComp, updateFormComp] = useState(() => genComp());
   const clickItem = useCallback((item: Flow.Node) => {
     updateItem(item);
-  }, [curItem, saveItem]);
+  }, []);
 
   const delItem = useCallback((item: Flow.Node) => {
     const internalData = [...data];

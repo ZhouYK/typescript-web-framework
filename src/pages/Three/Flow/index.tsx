@@ -7,7 +7,7 @@ import {
   Material, Object3D, Vector2, WebGLRenderer,
 } from 'three';
 import { CSS3DObject, CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer';
-import useLine from '@src/pages/Three/Flow/useLine';
+// import useLine from '@src/pages/Three/Flow/useLine';
 import useDragControl from '@src/pages/Three/Flow/useDragControl';
 import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -25,7 +25,7 @@ import style from './style.less';
 
 interface Props {
 }
-const ARC_SEGMENTS = 1000;
+// const ARC_SEGMENTS = 1000;
 const { devicePixelRatio } = window;
 
 const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
@@ -96,7 +96,9 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     // object.position.y = 0;
     // object.position.x = 0;
     object.position.z = 0;
-    object.userData = { ...data };
+
+    // three 对象上的数据和react组件数据保持引用一致，降低数据更新复杂度
+    object.userData = data;
     return object;
   }, []);
 
@@ -123,7 +125,7 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     }
   }, []);
 
-  const { createLine, updateLinePositions: updateSplineOutline } = useLine(scene, ARC_SEGMENTS);
+  // const { createLine, updateLinePositions: updateSplineOutline } = useLine(scene, ARC_SEGMENTS);
 
   const displayToPixel = useCallback(() => {
     const canvas = rendererRef.current.domElement;
@@ -154,8 +156,8 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     }
     rendererRef.current.render(scene, camera);
     twoDRendererRef.current.render(scene, camera);
-    updateSplineOutline();
-  }, [updateSplineOutline]);
+    // updateSplineOutline();
+  }, []);
 
   const { createDragControl } = useDragControl(camera, {
     dragstart: (event) => {
@@ -177,10 +179,10 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
   const listNodeResult = useListNodeResult();
 
   const doRender = useCallback(() => {
-    createLine(splineHelperObjects);
+    // createLine(splineHelperObjects);
     createDragControl(splineHelperObjects, twoDRendererRef.current.domElement);
     render();
-  }, [createLine, createDragControl, render, splineHelperObjects, twoDRendererRef.current]);
+  }, [createDragControl, render, splineHelperObjects, twoDRendererRef.current]);
 
   useEffect(() => {
     if (flagRef.current) {

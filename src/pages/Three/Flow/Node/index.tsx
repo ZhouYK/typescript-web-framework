@@ -38,7 +38,7 @@ const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
         data,
       });
     }
-  }, [refFn]);
+  }, [refFn, data]);
 
   const onClickItem = useCallback(() => {
     clickItem(data);
