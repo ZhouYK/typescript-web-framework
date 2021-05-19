@@ -5,7 +5,7 @@ import {
 } from 'antd';
 import ConditionField from '@src/pages/Three/Flow/Fields/Condition';
 import { getSafe } from '@src/tools/util';
-import { useDerivedStateToModelFromProps, useIndividualModel } from 'femo';
+import { useDerivedStateToModel, useIndividualModel } from 'femo';
 import { DeleteOutlined, PlaySquareOutlined } from '@ant-design/icons';
 import TimePointField from '@src/pages/Three/Flow/Fields/TimePoint';
 import fieldNames from '../Fields/fieldNames';
@@ -22,7 +22,7 @@ const NodeForm: FC<Props> = (props: PropsWithChildren<Props>) => {
   const [form] = Form.useForm();
 
   const [, casesModel] = useIndividualModel<Flow.Case[]>(getSafe(node, 'switch_case') || []);
-  const [cases] = useDerivedStateToModelFromProps(props, casesModel, (nextProps, prevProps, state) => {
+  const [cases] = useDerivedStateToModel(props, casesModel, (nextProps, prevProps, state) => {
     if (nextProps.node !== prevProps.node) {
       return getSafe(nextProps, 'node.switch_case') || [];
     }

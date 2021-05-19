@@ -8,7 +8,6 @@ const publicPath = '/'; // 可自定义
 const entry = { ...commonConfig.entry };
 const bar = new WebpackBar({
   color: '#ffda00',
-  profile: true,
 });
 const config = {
   devtool: 'eval-source-map',

@@ -2,7 +2,7 @@ import React, {
   FC, PropsWithChildren, useCallback, useRef,
 } from 'react';
 import { Flow } from '@src/pages/Three/Flow/interface';
-import { useDerivedStateToModelFromProps, useIndividualModel } from 'femo';
+import { useDerivedStateToModel, useIndividualModel } from 'femo';
 import { Button, Popover, Space } from 'antd';
 import JSVideo from '@src/pages/Three/Flow/Video';
 import useVisible from '@src/hooks/useVisible';
@@ -45,7 +45,7 @@ const TimePoint: FC<Props> = (props: PropsWithChildren<Props>) => {
   const player = useRef<React.MutableRefObject<flv.Player>>();
   const result = useVisible(false);
   const [, valueModel] = useIndividualModel(value);
-  const [derivedValue] = useDerivedStateToModelFromProps(props, valueModel, (nextProps, _prevProps, state) => {
+  const [derivedValue] = useDerivedStateToModel(props, valueModel, (nextProps, _prevProps, state) => {
     if ('value' in nextProps) {
       return nextProps.value;
     }

@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren, useCallback } from 'react';
 import { Flow } from '@src/pages/Three/Flow/interface';
-import { useDerivedStateToModelFromProps, useIndividualModel } from 'femo';
+import { useDerivedStateToModel, useIndividualModel } from 'femo';
 import { Input } from 'antd';
 import NodeSelect from '@src/pages/Three/Flow/NodeSelect';
 import { getSafe } from '@src/tools/util';
@@ -14,7 +14,7 @@ const Condition: FC<Props> = (props: PropsWithChildren<Props>) => {
   const { onChange } = props;
   const [, valueModel] = useIndividualModel(props.value);
 
-  const [value] = useDerivedStateToModelFromProps(props, valueModel, (nextProps, _prevProps, state) => {
+  const [value] = useDerivedStateToModel(props, valueModel, (nextProps, _prevProps, state) => {
     if ('value' in nextProps) {
       return nextProps.value;
     }

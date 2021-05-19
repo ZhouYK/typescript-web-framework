@@ -101,6 +101,7 @@ const getConfig = (publicPath, env) => ({
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[contenthash:16].css',
+      ignoreOrder: true,
     }),
     new webpack.SourceMapDevToolPlugin({
       filename: '[file].map',

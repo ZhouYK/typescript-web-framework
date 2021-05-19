@@ -4,6 +4,8 @@ import ESLintWebpackPlugin from 'eslint-webpack-plugin';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import reactRefreshBabel from 'react-refresh/babel';
 import reactRefreshTs from 'react-refresh-typescript';
+import FriendlyErrorsWebpackPlugin from '@nuxtjs/friendly-errors-webpack-plugin';
+
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -81,6 +83,7 @@ const plugins = [
   new ESLintWebpackPlugin({
     extensions: ['js', 'jsx', 'tsx', 'ts'],
   }),
+  new FriendlyErrorsWebpackPlugin(),
   isDevelopment && new ReactRefreshWebpackPlugin(),
 ].filter(Boolean);
 const config = {
