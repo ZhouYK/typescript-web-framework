@@ -17,7 +17,16 @@ const roadMap = gluer({
   welcome: {
     name: 'Demo',
     path: '/demo',
-    component: lazy(() => import('./Demo')),
+    component: () => <Redirect to='/demo/femo' />,
+    subPaths: [{
+      name: 'femo',
+      path: '/femo',
+      component: lazy(() => import('./Demo/Femo')),
+    }, {
+      name: 'react hook',
+      path: '/hook',
+      component: lazy(() => import('./Demo/Hook')),
+    }],
   },
   three: {
     name: 'three示例',

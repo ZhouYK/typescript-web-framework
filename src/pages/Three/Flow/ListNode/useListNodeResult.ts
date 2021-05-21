@@ -22,6 +22,7 @@ const useListNodeResult = () => {
     internalList.push({
       id: `${Date.now()}`,
       name: `新增${internalList.length}`,
+      url: '',
     });
     updateList(internalList);
   }, [list]);

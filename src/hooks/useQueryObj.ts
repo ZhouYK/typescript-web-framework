@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { queryToObject } from '@src/tools/util';
 
-const useQueryToObj = <T = { [index: string]: any }>(search: string, initObj: T): [T] => {
+const useQueryObj = <T = { [index: string]: any }>(search: string, initObj: T): [T] => {
   const flagRef = useRef(false);
   const [obj, updateObj] = useState<T>(() => queryToObject(search, initObj));
   useEffect(() => {
@@ -14,4 +14,4 @@ const useQueryToObj = <T = { [index: string]: any }>(search: string, initObj: T)
   return [obj];
 };
 
-export default useQueryToObj;
+export default useQueryObj;
