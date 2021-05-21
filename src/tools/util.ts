@@ -103,7 +103,7 @@ export const isMobile = (): boolean => /Mobi|Android|webOS|iPhone|iPad|iPod|Blac
  * @param target
  * @param keyPath
  */
-export const getSafe = (target: any, keyPath: string): any => {
+export const getSafe = <T>(target: any, keyPath: string): T => {
   try {
     // const regex = /^\[\d\]$/;
     const mixRegex = /^.*\[\d]$/;
