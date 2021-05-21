@@ -23,7 +23,7 @@ const EnhancedInputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
   const [hidePlaceholder, updateHidePlaceholder] = useState(true);
   const textareaDom = useRef<{dom: any}>({ dom: null });
   const timer = useRef<NodeJS.Timer>();
-  const calcHeightRef = useRef<Function>();
+  const calcHeightRef = useRef<(times: any) => void>();
 
   const calcHeight = useCallback((times = 10) => {
     if (!rest.value) {
@@ -75,7 +75,9 @@ const EnhancedInputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
       clearTimeout(timer.current);
       calcHeightRef.current();
     };
-    window.addEventListener('resize', resizeHandler);
+    window.addEventListener('resize', resizeHandler, {
+      passive: true,
+    });
     return () => window.removeEventListener('resize', resizeHandler);
   }, []);
 
