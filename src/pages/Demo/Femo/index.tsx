@@ -1,5 +1,6 @@
 import React, { PureComponent, ReactElement, RefObject } from 'react';
 import { subscribe } from 'femo';
+import { safeCrash } from '@src/hocs';
 import model from './model';
 import './index.less';
 
@@ -71,4 +72,4 @@ class DemoClass extends PureComponent<any, State> {
       );
     }
 }
-export default DemoClass;
+export default safeCrash(DemoClass);

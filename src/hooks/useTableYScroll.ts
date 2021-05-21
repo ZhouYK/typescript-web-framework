@@ -7,7 +7,9 @@ const useTableYScroll = (diff = 370) => {
   }, []);
 
   useEffect(() => {
-    window.addEventListener('resize', updateYWhenResize);
+    window.addEventListener('resize', updateYWhenResize, {
+      passive: true,
+    });
     return () => window.removeEventListener('resize', updateYWhenResize);
   }, []);
   return y;

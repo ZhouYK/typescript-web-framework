@@ -17,6 +17,7 @@ import {
   Button, Empty, Input,
 } from 'antd';
 import { getSafe } from '@src/tools/util';
+import { safeCrash } from '@src/hocs';
 import JSVideo from '@src/pages/Three/Flow/Video';
 import { Flow } from './interface';
 import Node from './Node';
@@ -277,6 +278,7 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
     </section>
   );
 };
+DragWithLine.displayName = 'Three-DragWithLine';
 
 const InjectDndContext = (Component: ComponentType) => (props: any) => (
     <DndProvider backend={HTML5Backend}>
@@ -284,4 +286,4 @@ const InjectDndContext = (Component: ComponentType) => (props: any) => (
     </DndProvider>
 );
 
-export default InjectDndContext(DragWithLine);
+export default InjectDndContext(safeCrash(DragWithLine));

@@ -4,6 +4,7 @@ import React, {
 } from 'react';
 import * as THREE from 'three';
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
+import { safeCrash } from '@src/hocs';
 import style from './style.less';
 
 interface Props {
@@ -146,4 +147,6 @@ const Drag: FC<Props> = (_props: PropsWithChildren<Props>) => {
   );
 };
 
-export default Drag;
+Drag.displayName = 'Three-Drag';
+
+export default safeCrash(Drag);

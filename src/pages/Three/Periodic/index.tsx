@@ -5,6 +5,7 @@ import * as THREE from 'three';
 // @ts-ignore
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min';
 import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer';
+import { safeCrash } from '@src/hocs';
 import style from './style.less';
 
 interface Props {
@@ -330,4 +331,5 @@ const PeriodicTable: FC<Props> = (_props: PropsWithChildren<Props>) => {
   );
 };
 
-export default PeriodicTable;
+PeriodicTable.displayName = 'Three-PeriodicTable';
+export default safeCrash(PeriodicTable);

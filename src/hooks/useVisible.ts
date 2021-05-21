@@ -1,6 +1,7 @@
 import {
-  useCallback, useEffect, useRef, useState,
+  useCallback, useState,
 } from 'react';
+import useResult from '@src/hooks/useResult';
 
 export interface Result {
   visible: boolean;
@@ -10,7 +11,6 @@ export interface Result {
 
 const useVisible = (v: boolean): Result => {
   const [visible, updateVisible] = useState(v);
-  const flag = useRef(false);
 
   const show = useCallback(() => {
     updateVisible(true);
@@ -20,25 +20,11 @@ const useVisible = (v: boolean): Result => {
     updateVisible(false);
   }, []);
 
-  const [result, updateResult] = useState(() => ({
+  return useResult({
     visible,
     show,
     hide,
-  }));
-
-  useEffect(() => {
-    if (flag.current) {
-      updateResult({
-        visible,
-        show,
-        hide,
-      });
-    } else {
-      flag.current = true;
-    }
-  }, [visible, show, hide]);
-
-  return result;
+  });
 };
 
 export default useVisible;

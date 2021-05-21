@@ -6,6 +6,7 @@ import {
   CatmullRomCurve3, Line, Material, WebGLRenderer,
 } from 'three';
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
+import { safeCrash } from '@src/hocs';
 import style from './style.less';
 
 interface Props {
@@ -140,4 +141,5 @@ const DragWithLine: FC<Props> = (_props: PropsWithChildren<Props>) => {
   );
 };
 
-export default DragWithLine;
+DragWithLine.displayName = 'Three-DragWithLine';
+export default safeCrash(DragWithLine);
