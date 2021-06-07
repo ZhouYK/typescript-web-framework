@@ -45,7 +45,7 @@ const Node: FC<Props> = (props: PropsWithChildren<Props>) => {
   }, [clickItem, data]);
 
   const [canDelete] = useDerivedModel(() => {
-    const parents = getSafe(data, 'parents') || [];
+    const parents: any[] = getSafe(data, 'parents') || [];
     return !!parents.length;
   }, data, (nextSource, prevSource, state) => {
     const nextParents = getSafe(nextSource, 'parents');
