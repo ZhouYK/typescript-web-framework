@@ -102,11 +102,12 @@ export const isMobile = (): boolean => /Mobi|Android|webOS|iPhone|iPad|iPod|Blac
  * 安全取操作
  * @param target
  * @param keyPath
+ * @param bottomValue
  */
-export const getSafe = <T>(target: any, keyPath: string): T => {
+export const getSafe = <T>(target: any, keyPath: string, bottomValue?: T): T => {
   try {
     // const regex = /^\[\d\]$/;
-    const mixRegex = /^.*\[\d]$/;
+    const mixRegex = /^.*\[\d\]$/;
     const rest = keyPath.split('.');
     let temp = target;
     rest.forEach((key: string) => {
@@ -129,9 +130,12 @@ export const getSafe = <T>(target: any, keyPath: string): T => {
         temp = temp && temp[key];
       }
     });
+    if (isEmpty(temp) && !Object.is(bottomValue, undefined)) {
+      return bottomValue;
+    }
     return temp;
   } catch (e) {
-    return undefined;
+    return bottomValue;
   }
 };
 
