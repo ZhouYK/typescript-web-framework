@@ -1,15 +1,23 @@
-import { useEffect, useRef, useState } from 'react';
 import { queryToObject } from '@src/tools/util';
+import { useDerivedModel } from 'femo';
 
-const useQueryObjStrict = <T>(search: string, initQuery: T): [T] => {
-  const [queryObj, updateQueryObj] = useState(() => queryToObject(search, initQuery, true));
-  const cached = useRef({ search });
-  useEffect(() => {
-    if (cached.current.search !== search) {
-      cached.current.search = search;
-      updateQueryObj(queryToObject(search, initQuery, true));
+const useQueryObjStrict = <T>(search = '', initQuery: T, compensate?: (q: T) => T): [T] => {
+  const [queryObj] = useDerivedModel(() => {
+    const tmp = queryToObject(search, initQuery, true);
+    if (compensate) {
+      return compensate(tmp);
     }
-  }, [search]);
+    return tmp;
+  }, search, (ns, ps, s) => {
+    if (ns !== ps) {
+      const t = queryToObject(search, initQuery, true);
+      if (compensate) {
+        return compensate(t);
+      }
+      return t;
+    }
+    return s;
+  });
   return [queryObj];
 };
 
