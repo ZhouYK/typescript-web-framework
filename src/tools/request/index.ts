@@ -114,7 +114,6 @@ export const wrapSuccessTip = (res: ApiResult<any>, callback: () => void) => {
   }
 };
 
-
 export const post = <T = any>(url: string, data?: any, config?: CustomConfig): Promise<ApiResult<T>> => customRequest<T>({
   url, data, method: 'post', ...defaultExtraCustomConfig, ...config,
 });

@@ -2,13 +2,17 @@ import moment from 'moment';
 import axios, { CancelTokenSource } from 'axios';
 
 export const isEmpty = (value: any): boolean => value === null || value === undefined || value === '' || Object.is(value, NaN);
+export const isArrayEmpty = (arr: any[]) => !(arr instanceof Array) || !arr.length;
 
 /**
  * 查询字符串转对象
  * @param searchStr 查询字符串
  * @param initialQuery 是查询字符串的对象形式，表明每个值的类型，作为后续转化数据的依据
  * @param strict 是否开启严格模式
+ * ⚠️ 对数组解析的结果做了缓存，以提升效率
  */
+// 约定数组是这种形式: team_id=1,2,3,4,5
+const queryCacheMap = new Map();
 export const queryToObject = <T = {[index: string]: any}>(searchStr: string, initialQuery: T, strict = false): T => {
   let str_1 = searchStr;
   if (searchStr.startsWith('?')) {
@@ -24,7 +28,7 @@ export const queryToObject = <T = {[index: string]: any}>(searchStr: string, ini
     if (strict && !(key in initialQuery)) {
       continue;
     }
-    const value = temp[1];
+    const value = temp[1] ? temp[1].trim() : '';
     // eslint-disable-next-line no-continue
     if (temp.length < 2) continue;
     try {
@@ -56,7 +60,16 @@ export const queryToObject = <T = {[index: string]: any}>(searchStr: string, ini
         obj[key] = obj[key] !== 'false';
       }
     } else if (typeof initialValue === 'number') {
-      obj[key] = Number(value);
+      obj[key] = Number(obj[key]);
+    } else if (initialValue instanceof Array && !(obj[key] instanceof Array)) {
+      const mapKey = obj[key];
+      if (queryCacheMap.has(mapKey)) {
+        obj[key] = queryCacheMap.get(mapKey);
+      } else {
+        // 约定的"1,2,3"这种字符串代表数组
+        obj[key] = mapKey.split(',').filter((v: any) => !isEmpty(v));
+        queryCacheMap.set(mapKey, [...(obj[key])]);
+      }
     }
   }
 
@@ -102,9 +115,8 @@ export const isMobile = (): boolean => /Mobi|Android|webOS|iPhone|iPad|iPod|Blac
  * 安全取操作
  * @param target
  * @param keyPath
- * @param bottomValue
  */
-export const getSafe = <T>(target: any, keyPath: string, bottomValue?: T): T => {
+export const getSafe = <T = any>(target: any, keyPath: string, bottomValue?: T): T => {
   try {
     // const regex = /^\[\d\]$/;
     const mixRegex = /^.*\[\d\]$/;
@@ -139,7 +151,8 @@ export const getSafe = <T>(target: any, keyPath: string, bottomValue?: T): T => 
   }
 };
 
-export const debounce = (fn: (...args: any[]) => any, delay: number): (...args: any[]) => void => {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const debounce = (fn: Function, delay: number): (...args: any[]) => void => {
   let timer: NodeJS.Timer;
   return (...args: any[]): void => {
     if (timer) {
@@ -152,7 +165,8 @@ export const debounce = (fn: (...args: any[]) => any, delay: number): (...args: 
   };
 };
 
-export const throttle = (fn: (...args: any[]) => any, period: number) => {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const throttle = (fn: Function, period: number) => {
   let pre = Date.now();
   return (...args: any[]): void => {
     const now = Date.now();
@@ -179,6 +193,10 @@ export const getMD = (date: any): string => moment(date).format('MM-DD');
 export const genAxiosCancelSource = (): CancelTokenSource => axios.CancelToken.source();
 
 export const regex = {
+  url: (value: string): boolean => {
+    const reg = /^((http(s)?):\/\/)?([-_\w])+(\.([-_\w])+)*(\.[-_\w][-_\w]+).*$/i;
+    return reg.test(value);
+  },
   number: (value: any): boolean => {
     const reg = /^\d+\.?$/;
     return reg.test(value);
@@ -265,7 +283,9 @@ export const regex = {
         }
       }
     }
-    return false;
+
+    const residencePermitReg = /^8[123]0000(?:19|20)\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])\d{3}[\dX]$/;
+    return residencePermitReg.test(value);
   },
 };
 
@@ -348,4 +368,39 @@ export const luhnCheck = (card_number: string) => {
   });
   const sum = odd_sum + even_sum;
   return !(sum % 10);
+};
+
+export const formatRegexString = (str: string) => str.replace(/(\()|(\))|(\{)|(\})|(\.)/g, (match: string) => {
+  if (match === '(') {
+    return '（';
+  }
+  if (match === ')') {
+    return '（';
+  }
+  if (match === '}') {
+    return '】';
+  }
+  if (match === '{') {
+    return '【';
+  }
+  // if (match === '.') {
+  //   return '点';
+  // }
+  return match;
+});
+
+export const getOffset = (dom: HTMLElement) => {
+  let obj: HTMLElement = dom;
+  let top = obj.offsetTop;
+  let left = obj.offsetLeft;
+  while (obj.offsetParent) {
+    // @ts-ignore
+    obj = obj.offsetParent;
+    top += obj.offsetTop;
+    left += obj.offsetLeft;
+  }
+  return {
+    top,
+    left,
+  };
 };
