@@ -120,7 +120,7 @@ const genRenderRoutesFn = (curContext: CurContext, props: Props): (routes: RoadM
           />
       );
     }
-    return <Route key={ route.path } exact path={ route.path } component={ (props: RouteComponentProps) => {
+    return <Route key={ route.path } exact path={ route.path } render={ (props: RouteComponentProps) => {
       const Component = route.component;
       return (
         <CrashPage>
