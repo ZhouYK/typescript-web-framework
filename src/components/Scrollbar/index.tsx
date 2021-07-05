@@ -7,9 +7,7 @@ import ReactPerfectScrollbar, {
 import classNames from 'classnames';
 import parser from 'ua-parser-js';
 import { getSafe } from '@src/tools/util';
-
-import style from './style.less';
-
+import './style.less';
 
 export interface ScrollbarProps extends ScrollBarProps {
   /* 垂直方向滚动条是否常显 */
@@ -29,13 +27,18 @@ if (os) {
 
 // 简单事件分发
 const event: {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   listenersMap: Record<string, Function[]>;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   on: (key: string, handle: Function) => void;
   emit: (key: string, data?: any) => void;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   removeListeners: Function;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   removeAlListeners: Function;
 } = {
   listenersMap: {},
+  // eslint-disable-next-line @typescript-eslint/ban-types
   on: (key: string, handle: Function) => {
     if (!(event.listenersMap[key] instanceof Array)) {
       event.listenersMap[key] = [];
@@ -116,7 +119,7 @@ const Scrollbar = forwardRef<ReactPerfectScrollbar, ScrollbarProps>(
     const {
       className, isVerticalResident, isWindowsVerticalResident, isWindowsHorizontalResident, ...rest
     } = props;
-    const clsNames = classNames(style.scrollbar, className, {
+    const clsNames = classNames(className, {
       'is-windows': isWindows,
       'is-vertical-resident': isVerticalResident || !!(isWindows && isWindowsVerticalResident),
       'is-horizontal-resident': !!(isWindows && isWindowsHorizontalResident),
