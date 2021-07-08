@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import { getSafe } from '@src/tools/util';
 import style from './style.less';
 
+// 依赖antd的版本，目前版本: antd@4.7.3
 // 目前不能传autoSize，因为要做placeholder的高度适配。二者有冲突
 interface Props extends TextAreaProps {
   placeholder?: any;
@@ -73,7 +74,7 @@ const EnhancedInputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
   useEffect(() => {
     const resizeHandler = () => {
       clearTimeout(timer.current);
-      calcHeightRef.current();
+      calcHeightRef.current(10);
     };
     window.addEventListener('resize', resizeHandler, {
       passive: true,
