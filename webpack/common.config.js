@@ -6,7 +6,6 @@ import reactRefreshBabel from 'react-refresh/babel';
 import reactRefreshTs from 'react-refresh-typescript';
 import FriendlyErrorsWebpackPlugin from '@nuxtjs/friendly-errors-webpack-plugin';
 
-
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 export const contentPath = path.resolve(__dirname, '../dist');
@@ -39,20 +38,6 @@ const rules = [{
     },
   }],
 }, {
-  test: /\.(png|jpe?g|gif)$/i,
-  loader: 'file-loader',
-  options: {
-    outputPath: 'imgs',
-    publicPath: '/imgs',
-  },
-}, {
-  test: /\.(ttf|eot|otf|woff)$/i,
-  loader: 'file-loader',
-  options: {
-    outputPath: 'fonts',
-    publicPath: '/fonts',
-  },
-}, {
   test: /\.svg(\?v=\d+\.\d+\.\d+)?$/i,
   use: [{
     loader: 'babel-loader',
@@ -74,7 +59,7 @@ const plugins = [
     template: './html/index.html',
     filename: 'index.html',
     templateParameters: {
-      title: '脚手架',
+      title: 'Mesh',
     },
     chunksSortMode: 'manual',
     chunks: ['runtime', 'base', 'uis', 'style', 'index'],
@@ -84,7 +69,9 @@ const plugins = [
     extensions: ['js', 'jsx', 'tsx', 'ts'],
   }),
   new FriendlyErrorsWebpackPlugin(),
-  isDevelopment && new ReactRefreshWebpackPlugin(),
+  isDevelopment && new ReactRefreshWebpackPlugin({
+    overlay: false,
+  }),
 ].filter(Boolean);
 const config = {
   entry,
@@ -129,7 +116,7 @@ const config = {
           enforce: true,
         },
         base: {
-          test: /[\\/]node_modules[\\/]((?!antd|@ant-design|flv\.js).)+[\\/]/,
+          test: /[\\/]node_modules[\\/]((?!antd|@ant-design).)+[\\/]/,
           name: 'base',
           chunks: 'all',
           enforce: true,

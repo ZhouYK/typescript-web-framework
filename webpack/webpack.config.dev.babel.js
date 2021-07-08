@@ -88,6 +88,20 @@ const config = {
           sourceMap: false,
         },
       }, 'postcss-loader'],
+    }, {
+      test: /\.(png|jpe?g|gif)$/i,
+      loader: 'file-loader',
+      options: {
+        outputPath: 'imgs',
+        publicPath: `${publicPath}imgs`,
+      },
+    }, {
+      test: /\.(ttf|eot|otf|woff)$/i,
+      loader: 'file-loader',
+      options: {
+        outputPath: 'fonts',
+        publicPath: `${publicPath}fonts`,
+      },
     },
     ...commonConfig.module.rules,
     ],
@@ -118,9 +132,9 @@ const config = {
     proxy: {
       context: ['/api/'],
       // target: 'http://172.16.40.96:8080/',
-      target: 'http://127.0.0.1:3000/',
+      target: 'https://mesh-dev.baicizhan.com/',
       headers: {
-        // host: 'cyamis-staging.baicizhan.com',
+        host: 'mesh-dev.baicizhan.com',
         // host: '172.16.111.13',
       },
       onProxyReq: (proxyReq, req) => {
