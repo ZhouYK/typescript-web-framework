@@ -28,27 +28,6 @@ const roadMap = gluer({
       component: lazy(() => import('./Demo/Hook')),
     }],
   },
-  three: {
-    name: 'three示例',
-    path: '/three',
-    subPaths: [{
-      name: '元素周期表',
-      path: '/periodic',
-      component: lazy(() => import('./Three/Periodic')),
-    }, {
-      name: '可拖动',
-      path: '/draggable',
-      component: lazy(() => import('./Three/Drag')),
-    }, {
-      name: '曲线跟随拖动',
-      path: '/drag-with-line',
-      component: lazy(() => import('./Three/DragWithLine')),
-    }, {
-      name: '流程图拖动',
-      path: '/flow-drag',
-      component: lazy(() => import('./Three/Flow')),
-    }],
-  },
 });
 
 // 作为兜底的路由配置
