@@ -9,7 +9,7 @@ export interface RoadMap {
   path: string; // 必需。这个是路由配置的唯一key
   realPath?: string; // 表示该节点的真正路由地址。如果没有将由path来决定。realPath还是处在router的控制下。权重低于externUrl
   externUrl?: string; // 跳转到外部的链接，如果需要在新标签打开需要配置 externProps = {target: '_blank'}。配置了externUrl将会忽略 path和realPath
-  externProps?: object; // <a> 标签的所有可选属性
+  externProps?: Record<string, any>; // <a> 标签的所有可选属性
   homeUrl?: string; // 系统的默认首页，只在第一层配置了才有效，目前在404组件中有用到
   subPaths?: RoadMap[]; // 和leafPaths互斥。 下级菜单
   leafPaths?: RoadMap[]; // 和subPaths互斥。叶子页面，不会再有下级。没有自己的菜单，但是会激活父节点的菜单
@@ -26,7 +26,6 @@ export interface RoadMap {
   visible?: boolean; // 单纯控制显示与否.false: 菜单不可见；true: 菜单可见; visible菜单是否展示。目前在beforeRender.ts(这里面相当于当做是过滤标识，不是字段的本意)、SubSider/index.tsx中有使用
   defaultOpen?: boolean; // 控制二级子菜单是否默认展开
 }
-
 
 export interface RoadMapModuleType {
   [index: string]: RoadMap;
