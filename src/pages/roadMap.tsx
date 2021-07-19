@@ -26,6 +26,14 @@ const roadMap = gluer({
       name: 'react hook',
       path: '/hook',
       component: lazy(() => import('./Demo/Hook')),
+    }, {
+      name: 'update state',
+      path: '/update-state',
+      component: lazy(() => import('./Demo/UpdateState')),
+    }, {
+      name: 'suspense',
+      path: '/suspense-test',
+      component: lazy(() => import('./Demo/Suspense')),
     }],
   },
 });
