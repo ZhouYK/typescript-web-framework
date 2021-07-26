@@ -77,8 +77,9 @@ const config = {
   entry,
   target: 'web',
   output: {
-    filename: process.env.NODE_ENV === 'development' ? 'js/[name].js' : 'js/[name].[chunkhash:16].js',
-    chunkFilename: process.env.NODE_ENV === 'development' ? 'js/[name].js' : 'js/[id].[contenthash:16].js',
+    filename: isDevelopment ? 'js/[name].js' : 'js/[name].[chunkhash:16].js',
+    chunkFilename: isDevelopment ? 'js/[name].js' : 'js/[id].[contenthash:16].js',
+    pathinfo: false,
     // 这个会影响externals的配置
     // libraryTarget: 'umd',
   },
@@ -99,8 +100,15 @@ const config = {
     mainFiles: ['index'],
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.d.ts', '.less'],
     symlinks: false,
+    cacheWithContext: false,
   },
-  optimization: {
+  optimization: isDevelopment ? {
+    chunkIds: 'named', // 开发环境使用named，生产使用hashed
+    moduleIds: 'named', // 开发环境使用named，生产使用hashed
+    removeAvailableModules: false,
+    removeEmptyChunks: false,
+    splitChunks: false,
+  } : {
     chunkIds: 'deterministic',
     moduleIds: 'deterministic',
     runtimeChunk: {

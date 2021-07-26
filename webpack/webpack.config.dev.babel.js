@@ -10,7 +10,7 @@ const bar = new WebpackBar({
   color: '#ffda00',
 });
 const config = {
-  devtool: 'eval-source-map',
+  devtool: 'eval-cheap-module-source-map',
   mode: nodeEnv,
   entry,
   cache: commonConfig.cache,
@@ -110,13 +110,11 @@ const config = {
   externals: commonConfig.externals,
   watchOptions: {
     aggregateTimeout: 400,
-    poll: 1000,
+    poll: 3000,
     ignored: /node_modules/,
   },
   optimization: {
     ...commonConfig.optimization,
-    chunkIds: 'named', // 开发环境使用named，生产使用hashed
-    moduleIds: 'named', // 开发环境使用named，生产使用hashed
   },
   devServer: {
     hot: true,

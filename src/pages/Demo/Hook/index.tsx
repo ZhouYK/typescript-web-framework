@@ -51,6 +51,7 @@ const Hook: FC<Props> = (_props: PropsWithChildren<Props>) => {
 
   console.log('loading', loading);
   console.log('current', countRef.current);
+
   return (
     <Space>
       <Button onClick={onClick}>测试 reverse</Button>
