@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, ReactElement } from 'react';
+import { FC, PropsWithChildren, ReactElement } from 'react';
 import style from './style.less';
 
 interface Props {

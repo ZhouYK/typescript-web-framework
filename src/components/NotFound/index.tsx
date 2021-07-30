@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import classNames from 'classnames';
 import NotFoundSVG from '@src/assets/svg/404.svg';
 import style from './style.less';

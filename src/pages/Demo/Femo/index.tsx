@@ -1,4 +1,6 @@
-import React, { PureComponent, ReactElement, RefObject } from 'react';
+import {
+  createRef, PureComponent, ReactElement, RefObject,
+} from 'react';
 import { subscribe } from 'femo';
 import { safeCrash } from '@src/hocs';
 import model from './model';
@@ -20,8 +22,8 @@ class DemoClass extends PureComponent<any, State> {
 
     public constructor(props: Props) {
       super(props);
-      this.refName = React.createRef();
-      this.refCountry = React.createRef();
+      this.refName = createRef();
+      this.refCountry = createRef();
       subscribe([model.country, model.person], (country: string, person: Person): void => {
         if (!this.state) {
           this.state = {

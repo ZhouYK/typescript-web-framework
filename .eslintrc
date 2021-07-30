@@ -39,6 +39,7 @@
     "plugin:jest/recommended"
   ],
   "rules": {
+    "no-use-before-define": 0,
     "no-lone-blocks": 0,
     "no-param-reassign": 0,
     "no-shadow": 0,
@@ -50,7 +51,6 @@
     "max-len": ["error", { "code": 1000 }],
     "array-callback-return": "off",
     "prefer-promise-reject-errors": "off",
-    "no-use-before-define": "off", // 将来需要打开，现在因为react使用的ts的lint的版本问题？
     "import/no-extraneous-dependencies": "off",
     "import/extensions": "off",
     "import/prefer-default-export": 0,
@@ -58,6 +58,8 @@
     "react/no-find-dom-node": 0,
     "react/no-direct-mutation-state": 0,
     "react/prop-types": "off",
+    "react/jsx-uses-react": "off",
+    "react/react-in-jsx-scope": "off",
     "@typescript-eslint/camelcase": 0,
     "@typescript-eslint/no-empty-interface": 0,
     "@typescript-eslint/indent": 0,

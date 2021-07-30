@@ -1,5 +1,7 @@
 import { RouteComponentProps } from 'react-router-dom';
-import React, { ReactElement, useCallback, useEffect } from 'react';
+import {
+  ReactElement, useCallback, useEffect, useState,
+} from 'react';
 import { pathToRegexp } from 'path-to-regexp';
 import { RoadMap } from '@src/pages/interface';
 import { RecordRenderFunc } from '@src/components/SubSider/interface';
@@ -7,8 +9,6 @@ import { RecordRenderFunc } from '@src/components/SubSider/interface';
 import LeftSubSider from './index';
 import { SubSider } from '../Routes/interface';
 import './style.less';
-
-const { useState } = React;
 
 interface Props {
   sider: RoadMap[];

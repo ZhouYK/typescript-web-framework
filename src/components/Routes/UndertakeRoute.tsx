@@ -1,4 +1,4 @@
-import React, {
+import {
   FC, ReactElement, Suspense, useEffect, useState,
 } from 'react';
 import { RouteComponentProps } from 'react-router-dom';

@@ -1,4 +1,4 @@
-import React, { FC, ReactElement } from 'react';
+import { FC, ReactElement } from 'react';
 import { Layout } from 'antd';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import SiderControl from '@src/components/Sider/SiderControl';

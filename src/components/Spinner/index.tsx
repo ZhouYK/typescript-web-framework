@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, PropsWithChildren } from 'react';
+import { CSSProperties, FC, PropsWithChildren } from 'react';
 import classNames from 'classnames';
 import LoadingSVG from '@src/assets/svg/loading.svg';
 import styleLess from './style.less';

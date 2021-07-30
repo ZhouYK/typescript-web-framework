@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import Spinner from '@src/components/Spinner';
 import styleLess from './style.less';
 

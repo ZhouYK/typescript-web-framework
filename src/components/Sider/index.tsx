@@ -1,6 +1,8 @@
 import { Layout, Menu } from 'antd';
 import { pathToRegexp } from 'path-to-regexp';
-import React, { ReactElement, useCallback, useRef } from 'react';
+import {
+  ReactElement, useCallback, useRef, useState, useEffect,
+} from 'react';
 import { History } from 'history';
 import { RoadMap } from '@src/pages/interface';
 import { getSafe } from '@src/tools/util';
@@ -10,7 +12,6 @@ import {
 
 import style from './style.less';
 
-const { useState, useEffect } = React;
 const { SubMenu } = Menu;
 const MenuItem = Menu.Item;
 const { Sider } = Layout;
