@@ -1,12 +1,18 @@
-@import (reference) "~@src/theme/index";
+@import (reference) '../../theme/index';
 
-@siderWidth: 230px;
+@siderWidth: 200px;
 
 :export {
   siderwidth: @siderWidth;
 }
 
-.sider {
+:global {
+  .ant-menu-submenu-popup.ant-menu-dark .ant-menu-sub {
+    background: @black-4;
+  }
+}
+
+.misSider {
   &:global(.ant-layout-sider) {
     background: @black-4;
   }
@@ -28,7 +34,7 @@
       color: @white;
     }
 
-    .logo {
+    .mis-logo {
       color: @white;
       display: flex;
       align-items: center;
@@ -37,7 +43,7 @@
       padding-left: 24px;
       cursor: pointer;
 
-      .logo-png {
+      .mis-logo-png {
         background-image: url("../../assets/img/logo.png");
         width: 36px;
         height: 36px;
@@ -46,12 +52,12 @@
         flex-shrink: 0;
       }
 
-      .logo-placeholder {
+      .mis-logo-placeholder {
         width: 12px;
         flex-shrink: 0;
       }
 
-      .logo-text {
+      .mis-logo-text {
         font-weight: 600;
         font-family: misBold, sans-serif;
         flex-shrink: 0;
@@ -72,11 +78,11 @@
 
   &:global(.ant-layout-sider-collapsed) {
     :global {
-      .logo {
+      .mis-logo {
         width: 80px;
 
-        .logo-placeholder,
-        .logo-text {
+        .mis-logo-placeholder,
+        .mis-logo-text {
           display: none;
         }
       }

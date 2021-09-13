@@ -1,4 +1,4 @@
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router-dom';
 import { RoadMap } from '@src/pages/interface';
 import React from 'react';
 

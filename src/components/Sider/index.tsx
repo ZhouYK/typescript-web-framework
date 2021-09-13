@@ -1,25 +1,38 @@
-import { Layout, Menu } from 'antd';
+import { Badge, Layout, Menu } from 'antd';
 import { pathToRegexp } from 'path-to-regexp';
-import {
-  ReactElement, useCallback, useRef, useState, useEffect,
-} from 'react';
-import { History } from 'history';
+import React, { ReactElement, useCallback, useState } from 'react';
 import { RoadMap } from '@src/pages/interface';
 import { getSafe } from '@src/tools/util';
+import { useDerivedState } from 'femo';
 import {
-  State, KeyPathItem, CurContext, RefInstance, Props, EXTERN_KEY_PREFIX, MenusFunc,
+  State, KeyPathItem, CurContext, Props, EXTERN_KEY_PREFIX,
 } from './interface';
 
-import style from './style.less';
+import style, { siderwidth } from './style.less';
 
 const { SubMenu } = Menu;
 const MenuItem = Menu.Item;
 const { Sider } = Layout;
 
+const colapisble = (map: RoadMap[]) => !((map || []).find((r) => getSafe(r, 'path', '').indexOf('/dep-hr') !== -1));
+
 const EmptyIcon = (): null => null;
 
-const genRenderMenus = (curContext: CurContext, history: History): MenusFunc => {
-  const renderMenus = (menus: RoadMap[], path: string[] = [], depth = 1): ReactElement[] => {
+const LeftSider = (props: Props): ReactElement => {
+  const { history, sider, location } = props;
+  const pathname = getSafe(location, 'pathname', '');
+  const [collapsed, updateCollapsed] = useState(false);
+  const onCollapse = useCallback((colla: boolean) => {
+    updateCollapsed(colla);
+  }, [updateCollapsed]);
+
+  const [curContext] = useState((): CurContext => ({
+    keyPaths: [],
+    cachedSider: [],
+    cachedElements: [],
+  }));
+
+  const renderMenus = useCallback((menus: RoadMap[], path: string[] = [], depth = 1): ReactElement[] => {
     // 第一次调用
     if (path.length === 0) {
       // 如果sider数据发生了更新才做重新渲染
@@ -33,6 +46,7 @@ const genRenderMenus = (curContext: CurContext, history: History): MenusFunc => 
     return menus.map((item): ReactElement => {
       let elements = null;
       path.push(item.path);
+      const { roadTrigger } = item;
       if (item.visible !== false) {
         const keyPath = path.join('');
         const obj: KeyPathItem = {
@@ -46,7 +60,7 @@ const genRenderMenus = (curContext: CurContext, history: History): MenusFunc => 
         const IconComponent = item.icon || EmptyIcon;
         if (item.subPaths && item.subPaths.length !== 0) {
           elements = (
-            <SubMenu title={item.name} key={keyPath} icon={<IconComponent />}>
+            <SubMenu title={<span>{item.name}{roadTrigger}</span>} key={keyPath} icon={<IconComponent />}>
               {renderMenus(item.subPaths, path, depth + 1)}
             </SubMenu>
           );
@@ -57,14 +71,25 @@ const genRenderMenus = (curContext: CurContext, history: History): MenusFunc => 
               <a href={item.externUrl} rel="noopener noreferrer" {...item.externProps || {}}>
                 {item.name}
               </a>
+              {roadTrigger}
             </MenuItem>
           );
         } else {
           elements = (
-            <MenuItem onClick={(): void => {
-              history.push(item.realPath || keyPath);
-            }} key={keyPath} title={item.name} icon={<IconComponent />} >
-              {item.name}
+            <MenuItem
+              onClick={(): void => {
+                history.push(item.realPath || keyPath);
+              }}
+              key={keyPath}
+              title={item.name}
+              icon={<IconComponent />}
+            >
+              {
+                item.badge ? (
+                  <Badge size='small' offset={[item.badge > 9 ? 20 : 10, 0]} count={item.badge} overflowCount={99}>{item.name}</Badge>
+                ) : item.name
+              }
+              {roadTrigger}
             </MenuItem>
           );
         }
@@ -72,29 +97,19 @@ const genRenderMenus = (curContext: CurContext, history: History): MenusFunc => 
       path.pop();
       return elements;
     });
-  };
-  return renderMenus;
-};
+  }, []);
 
-const LeftSider = (props: Props): ReactElement => {
-  const [collapsed, updateCollapsed] = useState(false);
-  const onCollapse = useCallback((colla: boolean) => {
-    updateCollapsed(colla);
-  }, [updateCollapsed]);
-
-  const [curContext] = useState((): CurContext => ({
-    keyPaths: [],
-    cachedSider: [],
-    cachedElements: [],
-  }));
-  const keysRef: RefInstance = useRef([]);
-  // 菜单状态
-  const keysInitial: State = { openKeys: [], selectedKeys: [] };
-  const [keys, keysUpdater] = useState(keysInitial);
-  keysRef.current = keys;
+  // 渲染menus
+  // 这里没有放入useEffect和useLayoutEffect是为了在属性发生变化的第一次渲染就得到最新的元素;它们时机滞后，不合适
+  useDerivedState(() => {
+    renderMenus(sider);
+  }, () => {
+    curContext.cachedElements = renderMenus(sider);
+    curContext.cachedSider = sider;
+  }, [sider]);
 
   // 使用url path匹配keyPaths中的路径
-  const analyzeUrlToKeys = (urlPath: string): void => {
+  const analyzeUrlToKeys = useCallback((urlPath: string): State => {
     const arr = curContext.keyPaths.filter((item): boolean => {
       const { keyPath } = item;
       const re = pathToRegexp(keyPath, [], { end: false });
@@ -103,11 +118,12 @@ const LeftSider = (props: Props): ReactElement => {
     });
     const map = new Map();
     // 同等深度的节点，取先匹配的
-    arr.forEach((road: KeyPathItem): void => {
+    for (let i = 0; i < arr.length; i += 1) {
+      const road = arr[i];
       if (!map.has(road.depth)) {
         map.set(road.depth, road);
       }
-    });
+    }
 
     const newArr = Array.from(map.values());
 
@@ -128,16 +144,17 @@ const LeftSider = (props: Props): ReactElement => {
       obj.openKeys = newArr.map((n: KeyPathItem): string => n.keyPath);
       obj.selectedKeys = [target.keyPath];
     }
-    keysUpdater({
-      ...obj,
-      openKeys: Array.from(new Set([...keysRef.current.openKeys, ...obj.openKeys])),
-    });
-  };
+    return obj;
+  }, []);
 
-  // 添加副作用代码
-  useEffect((): void => {
-    analyzeUrlToKeys(props.location.pathname);
-  }, [props.sider, props.location.pathname]);
+  // 菜单状态
+  const [keys, keysModel] = useDerivedState(() => analyzeUrlToKeys(pathname), (state) => {
+    const obj = analyzeUrlToKeys(pathname);
+    return {
+      ...obj,
+      openKeys: Array.from(new Set([...state.openKeys, ...obj.openKeys])),
+    };
+  }, [sider, pathname]);
 
   // 菜单项点击事件
   const handleItemClick = useCallback(
@@ -146,49 +163,43 @@ const LeftSider = (props: Props): ReactElement => {
       if (key.startsWith(`${EXTERN_KEY_PREFIX}-`)) {
         return;
       }
-      keysUpdater({
-        ...keysRef.current,
+      keysModel((_d, state) => ({
+        ...state,
         selectedKeys: [key],
-      });
+      }));
     },
-    [keysRef],
+    [],
   );
 
   // 次级菜单展开状态变化事件
   const handleSubMenuOpenChange = useCallback(
     (oks: (string[]) | any): any => {
-      keysUpdater({
-        ...keysRef.current,
+      keysModel((_d, state) => ({
+        ...state,
         openKeys: oks,
-      });
+      }));
     },
-    [keysRef],
+    [],
   );
-
-  // 渲染menus
-  // 这里没有放入useEffect和useLayoutEffect是为了在属性发生变化的第一次渲染就得到最新的元素;它们时机滞后，不合适
-  const renderMenus = genRenderMenus(curContext, props.history);
-
-  const { sider /* loadingStatus */ } = props;
-  curContext.cachedElements = renderMenus(sider);
-  curContext.cachedSider = sider;
 
   const backHome = useCallback(() => {
     props.history.push('/');
   }, [props.history]);
+
   const { openKeys, selectedKeys } = keys;
+
   return (
     <Sider
-      className={style.sider}
-      width={style.siderwidth}
-      collapsible
+      className={style.misSider}
+      width={siderwidth}
+      collapsible={colapisble(sider)}
       collapsed={collapsed}
       onCollapse={onCollapse}
     >
-      <header className='logo' onClick={backHome}>
-        <section className='logo-png' />
-        <section className='logo-placeholder' />
-        <span className='logo-text'>脚手架</span>
+      <header className='mis-logo' onClick={backHome}>
+        <section className='mis-logo-png' />
+        <section className='mis-logo-placeholder' />
+        <span className='mis-logo-text'>MIS</span>
       </header>
       <Menu
         openKeys={openKeys}

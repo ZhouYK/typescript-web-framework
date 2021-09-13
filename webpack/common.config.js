@@ -38,6 +38,20 @@ const rules = [{
     },
   }],
 }, {
+  test: /\.(png|jpe?g|gif)$/i,
+  // loader: 'file-loader', // https://webpack.docschina.org/guides/asset-modules/
+  type: 'asset/resource',
+  generator: {
+    filename: 'imgs',
+  },
+}, {
+  test: /\.(ttf|eot|otf|woff)$/i,
+  // loader: 'file-loader', // https://webpack.docschina.org/guides/asset-modules/
+  type: 'asset/resource',
+  generator: {
+    filename: 'fonts',
+  },
+}, {
   test: /\.svg(\?v=\d+\.\d+\.\d+)?$/i,
   use: [{
     loader: 'babel-loader',

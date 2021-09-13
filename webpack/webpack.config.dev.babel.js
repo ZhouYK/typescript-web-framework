@@ -88,20 +88,6 @@ const config = {
           sourceMap: false,
         },
       }, 'postcss-loader'],
-    }, {
-      test: /\.(png|jpe?g|gif)$/i,
-      loader: 'file-loader',
-      options: {
-        outputPath: 'imgs',
-        publicPath: `${publicPath}imgs`,
-      },
-    }, {
-      test: /\.(ttf|eot|otf|woff)$/i,
-      loader: 'file-loader',
-      options: {
-        outputPath: 'fonts',
-        publicPath: `${publicPath}fonts`,
-      },
     },
     ...commonConfig.module.rules,
     ],

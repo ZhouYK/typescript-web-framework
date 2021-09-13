@@ -1,15 +1,15 @@
-import { ComponentType, ReactNode } from 'react';
+import { AnchorHTMLAttributes, ComponentType, ReactElement } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
 export type Permission = Set<any> | any[];
 
 export interface RoadMap {
-  name?: string | ReactNode; // 路由的 name。可以是动态的，数据来自于url的query，形如 {depart_id}
-  innerTitle?: string | ReactNode; // 渲染到 Menu.Item children 的内容，如果为 undefined 则渲染 name
+  name?: any; // 路由的 name。可以是动态的，数据来自于url的query，形如 {depart_id}
+  innerTitle?: any; // 渲染到 Menu.Item children 的内容，如果为 undefined 则渲染 name
   path: string; // 必需。这个是路由配置的唯一key
   realPath?: string; // 表示该节点的真正路由地址。如果没有将由path来决定。realPath还是处在router的控制下。权重低于externUrl
   externUrl?: string; // 跳转到外部的链接，如果需要在新标签打开需要配置 externProps = {target: '_blank'}。配置了externUrl将会忽略 path和realPath
-  externProps?: Record<string, any>; // <a> 标签的所有可选属性
+  externProps?: AnchorHTMLAttributes<any>; // <a> 标签的所有可选属性
   homeUrl?: string; // 系统的默认首页，只在第一层配置了才有效，目前在404组件中有用到
   subPaths?: RoadMap[]; // 和leafPaths互斥。 下级菜单
   leafPaths?: RoadMap[]; // 和subPaths互斥。叶子页面，不会再有下级。没有自己的菜单，但是会激活父节点的菜单
@@ -25,6 +25,8 @@ export interface RoadMap {
   hasSubSider?: boolean; // 可应用于所有路由，对应的页面是否展示左侧第二级导航菜单栏，true：展示，false：隐藏，默认为true。上级路由设置对下级路由生效，下级路由设置可以覆盖上级路由设置（优先级高于上级路由）
   visible?: boolean; // 单纯控制显示与否.false: 菜单不可见；true: 菜单可见; visible菜单是否展示。目前在beforeRender.ts(这里面相当于当做是过滤标识，不是字段的本意)、SubSider/index.tsx中有使用
   defaultOpen?: boolean; // 控制二级子菜单是否默认展开
+  badge?: number; // 徽章的数量，大于0，才会显示
+  roadTrigger?: ReactElement; // 用于监测road的挂载和卸载等状态
 }
 
 export interface RoadMapModuleType {

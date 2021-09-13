@@ -1,9 +1,10 @@
-import {
-  FC, ReactElement, Suspense, useEffect, useState,
+import React, {
+  FC, ReactElement, Suspense,
 } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { RoadMap } from '@src/pages/interface';
 import Spinner from '@src/components/Spinner';
+import { useDerivedState } from 'femo';
 import Routes from './index';
 
 interface Props extends RouteComponentProps {
@@ -15,12 +16,8 @@ const UndertakeRoute: FC<Props> = (props: Props): ReactElement => {
   const {
     road,
   } = props;
+  const [routes] = useDerivedState(() => [road], () => [road], [road]);
 
-  const [routes, routesUpdater] = useState([road]);
-
-  useEffect((): void => {
-    routesUpdater([road]);
-  }, [road]);
   const loadingEl = <Spinner />;
 
   return (

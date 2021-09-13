@@ -1,5 +1,5 @@
 import React, { ReactElement, ReactNode } from 'react';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router-dom';
 import { RoadMap } from '@src/pages/interface';
 
 export const EXTERN_KEY_PREFIX = 'EXTERN_KEY_PREFIX';
