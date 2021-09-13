@@ -21,6 +21,7 @@
     ]
   },
   "scripts": {
+    "lint": "lint-staged",
     "test": "jest --no-cache",
     "start": "NODE_OPTIONS=--max_old_space_size=4096 NODE_ENV=development PORT=8989 webpack serve --hot --progress --config ./webpack/webpack.config.dev.babel.js",
     "build": "NODE_ENV=production webpack --env local --profile --progress --config  ./webpack/webpack.config.babel.js",
