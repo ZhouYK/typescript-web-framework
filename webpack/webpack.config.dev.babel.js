@@ -106,12 +106,12 @@ const config = {
     hot: true,
     host: '0.0.0.0',
     port: devPort,
-    disableHostCheck: true,
-    contentBase: contentPath,
+    allowedHosts: 'all',
+    static: {
+      directory: contentPath,
+    },
     historyApiFallback: true,
-    stats: 'errors-only',
     compress: true,
-    useLocalIp: true,
     // quiet: true,
     proxy: {
       context: ['/api/'],
