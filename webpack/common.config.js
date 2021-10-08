@@ -7,7 +7,6 @@ import reactRefreshTs from 'react-refresh-typescript';
 import FriendlyErrorsWebpackPlugin from '@nuxtjs/friendly-errors-webpack-plugin';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
-
 export const contentPath = path.resolve(__dirname, '../dist');
 // 这里可以路径前一个名称作为页面区分
 const entry = {
@@ -42,14 +41,14 @@ const rules = [{
   // loader: 'file-loader', // https://webpack.docschina.org/guides/asset-modules/
   type: 'asset/resource',
   generator: {
-    filename: 'imgs',
+    filename: 'imgs/[hash][ext][query]',
   },
 }, {
   test: /\.(ttf|eot|otf|woff)$/i,
   // loader: 'file-loader', // https://webpack.docschina.org/guides/asset-modules/
   type: 'asset/resource',
   generator: {
-    filename: 'fonts',
+    filename: 'fonts/[hash][ext][query]',
   },
 }, {
   test: /\.svg(\?v=\d+\.\d+\.\d+)?$/i,
