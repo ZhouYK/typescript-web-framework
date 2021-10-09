@@ -1,6 +1,5 @@
 import { FC, ReactElement } from 'react';
 import { Layout } from 'antd';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 import SiderControl from '@src/components/Sider/SiderControl';
 import DispatchRoute from '@src/components/Routes/DispatchRoute';
 import HeaderControl from '@src/components/Header/HeaderControl';
@@ -9,25 +8,24 @@ import style from './style.less';
 
 const { Content } = Layout;
 
-interface AppProps extends RouteComponentProps {
+interface AppProps {
 }
 
-const App: FC<AppProps> = (props: AppProps): ReactElement => {
-  const { ...routeProps } = props;
+const App: FC<AppProps> = (_props: AppProps): ReactElement => {
   const content = (
     <Content className={style.mainLayout}>
-      <DispatchRoute { ...routeProps } />
+      <DispatchRoute />
     </Content>
   );
   return (
     <Layout hasSider style={{ height: '100%' }}>
-      <SiderControl {...routeProps} />
+      <SiderControl />
       <Layout className={style.contentWrap}>
-        <HeaderControl {...routeProps} />
+        <HeaderControl />
         {content}
       </Layout>
     </Layout>
   );
 };
 
-export default withRouter(App);
+export default App;

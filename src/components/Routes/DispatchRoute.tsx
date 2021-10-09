@@ -1,7 +1,7 @@
 import React, {
   ReactElement, useCallback,
 } from 'react';
-import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Route, Switch, RouteComponentProps } from 'react-router-dom';
 import pagesRoadMap, { road404 /* roadRoot */ } from '@src/pages/roadMap';
 import { RoadMap, RoadMapModuleType } from '@src/pages/interface';
 import { extractPagesRoadMapAsArray } from '@src/pages/aroundRoadMap';
@@ -11,7 +11,7 @@ import UndertakeRoute from './UndertakeRoute';
 
 const genRoutes = (routes: RoadMap[]): RoadMap[] => (routes instanceof Array ? [...routes, /* roadRoot, */road404] : [road404]);
 
-const DispatchRoute = (_props: RouteComponentProps): ReactElement => {
+const DispatchRoute = (): ReactElement => {
   const renderRoutes = useCallback((r: RoadMapModuleType) => {
     const tempRoutes: RoadMap[] = genRoutes(extractPagesRoadMapAsArray(r));
     return tempRoutes.map((road: RoadMap, index: number): ReactElement => (

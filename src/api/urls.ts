@@ -26,6 +26,6 @@ export const genUrlWithQuery = <T = { [index: string]: any }>(path: string) => (
   return path;
 };
 
-export const commonUrls = {
+export const commonApiUrls = {
   userInfo: genUrl('/home/user_info'), // 用户基本信息
 };

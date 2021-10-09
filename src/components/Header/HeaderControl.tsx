@@ -1,7 +1,7 @@
 import React, {
   ReactElement, useCallback, useEffect,
 } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { pathToRegexp } from 'path-to-regexp';
 import { RoadMap, RoadMapModuleType } from '@src/pages/interface';
 import roads from '@src/pages/roadMap';
@@ -131,4 +131,4 @@ const HeaderControl = (props: RouteComponentProps): ReactElement => {
   return headerShow ? <MisHeader breadcrumbNameMap={breadcrumbData} { ...props } /> : null;
 };
 
-export default HeaderControl;
+export default withRouter(HeaderControl);

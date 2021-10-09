@@ -4,7 +4,7 @@ import {
 import {
   Layout, Avatar, Breadcrumb, Dropdown, Menu,
 } from 'antd';
-import userModel from '@src/model/user';
+import model from '@src/commonModelService/user/model';
 import { useModel } from 'femo';
 import { getSafe } from '@src/tools/util';
 import {
@@ -17,7 +17,7 @@ import style from './style.less';
 const { Header } = Layout;
 
 const MisHeader: FC<Props> = (props: Props) => {
-  const [userInfo] = useModel(userModel);
+  const [userInfo] = useModel(model);
   const breadcrumbs = Object.keys(props.breadcrumbNameMap).map((key: string) => {
     const names = props.breadcrumbNameMap[key];
     if (names instanceof Array) {

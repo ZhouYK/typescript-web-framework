@@ -2,7 +2,7 @@ import React, {
   ReactElement, useCallback, useState,
 } from 'react';
 import { pathToRegexp } from 'path-to-regexp';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { RoadMap } from '@src/pages/interface';
 import { extractPagesRoadMapAsArray } from '@src/pages/aroundRoadMap';
 import pagesRoadMap from '@src/pages/roadMap';
@@ -95,4 +95,4 @@ const SiderControl = (props: RouteComponentProps): ReactElement => {
   );
 };
 
-export default SiderControl;
+export default withRouter(SiderControl);
