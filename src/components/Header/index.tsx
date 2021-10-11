@@ -46,19 +46,19 @@ const MisHeader: FC<Props> = (props: Props) => {
     </Menu>
   );
   return (
-    <Header className={style.misHeader}>
+    <Header className={style.header}>
       { breadcrumbs.length !== 0 ? (
-        <section className='mis-header-breadcrumb'>
+        <section className={`${style.prefix}-header-breadcrumb`}>
           <Breadcrumb>{breadcrumbs}</Breadcrumb>
         </section>
       ) : null }
-      <section className='mis-header-placeholder-section' />
+      <section className={`${style.prefix}-header-placeholder-section`} />
       <Dropdown
         overlay={overlay}
       >
-        <section className='mis-header-user-info'>
+        <section className={`${style.prefix}-header-user-info`}>
           <Avatar src={getSafe(userInfo, 'thumbnail')} />
-          <span className='mis-header-user-name'>{ getSafe(userInfo, 'name') }</span>
+          <span className={`${style.prefix}-header-user-name`}>{ getSafe(userInfo, 'name') }</span>
         </section>
       </Dropdown>
     </Header>

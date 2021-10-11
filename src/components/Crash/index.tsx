@@ -1,9 +1,8 @@
 import React from 'react';
 import sentry from '@src/tools/sentry';
 import Failed from '@src/components/Failed';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 
-interface Props extends RouteComponentProps {
+interface Props {
   fallback?: (error: any) => React.ReactElement | React.ReactNode;
 }
 
@@ -50,4 +49,4 @@ class Crash extends React.Component<Props, any> {
   }
 }
 
-export default withRouter(Crash);
+export default Crash;

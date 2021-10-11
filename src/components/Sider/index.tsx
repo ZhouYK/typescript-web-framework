@@ -190,16 +190,16 @@ const LeftSider = (props: Props): ReactElement => {
 
   return (
     <Sider
-      className={style.misSider}
+      className={style.sider}
       width={style.siderwidth}
       collapsible={colapisble(sider)}
       collapsed={collapsed}
       onCollapse={onCollapse}
     >
-      <header className='mis-logo' onClick={backHome}>
-        <section className='mis-logo-png' />
-        <section className='mis-logo-placeholder' />
-        <span className='mis-logo-text'>MIS</span>
+      <header className={`${style.prefix}-logo`} onClick={backHome}>
+        <section className={`${style.prefix}-logo-png`} />
+        <section className={`${style.prefix}-logo-placeholder`} />
+        <span className={`${style.prefix}-logo-text`}>{style.prefix}</span>
       </header>
       <Menu
         openKeys={openKeys}

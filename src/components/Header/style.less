@@ -1,6 +1,10 @@
 @import (reference) "~@src/theme/index";
 
-.misHeader {
+:export {
+  prefix: @prefix;
+}
+
+.header {
   &:global(.ant-layout-header) {
     background: @main-bg-color;
     height: 56px;
@@ -13,11 +17,12 @@
     justify-content: flex-start;
 
     :global {
-      .mis-header-logo {
+
+      .@{prefix}-header-logo {
         flex: 0 0 370px;
       }
 
-      .mis-header-user-info {
+      .@{prefix}-header-user-info {
         cursor: pointer;
 
         &:hover {
@@ -25,15 +30,15 @@
         }
       }
 
-      .mis-header-search {
+      .@{prefix}-header-search {
         flex: 0 0 430px;
       }
 
-      .mis-header-placeholder-section {
+      .@{prefix}-header-placeholder-section {
         flex: 1 1 auto;
       }
 
-      .mis-header-user-name {
+      .@{prefix}-header-user-name {
         margin-left: 8px;
       }
 

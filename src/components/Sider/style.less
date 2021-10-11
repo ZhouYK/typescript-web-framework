@@ -4,6 +4,7 @@
 
 :export {
   siderwidth: @siderWidth;
+  prefix: @prefix;
 }
 
 :global {
@@ -12,7 +13,7 @@
   }
 }
 
-.misSider {
+.sider {
   &:global(.ant-layout-sider) {
     background: @black-4;
   }
@@ -34,7 +35,7 @@
       color: @white;
     }
 
-    .mis-logo {
+    .@{prefix}-logo {
       color: @white;
       display: flex;
       align-items: center;
@@ -43,7 +44,7 @@
       padding-left: 24px;
       cursor: pointer;
 
-      .mis-logo-png {
+      .@{prefix}-logo-png {
         background-image: url("../../assets/img/logo.png");
         width: 36px;
         height: 36px;
@@ -52,12 +53,12 @@
         flex-shrink: 0;
       }
 
-      .mis-logo-placeholder {
+      .@{prefix}-logo-placeholder {
         width: 12px;
         flex-shrink: 0;
       }
 
-      .mis-logo-text {
+      .@{prefix}-logo-text {
         font-weight: 600;
         font-family: misBold, sans-serif;
         flex-shrink: 0;
@@ -78,11 +79,11 @@
 
   &:global(.ant-layout-sider-collapsed) {
     :global {
-      .mis-logo {
+      .@{prefix}-logo {
         width: 80px;
 
-        .mis-logo-placeholder,
-        .mis-logo-text {
+        .@{prefix}-logo-placeholder,
+        .@{prefix}-logo-text {
           display: none;
         }
       }

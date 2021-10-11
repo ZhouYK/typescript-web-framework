@@ -7,7 +7,7 @@ import ReactPerfectScrollbar, {
 import classNames from 'classnames';
 import parser from 'ua-parser-js';
 import { getSafe } from '@src/tools/util';
-import './style.less';
+import style from './style.less';
 
 export interface ScrollbarProps extends ScrollBarProps {
   /* 垂直方向滚动条是否常显 */
@@ -119,7 +119,7 @@ const Scrollbar = forwardRef<ReactPerfectScrollbar, ScrollbarProps>(
     const {
       className, isVerticalResident, isWindowsVerticalResident, isWindowsHorizontalResident, ...rest
     } = props;
-    const clsNames = classNames(className, {
+    const clsNames = classNames(className, style.scrollbar, {
       'is-windows': isWindows,
       'is-vertical-resident': isVerticalResident || !!(isWindows && isWindowsVerticalResident),
       'is-horizontal-resident': !!(isWindows && isWindowsHorizontalResident),

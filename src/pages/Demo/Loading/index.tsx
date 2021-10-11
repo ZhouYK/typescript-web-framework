@@ -1,5 +1,6 @@
 import { FC, useCallback } from 'react';
 import { gluer, useIndividualModel, useModel } from 'femo';
+import Scrollbar from '@src/components/Scrollbar';
 
 interface Props {
 
@@ -15,7 +16,9 @@ const Loading: FC<Props> = (_props) => {
   const [name] = useModel(nameModel);
   console.log('loading：', loading, ' count：', count);
   return (
-    <span>{count} {name}</span>
+    <Scrollbar>
+      <span>{count} {name}</span>
+    </Scrollbar>
   );
 };
 
