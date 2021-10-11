@@ -136,6 +136,6 @@ const config = {
     }),
     ...commonConfig.plugins,
   ],
-  stats: 'normal',
+  stats: 'summary',
 };
 export default config;
