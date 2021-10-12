@@ -8,9 +8,9 @@ interface Props {
 }
 
 let count = 0;
-const a = () => new Promise((resolve) => {
+const a = () => new Promise((_resolve, reject) => {
   setTimeout(() => {
-    resolve('测试test');
+    reject('测试test');
   }, 4000);
 });
 const Test: FC<Props> = (props) => {

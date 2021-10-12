@@ -5,16 +5,16 @@ interface Props {
 
 }
 
-let count = 0;
+// let count = 0;
 const CiCi: FC<Props> = (props) => {
   const [c, updateC] = useState(Date.now());
   console.log('cici before');
-  if (count === 0) {
-    count += 1;
-    throw new Promise((resolve) => {
-      setTimeout(resolve, 2000);
-    });
-  }
+  // if (count === 0) {
+  //   count += 1;
+  //   throw new Promise((resolve) => {
+  //     setTimeout(resolve, 2000);
+  //   });
+  // }
   console.log('cici after');
   return (
     <span>

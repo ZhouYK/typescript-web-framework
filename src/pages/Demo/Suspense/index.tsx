@@ -11,10 +11,9 @@ const SuspenseTest: FC<Props> = (_props) => {
   const [t, updateT] = useState(Date.now());
   return (
     <React.Suspense fallback={<span>loading....</span>}>
-      <BiBi />
-      <CiCi>
-        <Test />
-      </CiCi>
+      <BiBi>
+
+      </BiBi>
     </React.Suspense>
   );
 };
