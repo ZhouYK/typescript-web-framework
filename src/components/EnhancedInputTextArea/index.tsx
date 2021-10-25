@@ -1,14 +1,12 @@
 import React, {
   FC, PropsWithChildren, useCallback, useEffect, useLayoutEffect, useRef, useState,
 } from 'react';
-import ReactDom from 'react-dom';
 import { TextAreaProps } from 'antd/es/input';
 import { Input } from 'antd';
 import classNames from 'classnames';
 import { getSafe } from '@src/tools/util';
 import style from './style.less';
 
-// 依赖antd的版本，目前版本: antd@4.7.3
 // 目前不能传autoSize，因为要做placeholder的高度适配。二者有冲突
 interface Props extends TextAreaProps {
   placeholder?: any;
@@ -17,19 +15,19 @@ interface Props extends TextAreaProps {
 // 这里antd里面textarea最小高度是32，需要做限制;
 const minHeight = 32;
 // 使用该组件时需要注意容器组件的背景色
-const EnhancedInputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
+const InputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
   const { placeholder, useTextHeight, ...rest } = props;
   const textareaRef = useRef<any>();
   const placeholderRef = useRef<HTMLDivElement>();
   const [hidePlaceholder, updateHidePlaceholder] = useState(true);
   const textareaDom = useRef<{dom: any}>({ dom: null });
   const timer = useRef<NodeJS.Timer>();
-  const calcHeightRef = useRef<(times: any) => void>();
+  const calcHeightRef = useRef<(ts: number) => void>();
 
   const calcHeight = useCallback((times = 10) => {
     if (!rest.value) {
       if (!textareaDom.current.dom) {
-        textareaDom.current.dom = ReactDom.findDOMNode(textareaRef.current);
+        textareaDom.current.dom = getSafe(textareaRef.current, 'resizableTextArea.textArea');
       }
       if (!useTextHeight && textareaDom.current.dom && placeholderRef.current) {
         let textHeight = getSafe(textareaDom, 'current.dom.offsetHeight');
@@ -74,11 +72,9 @@ const EnhancedInputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
   useEffect(() => {
     const resizeHandler = () => {
       clearTimeout(timer.current);
-      calcHeightRef.current(10);
+      calcHeightRef.current();
     };
-    window.addEventListener('resize', resizeHandler, {
-      passive: true,
-    });
+    window.addEventListener('resize', resizeHandler);
     return () => window.removeEventListener('resize', resizeHandler);
   }, []);
 
@@ -94,8 +90,8 @@ const EnhancedInputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
   );
 };
 
-EnhancedInputTextArea.defaultProps = {
+InputTextArea.defaultProps = {
   useTextHeight: false,
 };
 
-export default EnhancedInputTextArea;
+export default InputTextArea;
