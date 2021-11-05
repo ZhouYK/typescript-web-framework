@@ -27,7 +27,7 @@ const DispatchRoute = (): ReactElement => {
   }, []);
 
   // 后续UndertakeRoute中不会再校验road中第一层的权限
-  const [routeElements] = useDerivedState((): ReactElement[] => renderRoutes(pagesRoadMap()), () => renderRoutes(pagesRoadMap()), [pagesRoadMap]);
+  const [routeElements] = useDerivedState(() => renderRoutes(pagesRoadMap()), [pagesRoadMap]);
 
   return (
     <Switch>

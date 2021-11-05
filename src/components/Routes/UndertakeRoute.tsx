@@ -16,7 +16,7 @@ const UndertakeRoute: FC<Props> = (props: Props): ReactElement => {
   const {
     road,
   } = props;
-  const [routes] = useDerivedState(() => [road], () => [road], [road]);
+  const [routes] = useDerivedState(() => [road], [road]);
 
   const loadingEl = <Spinner />;
 
