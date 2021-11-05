@@ -4,7 +4,7 @@ import {
 import {
   Layout, Avatar, Breadcrumb, Dropdown, Menu,
 } from 'antd';
-import model from '@src/commonModelService/user/model';
+import model from '@src/models/user/model';
 import { useModel } from 'femo';
 import { getSafe } from '@src/tools/util';
 import {

@@ -22,7 +22,7 @@ const InputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
   const [hidePlaceholder, updateHidePlaceholder] = useState(true);
   const textareaDom = useRef<{dom: any}>({ dom: null });
   const timer = useRef<NodeJS.Timer>();
-  const calcHeightRef = useRef<(ts: number) => void>();
+  const calcHeightRef = useRef<(ts?: number) => void>();
 
   const calcHeight = useCallback((times = 10) => {
     if (!rest.value) {

@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { ConfigProvider } from 'antd';
 import zh from 'antd/lib/locale/zh_CN';
-import Root from './Root';
+import AppRoot from './AppRoot';
 import App from './App';
 import './global.less';
 
@@ -18,10 +18,10 @@ if (window.Promise && !window.Promise.prototype.finally) {
   };
 }
 render(
-    <Root>
+    <AppRoot>
       <ConfigProvider locale={zh}>
         <App />
       </ConfigProvider>
-    </Root>,
+    </AppRoot>,
     document.getElementById('bd'),
 );

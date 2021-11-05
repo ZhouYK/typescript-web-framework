@@ -6,7 +6,7 @@ import { pathToRegexp } from 'path-to-regexp';
 import { RoadMap, RoadMapModuleType } from '@src/pages/interface';
 import roads from '@src/pages/roadMap';
 import { subscribe } from 'femo';
-import { extractPagesRoadMapAsArray } from '@src/pages/aroundRoadMap';
+import { extractPagesRoadMapAsArray } from '@src/pages/roadMapTool';
 import { CurContext, SimpleRoute, WholeProps } from '@src/components/Header/interface';
 import {
   queryToObject, variablePlaceholderReplace,

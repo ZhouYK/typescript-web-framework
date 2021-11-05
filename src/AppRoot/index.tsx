@@ -2,8 +2,8 @@ import React, {
   ReactElement,
 } from 'react';
 import { Router } from 'react-router-dom';
-import userModel from '@src/commonModelService/user/model';
-import userService from '@src/commonModelService/user/service';
+import userModel from '@src/models/user/model';
+import userService from '@src/models/user/service';
 import Spinner from '@src/components/Spinner';
 import NotFound from '@src/components/NotFound';
 import { useModel } from 'femo';
@@ -14,7 +14,7 @@ interface RootProps {
   [index: string]: any;
 }
 
-const Root = (props: RootProps): ReactElement => {
+const AppRoot = (props: RootProps): ReactElement => {
   const { children } = props;
   const [userInfo,, { loading }] = useModel(userModel, [userService.getUserInfo]);
 
@@ -33,4 +33,4 @@ const Root = (props: RootProps): ReactElement => {
   );
 };
 
-export default safeCrash(Root);
+export default safeCrash(AppRoot);

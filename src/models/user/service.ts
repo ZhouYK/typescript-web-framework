@@ -1,4 +1,4 @@
-import model from '@src/commonModelService/user/model';
+import model from '@src/models/user/model';
 import { commonApiActions } from '@src/api/actions';
 import { getSafe } from '@src/tools/util';
 

@@ -4,7 +4,7 @@ import React, {
 import { pathToRegexp } from 'path-to-regexp';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { RoadMap } from '@src/pages/interface';
-import { extractPagesRoadMapAsArray } from '@src/pages/aroundRoadMap';
+import { extractPagesRoadMapAsArray } from '@src/pages/roadMapTool';
 import pagesRoadMap from '@src/pages/roadMap';
 import { useDerivedState } from 'femo';
 import { getSafe } from '@src/tools/util';
