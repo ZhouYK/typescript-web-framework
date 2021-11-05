@@ -1,17 +1,20 @@
-import { useEffect, useRef, useState } from 'react';
 import { queryToObject } from '@src/tools/util';
+import { useDerivedState } from 'femo';
 
-const useQueryObj = <T = { [index: string]: any }>(search: string, initObj: T): [T] => {
-  const flagRef = useRef(false);
-  const [obj, updateObj] = useState<T>(() => queryToObject(search, initObj));
-  useEffect(() => {
-    if (flagRef.current) {
-      updateObj(queryToObject(search, initObj));
-    } else {
-      flagRef.current = true;
+interface UseQueryObjOptions<T> {
+  compensate?: (q: T) => T;
+  strict?: boolean;
+}
+
+const useQueryObj = <T>(search = '', initQuery: T, options: UseQueryObjOptions<T>): [T] => {
+  const [queryObj] = useDerivedState(() => {
+    const tmp = queryToObject(search, initQuery, options.strict);
+    if (options.compensate) {
+      return options.compensate(tmp);
     }
+    return tmp;
   }, [search]);
-  return [obj];
+  return [queryObj];
 };
 
 export default useQueryObj;

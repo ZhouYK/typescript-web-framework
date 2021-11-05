@@ -32,7 +32,7 @@ const SiderControl = (props: RouteComponentProps): ReactElement => {
     recordMenus: [],
   }));
 
-  const [sider] = useDerivedState(() => extractPagesRoadMapAsArray(pagesRoadMap()), () => extractPagesRoadMapAsArray(pagesRoadMap()), [pagesRoadMap]);
+  const [sider] = useDerivedState(() => extractPagesRoadMapAsArray(pagesRoadMap()), [pagesRoadMap]);
 
   // 渲染menus
   const renderFunc = useCallback((menus: RoadMap[], path: string[] = [], parentHasSider = true): void => {
@@ -86,7 +86,7 @@ const SiderControl = (props: RouteComponentProps): ReactElement => {
     return target.hasSider;
   }, []);
 
-  const [siderShow] = useDerivedState(() => getSiderShow(props), () => getSiderShow(props), [getSafe(props, 'location.pathname'), getSafe(props, 'location.search'), sider]);
+  const [siderShow] = useDerivedState(() => getSiderShow(props), [getSafe(props, 'location.pathname'), getSafe(props, 'location.search'), sider]);
 
   return (
     siderShow ? (
