@@ -14,12 +14,12 @@ export const isArrayEmpty = (arr: any[]) => !(arr instanceof Array) || !arr.leng
 // 约定数组是这种形式: team_id=1,2,3,4,5
 const queryCacheMap = new Map();
 export const queryToObject = <T = {[index: string]: any}>(searchStr: string, initialQuery: T, strict = false): T => {
-  let str_1 = searchStr;
-  if (searchStr.startsWith('?')) {
-    str_1 = searchStr.substring(1);
+  let str_1 = `${searchStr}`;
+  if (str_1.startsWith('?')) {
+    str_1 = str_1.substring(1);
   }
-  const obj: any = {};
   if (!str_1) return initialQuery;
+  const obj: any = {};
   const str_2 = str_1.split('&');
   for (let i = 0; i < str_2.length; i += 1) {
     const temp = str_2[i].split('=');
@@ -111,12 +111,18 @@ export const objectToQuery = (obj: { [index: string]: any }): string => {
  */
 export const isMobile = (): boolean => /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(window.navigator.userAgent);
 
+interface DefaultFn<T> {
+  (value?: any): T;
+}
+
+const isDefaultFn = <T>(d: T | DefaultFn<T>): d is DefaultFn<T> => typeof d === 'function';
 /**
  * 安全取操作
  * @param target
  * @param keyPath
+ * @param defaultValue 当为函数时，不管取得的值是否为空，都会经过defaultValue函数处理然后返回，函数的返回值将作为最终的值。不应大量使用函数，可能会有性能问题
  */
-export const getSafe = <T = any>(target: any, keyPath: string, bottomValue?: T): T => {
+export const getSafe = <T = any>(target: any, keyPath: string, defaultValue?: T | DefaultFn<T>): T => {
   try {
     // const regex = /^\[\d\]$/;
     const mixRegex = /^.*\[\d\]$/;
@@ -142,12 +148,22 @@ export const getSafe = <T = any>(target: any, keyPath: string, bottomValue?: T):
         temp = temp && temp[key];
       }
     });
-    if (isEmpty(temp) && !Object.is(bottomValue, undefined)) {
-      return bottomValue;
+    if (isEmpty(temp)) {
+      if (isDefaultFn(defaultValue)) {
+        return defaultValue(temp);
+      }
+      return defaultValue;
+    }
+
+    if (isDefaultFn(defaultValue)) {
+      return defaultValue(temp);
     }
     return temp;
   } catch (e) {
-    return bottomValue;
+    if (isDefaultFn(defaultValue)) {
+      return defaultValue();
+    }
+    return defaultValue;
   }
 };
 

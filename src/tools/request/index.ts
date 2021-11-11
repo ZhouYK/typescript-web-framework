@@ -35,15 +35,18 @@ const customRequest = <T>(config: CustomConfig): Promise<ApiResult<T>> => {
   //   };
   //   config.data = objectToQuery(config.data);
   // }
+  const {
+    showBizError, showHttpError, ...restConfig
+  } = config;
   return request({
-    ...config,
+    ...restConfig,
   }).catch((error) => {
     let code = getSafe(error, 'response.status') || ApiCode.httpError;
     if (axios.isCancel(error)) {
       code = ApiCode.cancelError;
     }
 
-    if (config.showHttpError) {
+    if (showHttpError) {
       const msg = window.navigator.onLine ? `系统出现问题，请稍后重试(code: ${code})` : `网络连接中断，请检查网络(code: ${code})`;
       message.error(msg);
     }
@@ -64,8 +67,8 @@ const customRequest = <T>(config: CustomConfig): Promise<ApiResult<T>> => {
     }
 
     if (code !== ApiCode.ok && code !== ApiCode.limitValid) {
-      if (config.showBizError) {
-        const msg = getSafe(data, 'msg');
+      if (showBizError) {
+        const msg = getSafe(data, 'msg') || getSafe(data, 'message');
         const dataStr = getSafe(data, 'data');
         let errMsg = msg;
         if (!errMsg && typeof dataStr === 'string') {
@@ -76,6 +79,32 @@ const customRequest = <T>(config: CustomConfig): Promise<ApiResult<T>> => {
       return Promise.reject(data);
     }
     return data;
+  });
+};
+
+const customRequestFile = (config: CustomConfig): Promise<AxiosResponse<Blob>> => {
+  const referer = window.location.href;
+  config.headers = {
+    ...config.headers,
+    'mis-referer': referer,
+    'X-Requested-With': 'XMLHttpRequest',
+  };
+  const {
+    showBizError, showHttpError, ...restConfig
+  } = config;
+  return request({
+    ...restConfig,
+  }).catch((error) => {
+    let code = getSafe(error, 'response.status') || ApiCode.httpError;
+    if (axios.isCancel(error)) {
+      code = ApiCode.cancelError;
+    }
+
+    if (showHttpError) {
+      const msg = window.navigator.onLine ? `系统出现问题，请稍后重试(code: ${code})` : `网络连接中断，请检查网络(code: ${code})`;
+      message.error(msg);
+    }
+    return Promise.reject(error);
   });
 };
 
@@ -140,4 +169,22 @@ export const postForm = <T = any>(url: string, data?: any, config?: CustomConfig
 
 export const postMultipartForm = <T = any>(url: string, data?: any, config?: CustomConfig): Promise<ApiResult<T>> => customRequest<T>({
   url, data, method: 'post', headers: { 'content-type': 'multipart/form-data' }, ...defaultExtraCustomConfig, ...config,
+});
+
+export const requestFileByGet = (url: string, params?: any, config?: CustomConfig): Promise<AxiosResponse<Blob>> => customRequestFile({
+  url,
+  method: 'get',
+  params,
+  ...defaultExtraCustomConfig,
+  responseType: 'blob',
+  ...config,
+});
+
+export const requestFileByPost = (url: string, data?: any, config?: CustomConfig): Promise<AxiosResponse<Blob>> => customRequestFile({
+  url,
+  method: 'post',
+  data,
+  ...defaultExtraCustomConfig,
+  responseType: 'blob',
+  ...config,
 });
