@@ -16,7 +16,6 @@ const rules = [{
   test: /\.(ts|js)x?$/,
   include: [
     path.resolve(__dirname, '../src'),
-    /node_modules[\\/](antd)/,
   ],
   use: [{
     loader: 'babel-loader',
@@ -34,6 +33,25 @@ const rules = [{
       getCustomTransformers: () => ({
         before: isDevelopment ? [reactRefreshTs()] : [],
       }),
+    },
+  }],
+}, {
+  test: /\.(ts|js)x?$/,
+  include: [
+    /node_modules[\\/](antd)/,
+  ],
+  use: [{
+    loader: 'babel-loader',
+    options: {
+      cacheDirectory: true,
+      cacheCompression: false,
+      presets: [
+        ['@babel/preset-env', {
+          modules: 'cjs',
+          useBuiltIns: 'usage',
+          corejs: '3.9',
+        }],
+      ],
     },
   }],
 }, {
