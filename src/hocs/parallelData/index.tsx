@@ -23,36 +23,38 @@ interface ParallelService {
  * @param parallelService
  * @constructor
  */
-const ParallelData: (componentPath: string, parallelService: ParallelService) => FC<Props> = (componentPath: string, parallelService: ParallelService) => (props: Props) => {
+const parallelData: (componentPath: string, parallelService?: ParallelService) => FC<Props> = (componentPath: string, parallelService?: ParallelService) => (props: Props) => {
   const [path] = useState(() => (componentPath || '').replace(/^@src\//, ''));
-  const srcPath = `@src/${path}`;
   const [, control] = useIndividualModel<ModelStatus>({
     loading: false,
     successful: false,
   });
   const unmountFlagRef = useRef(false);
   const [Component] = useState(() => {
-    control.silent((_d, state) => ({
-      ...state,
-      loading: true,
-      successful: false,
-    }));
-    parallelService(props).then(() => {
-      if (unmountFlagRef.current) return;
-      control.silent((_d, state) => ({
-        ...state,
-        loading: false,
-        successful: true,
-      }));
-    }).catch(() => {
-      if (unmountFlagRef.current) return;
+    if (parallelService) {
       control.silent((_d, state) => ({
         ...state,
         loading: true,
         successful: false,
       }));
-    });
-    return lazy(() => import(srcPath));
+      parallelService(props).then(() => {
+        if (unmountFlagRef.current) return;
+        control.silent((_d, state) => ({
+          ...state,
+          loading: false,
+          successful: true,
+        }));
+      }).catch(() => {
+        if (unmountFlagRef.current) return;
+        control.silent((_d, state) => ({
+          ...state,
+          loading: true,
+          successful: false,
+        }));
+      });
+    }
+
+    return lazy(() => import(`@src/${path}`));
   });
 
   useEffect(() => () => {
@@ -62,4 +64,4 @@ const ParallelData: (componentPath: string, parallelService: ParallelService) =>
   return <Component {...props} control={control} />;
 };
 
-export default ParallelData;
+export default parallelData;

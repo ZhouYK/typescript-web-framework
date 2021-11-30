@@ -142,7 +142,7 @@ const Routes: React.FC<Props> = (props: Props): ReactElement => {
     curContext.cachedRoutes = routes;
   }, []);
 
-  useDerivedState(null, () => {
+  useDerivedState(() => {
     getPermittedRoutes(routes);
     renderRoutes(routes, propRoad404);
   }, [routes, propRoad404]);

@@ -95,8 +95,6 @@ const LeftSider = (props: Props): ReactElement => {
   // 渲染menus
   // 这里没有放入useEffect和useLayoutEffect是为了在属性发生变化的第一次渲染就得到最新的元素;它们时机滞后，不合适
   useDerivedState(() => {
-    renderMenus(sider);
-  }, () => {
     curContext.cachedElements = renderMenus(sider);
     curContext.cachedSider = sider;
   }, [sider]);
