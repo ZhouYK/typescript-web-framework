@@ -1,7 +1,7 @@
 import React, { ReactElement, useCallback, useState } from 'react';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { road404 } from '@src/pages/roadMap';
-import { RoadMap } from '@src/pages/interface';
+import { RoadMap } from '@src/interface';
 import CrashPage from '@src/components/Crash';
 import { useDerivedState } from 'femo';
 import {

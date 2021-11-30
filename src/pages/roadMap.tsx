@@ -1,12 +1,12 @@
 import {
-  lazy,
   ReactElement,
 } from 'react';
-import { RoadMap } from '@src/pages/interface';
+import { RoadMap } from '@src/interface';
 import { gluer } from 'femo';
 import NotFound from '@src/components/NotFound';
 import { Redirect } from 'react-router-dom';
 import { getSafe } from '@src/tools/util';
+import ParallelData from '@src/components/ParallelData';
 
 export interface Key {
   [index: string]: any;
@@ -21,15 +21,18 @@ const roadMap = gluer({
     subPaths: [{
       name: 'femo',
       path: '/femo',
-      component: lazy(() => import('./Demo/Femo')),
+      // component: lazy(() => import('./Demo/Femo')),
+      component: ParallelData('@src/pages/Demo/Femo'),
     }, {
       name: 'react hook',
       path: '/hook',
-      component: lazy(() => import('./Demo/Hook')),
+      // component: lazy(() => import('./Demo/Hook')),
+      component: ParallelData('@src/pages/Demo/Hook'),
     }, {
       name: 'loading',
       path: '/loading',
-      component: lazy(() => import('./Demo/Loading')),
+      // component: lazy(() => import('./Demo/Loading')),
+      component: ParallelData('@src/pages/Demo/Loading'),
     }],
   },
 });

@@ -1,4 +1,4 @@
-import { Permission, RoadMap } from '@src/pages/interface';
+import { Permission, RoadMap } from '@src/interface';
 import {
   isString, isNumber, isArray, isSet,
 } from '@src/tools/util';

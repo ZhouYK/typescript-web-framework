@@ -3,11 +3,11 @@ import classnames from 'classnames';
 import Scrollbar from '@src/components/Scrollbar';
 import Clamp from '@src/components/Clamp';
 import { debounce, getSafe } from '@src/tools/util';
+import { Empty } from 'antd';
 import {
   ExternalStageCount, PipelineProps, PipelineState, StageCount, ExternalStageCountId,
 } from './interface';
 import style from './style.less';
-import Empty from '../Empty';
 
 class Pipeline extends React.Component<PipelineProps, PipelineState> {
   scrollOnEveryClick = 120;

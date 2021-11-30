@@ -1,4 +1,4 @@
-import { AnchorHTMLAttributes, ComponentType, ReactElement } from 'react';
+import { AnchorHTMLAttributes, ComponentType } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
 export type Permission = Set<any> | any[];
@@ -14,7 +14,6 @@ export interface RoadMap {
   subPaths?: RoadMap[]; // 和leafPaths互斥。 下级菜单
   leafPaths?: RoadMap[]; // 和subPaths互斥。叶子页面，不会再有下级。没有自己的菜单，但是会激活父节点的菜单
   component?: any; // 只和subPaths互斥，与leafPaths可以共存。没有下级菜单的才会有组件
-  grayFeature?: any; // 灰度的key。如果有值，表示该节点处于灰度状态，会从灰度接口结果中匹配：匹配到了则显示；未匹配则不显示。显示与否也是通过控制visible
   permissions?: Permission; // 每个节点权限码。如果不指定permissions或者permissions为空数组，则认为该节点默认所有可见。普通数组代表'且', Set代表'或'
   authResult?: { [index: string]: boolean }; // 权限校验结果
   fallback?: (props: RouteComponentProps) => any; // 当没有权限时的回退函数（重定向，还是绘制其他视图，都通过fallback）
@@ -25,8 +24,6 @@ export interface RoadMap {
   hasSubSider?: boolean; // 可应用于所有路由，对应的页面是否展示左侧第二级导航菜单栏，true：展示，false：隐藏，默认为true。上级路由设置对下级路由生效，下级路由设置可以覆盖上级路由设置（优先级高于上级路由）
   visible?: boolean; // 单纯控制显示与否.false: 菜单不可见；true: 菜单可见; visible菜单是否展示。目前在beforeRender.ts(这里面相当于当做是过滤标识，不是字段的本意)、SubSider/index.tsx中有使用
   defaultOpen?: boolean; // 控制二级子菜单是否默认展开
-  badge?: number; // 徽章的数量，大于0，才会显示
-  roadTrigger?: ReactElement; // 用于监测road的挂载和卸载等状态
 }
 
 export interface RoadMapModuleType {

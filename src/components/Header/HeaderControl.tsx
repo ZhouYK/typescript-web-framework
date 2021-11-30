@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { pathToRegexp } from 'path-to-regexp';
-import { RoadMap, RoadMapModuleType } from '@src/pages/interface';
+import { RoadMap, RoadMapModuleType } from '@src/interface';
 import roads from '@src/pages/roadMap';
 import { subscribe } from 'femo';
 import { extractPagesRoadMapAsArray } from '@src/pages/roadMapTool';

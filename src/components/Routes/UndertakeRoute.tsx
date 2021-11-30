@@ -2,7 +2,7 @@ import React, {
   FC, ReactElement, Suspense,
 } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { RoadMap } from '@src/pages/interface';
+import { RoadMap } from '@src/interface';
 import Spinner from '@src/components/Spinner';
 import { useDerivedState } from 'femo';
 import Routes from './index';

@@ -1,7 +1,7 @@
-import { Badge, Layout, Menu } from 'antd';
+import { Layout, Menu } from 'antd';
 import { pathToRegexp } from 'path-to-regexp';
 import React, { ReactElement, useCallback, useState } from 'react';
-import { RoadMap } from '@src/pages/interface';
+import { RoadMap } from '@src/interface';
 import { getSafe } from '@src/tools/util';
 import { useDerivedState } from 'femo';
 import {
@@ -46,7 +46,6 @@ const LeftSider = (props: Props): ReactElement => {
     return menus.map((item): ReactElement => {
       let elements = null;
       path.push(item.path);
-      const { roadTrigger } = item;
       if (item.visible !== false) {
         const keyPath = path.join('');
         const obj: KeyPathItem = {
@@ -60,7 +59,7 @@ const LeftSider = (props: Props): ReactElement => {
         const IconComponent = item.icon || EmptyIcon;
         if (item.subPaths && item.subPaths.length !== 0) {
           elements = (
-            <SubMenu title={<span>{item.name}{roadTrigger}</span>} key={keyPath} icon={<IconComponent />}>
+            <SubMenu title={item.name} key={keyPath} icon={<IconComponent />}>
               {renderMenus(item.subPaths, path, depth + 1)}
             </SubMenu>
           );
@@ -71,7 +70,6 @@ const LeftSider = (props: Props): ReactElement => {
               <a href={item.externUrl} rel="noopener noreferrer" {...item.externProps || {}}>
                 {item.name}
               </a>
-              {roadTrigger}
             </MenuItem>
           );
         } else {
@@ -84,12 +82,7 @@ const LeftSider = (props: Props): ReactElement => {
               title={item.name}
               icon={<IconComponent />}
             >
-              {
-                item.badge ? (
-                  <Badge size='small' offset={[item.badge > 9 ? 20 : 10, 0]} count={item.badge} overflowCount={99}>{item.name}</Badge>
-                ) : item.name
-              }
-              {roadTrigger}
+              {item.name}
             </MenuItem>
           );
         }

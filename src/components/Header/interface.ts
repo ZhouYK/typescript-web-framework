@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
-import { RoadMap } from '@src/pages/interface';
+import { RoadMap } from '@src/interface';
 import { RouteComponentProps } from 'react-router';
-
 
 export interface Props extends RouteComponentProps {
   breadcrumbNameMap: { [index: string]: any };

@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { Route, Switch, RouteComponentProps } from 'react-router-dom';
 import pagesRoadMap, { road404 /* roadRoot */ } from '@src/pages/roadMap';
-import { RoadMap, RoadMapModuleType } from '@src/pages/interface';
+import { RoadMap, RoadMapModuleType } from '@src/interface';
 import { extractPagesRoadMapAsArray } from '@src/pages/roadMapTool';
 import { useDerivedState } from 'femo';
 
