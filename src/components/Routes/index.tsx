@@ -1,9 +1,12 @@
-import React, { ReactElement, useCallback, useState } from 'react';
-import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import React, {
+  ComponentType, ReactElement, useCallback, useState,
+} from 'react';
+import { Route, Switch } from 'react-router-dom';
 import { road404 } from '@src/pages/roadMap';
 import { RoadMap } from '@src/interface';
 import CrashPage from '@src/components/Crash';
 import { useDerivedState } from 'femo';
+import PrepareData from '@src/components/PrepareData';
 import {
   CurContext, KeyPathItem, PermittedRouteFunc, SubSider,
 } from './interface';
@@ -31,7 +34,7 @@ const Routes: React.FC<Props> = (props: Props): ReactElement => {
     subSider?: SubSider,
     parentHasSubSider = true,
     parentHasSider = true,
-    parentFallback: (props: RouteComponentProps) => any = null,
+    parentFallback: ComponentType = null,
   ): void => {
     if (path.length === 0) {
       // 如果routes数据发生了变化才去重新生成
@@ -52,13 +55,14 @@ const Routes: React.FC<Props> = (props: Props): ReactElement => {
       if (typeof hasSider !== 'boolean') {
         hasSider = parentHasSider;
       }
-      if (typeof fallback !== 'function') {
+      if (!fallback) {
         fallback = parentFallback;
       }
       if (item.component) {
         const obj: KeyPathItem = {
           path: keyPath,
           component: item.component,
+          prepare: item.prepare,
           hasSider,
           subSider,
           hasSubSider,
@@ -87,8 +91,9 @@ const Routes: React.FC<Props> = (props: Props): ReactElement => {
 
     const finalRoutes = curContext.keyPaths.map((route: KeyPathItem): ReactElement => {
       if (route.access === false) {
+        const Fallback = route.fallback;
         // 默认使用通用的404
-        if (!route.fallback) {
+        if (!Fallback) {
           return null;
         }
         // 否则使用自定义的fallback逻辑
@@ -97,45 +102,26 @@ const Routes: React.FC<Props> = (props: Props): ReactElement => {
             key={ route.path }
             exact
             path={ route.path }
-            render={ (props: RouteComponentProps): any => {
-              const result = route.fallback(props);
-              return (
-                <CrashPage>
-                  {result || null}
-                </CrashPage>
-              );
-            } }
-          />
+          >
+            <Fallback />
+          </Route>
         );
       }
-      if (route.hasSubSider && route.subSider) {
-        return (
-          <Route
-            key={ route.path }
-            exact
-            path={ route.path }
-            render={ (props: RouteComponentProps): ReactElement => {
-              const Component = route.component;
-              return (
-                <CrashPage>
-                  <Component { ...props } />
-                </CrashPage>
-              );
-            } }
-          />
-        );
-      }
-      return <Route key={ route.path } exact path={ route.path } render={ (props: RouteComponentProps) => {
-        const Component = route.component;
-        return (
-          <CrashPage>
-            <Component { ...props } />
-          </CrashPage>
-        );
-      }}/>;
+      const Component = route.component;
+      return (
+        <Route key={ route.path } exact path={ route.path } render={(props) => (
+            <CrashPage>
+              <PrepareData {...props} prepare={route.prepare}>
+                <Component />
+              </PrepareData>
+            </CrashPage>
+        )} />
+      );
     });
     const final404 = notFoundRoad || road404;
-    const route404 = <Route key="404" path={ final404.path } component={ final404.component }/>;
+    const route404 = (
+      <Route key="404" path={ final404.path } component={final404.component} />
+    );
 
     curContext.routeComponents = [...finalRoutes, route404];
 

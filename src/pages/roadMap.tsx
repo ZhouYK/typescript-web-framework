@@ -1,19 +1,20 @@
 import {
+  lazy,
   ReactElement,
 } from 'react';
-import { RoadMap } from '@src/interface';
+import { RoadMap, RoadMapModuleType } from '@src/interface';
 import { gluer } from 'femo';
 import NotFound from '@src/components/NotFound';
 import { Redirect } from 'react-router-dom';
-import { getSafe } from '@src/tools/util';
-import parallelData from '@src/hocs/parallelData';
+import { getSafe, queryToObject } from '@src/tools/util';
+import { Femo } from '@src/pages/Demo/Femo/interface';
+import femoService from '@src/pages/Demo/Femo/service';
 
 export interface Key {
   [index: string]: any;
 }
 
-// 操作的是直接提取值成数组 extractPagesRoadMapAsArray
-const roadMap = gluer({
+const initRoadMap: RoadMapModuleType = {
   welcome: {
     name: 'Demo',
     path: '/demo',
@@ -21,21 +22,28 @@ const roadMap = gluer({
     subPaths: [{
       name: 'femo',
       path: '/femo',
-      // component: lazy(() => import('./Demo/Femo')),
-      component: parallelData('@src/pages/Demo/Femo'),
+      component: lazy(() => import('./Demo/Femo')),
+      prepare: (routeParams) => {
+        const { location } = routeParams;
+        const query = queryToObject<Femo.Query>(location.search, {
+          name: '',
+          condition: '',
+        }, true);
+        return femoService.getList(query);
+      },
     }, {
       name: 'react hook',
       path: '/hook',
-      // component: lazy(() => import('./Demo/Hook')),
-      component: parallelData('@src/pages/Demo/Hook'),
+      component: lazy(() => import('./Demo/Hook')),
     }, {
       name: 'loading',
       path: '/loading',
-      // component: lazy(() => import('./Demo/Loading')),
-      component: parallelData('@src/pages/Demo/Loading'),
+      component: lazy(() => import('./Demo/Loading')),
     }],
   },
-});
+};
+// 操作的是直接提取值成数组 extractPagesRoadMapAsArray
+const roadMap = gluer(initRoadMap);
 
 // 作为兜底的路由配置
 // 将所有路由重定向到

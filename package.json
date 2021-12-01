@@ -68,13 +68,13 @@
     "antd": "4.17.0-alpha.7",
     "axios": "0.21.1",
     "classnames": "2.2.6",
-    "femo": "1.14.0-alpha.0",
+    "femo": "1.14.0-alpha.3",
     "localforage": "1.9.0",
     "path-to-regexp": "6.2.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-perfect-scrollbar": "1.5.8",
-    "react-router-dom": "5.2.0",
+    "react-router-dom": "5.3.0",
     "ua-parser-js": "0.7.24"
   },
   "devDependencies": {

@@ -98,6 +98,10 @@ const plugins = [
   }),
   new ESLintWebpackPlugin({
     extensions: ['js', 'jsx', 'tsx', 'ts'],
+    threads: true,
+    emitError: true,
+    emitWarning: true,
+    failOnError: true,
   }),
   new FriendlyErrorsWebpackPlugin(),
   isDevelopment && new ReactRefreshWebpackPlugin({

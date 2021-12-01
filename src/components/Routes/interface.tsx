@@ -1,6 +1,5 @@
-import { RouteComponentProps } from 'react-router-dom';
 import { RoadMap } from '@src/interface';
-import React from 'react';
+import React, { ComponentType } from 'react';
 
 export interface Props {
   routes: RoadMap[];
@@ -19,7 +18,8 @@ export interface KeyPathItem {
   hasSider?: boolean;
   visible?: boolean;
   access?: boolean;
-  fallback?: (props: RouteComponentProps) => any;
+  fallback?: RoadMap['fallback'];
+  prepare?: RoadMap['prepare'];
   authResult?: { [index: string]: boolean };
 }
 
@@ -30,5 +30,5 @@ export interface CurContext {
 }
 
 export interface PermittedRouteFunc {
-  (roads: RoadMap[], path?: string[], subSider?: SubSider, parentHasSubSider?: boolean, parentHasSider?: boolean, parentFallback?: (props: RouteComponentProps) => any): void;
+  (roads: RoadMap[], path?: string[], subSider?: SubSider, parentHasSubSider?: boolean, parentHasSider?: boolean, parentFallback?: ComponentType): void;
 }

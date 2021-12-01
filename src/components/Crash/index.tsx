@@ -45,7 +45,12 @@ class Crash extends React.Component<Props, any> {
     if (this.state.hasError && this.props.fallback) {
       return this.props.fallback(this.state.error);
     }
-    return this.props.children;
+
+    return (
+      <>
+        {this.props.children}
+      </>
+    );
   }
 }
 
