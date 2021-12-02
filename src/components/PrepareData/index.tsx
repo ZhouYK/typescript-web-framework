@@ -20,6 +20,7 @@ export interface PrepareDataInjectProps<D = any> {
 const PrepareData: FC<Props> = (props) => {
   const { prepare, ...rest } = props;
   const umountRef = useRef(false);
+  const firstRef = useRef(false);
 
   const [control] = useState(() => gluer<ServiceControl>({
     loading: false,
@@ -27,33 +28,31 @@ const PrepareData: FC<Props> = (props) => {
   }));
 
   // 只在组件第一次渲染的时候调用prepare准备数据
-  useState(() => {
-    if (prepare) {
-      // 使用silent，是为了减少当前组件刷新次数
-      // control是在useModel、useIndividualModel中使用onChange监听的，所以能执行silent不会跳过onChange回调
+  if (!firstRef.current && prepare) {
+    // 使用silent，是为了减少当前组件刷新次数
+    // control是在useModel、useIndividualModel中使用onChange监听的
+    control((_d, s) => ({
+      ...s,
+      loading: true,
+      successful: false,
+    }));
+    prepare(rest).then((d) => {
+      if (umountRef.current) return;
       control((_d, s) => ({
         ...s,
-        loading: true,
+        loading: false,
+        successful: true,
+        data: d,
+      }));
+    }).catch(() => {
+      if (umountRef.current) return;
+      control((_d, s) => ({
+        ...s,
+        loading: false,
         successful: false,
       }));
-      prepare(rest).then((d) => {
-        if (umountRef.current) return;
-        control((_d, s) => ({
-          ...s,
-          loading: false,
-          successful: true,
-          data: d,
-        }));
-      }).catch(() => {
-        if (umountRef.current) return;
-        control((_d, s) => ({
-          ...s,
-          loading: false,
-          successful: false,
-        }));
-      });
-    }
-  });
+    });
+  }
 
   useEffect(() => () => {
     umountRef.current = true;
