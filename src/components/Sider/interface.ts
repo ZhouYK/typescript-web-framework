@@ -1,6 +1,7 @@
-import React, { ReactElement, ReactNode } from 'react';
+import React, { ComponentType, ReactElement, ReactNode } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { RoadMap } from '@src/interface';
+import { PrepareDataInjectProps } from '@src/components/PrepareData';
 
 export const EXTERN_KEY_PREFIX = 'EXTERN_KEY_PREFIX';
 
@@ -15,7 +16,7 @@ export interface State {
 
 export interface KeyPathItem {
   keyPath: string;
-  component?: React.Component;
+  component?: ComponentType<RouteComponentProps & PrepareDataInjectProps>;
   depth?: number;
   name?: string | ReactNode;
 }
