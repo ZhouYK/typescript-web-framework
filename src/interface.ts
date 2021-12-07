@@ -3,6 +3,7 @@ import {
 } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { PrepareDataInjectProps } from '@src/components/PrepareData';
+import { ServiceOptions } from 'femo';
 
 export type Permission = Set<any> | any[];
 
@@ -27,7 +28,7 @@ export interface RoadMap {
   hasSubSider?: boolean; // 可应用于所有路由，对应的页面是否展示左侧第二级导航菜单栏，true：展示，false：隐藏，默认为true。上级路由设置对下级路由生效，下级路由设置可以覆盖上级路由设置（优先级高于上级路由）
   visible?: boolean; // 单纯控制显示与否.false: 菜单不可见；true: 菜单可见; visible菜单是否展示。目前在beforeRender.ts(这里面相当于当做是过滤标识，不是字段的本意)、SubSider/index.tsx中有使用
   defaultOpen?: boolean; // 控制二级子菜单是否默认展开
-  prepare?: (routeParams: RouteComponentProps) => Promise<any>; // 提前拉取页面数据
+  prepare?: (routeParams: RouteComponentProps, control: ServiceOptions['control']) => Promise<any>; // 提前拉取页面数据
 }
 
 export interface RoadMapModuleType {

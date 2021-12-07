@@ -37,7 +37,7 @@ const PrepareData: FC<Props> = (props) => {
         loading: true,
         successful: false,
       }));
-      prepare(rest).then((d) => {
+      prepare(rest, control).then((d) => {
         if (umountRef.current) return;
         control((_d, s) => ({
           ...s,
