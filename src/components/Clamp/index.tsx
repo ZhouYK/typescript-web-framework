@@ -2,7 +2,6 @@ import React, { Component, ReactNode, SyntheticEvent } from 'react';
 import { Tooltip } from 'antd';
 import { TooltipPlacement } from 'antd/es/tooltip';
 import classNames from 'classnames';
-import { isEmpty } from '@src/tools/util';
 import styleLess from './index.less';
 
 interface ClampProps {
@@ -70,7 +69,7 @@ class Clamp extends Component<ClampProps> {
         }
         const scrollWidth = this.contentNode.getBoundingClientRect().width;
         const scrollHeight = this.contentNode.getBoundingClientRect().height;
-        this.contentNode.style.maxWidth = !isEmpty(maxWidth) ? this.format(maxWidth) : '100%';
+        this.contentNode.style.maxWidth = this.format(maxWidth ?? 100);
         this.contentNode.style.overflow = 'hidden';
         if (isMultiLine) {
           this.contentNode.style.webkitLineClamp = `${line}`;

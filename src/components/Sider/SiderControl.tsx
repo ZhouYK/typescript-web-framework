@@ -7,7 +7,6 @@ import { RoadMap } from '@src/interface';
 import { extractPagesRoadMapAsArray } from '@src/pages/roadMapTool';
 import pagesRoadMap from '@src/pages/roadMap';
 import { useDerivedState } from 'femo';
-import { getSafe } from '@src/tools/util';
 
 import LeftSider from './index';
 import './style.less';
@@ -86,7 +85,7 @@ const SiderControl = (props: RouteComponentProps): ReactElement => {
     return target.hasSider;
   }, []);
 
-  const [siderShow] = useDerivedState(() => getSiderShow(props), [getSafe(props, 'location.pathname'), getSafe(props, 'location.search'), sider]);
+  const [siderShow] = useDerivedState(() => getSiderShow(props), [props.location?.pathname, props.location?.search, sider]);
 
   return (
     siderShow ? (

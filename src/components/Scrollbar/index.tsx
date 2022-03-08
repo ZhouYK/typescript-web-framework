@@ -6,7 +6,6 @@ import ReactPerfectScrollbar, {
 } from 'react-perfect-scrollbar';
 import classNames from 'classnames';
 import parser from 'ua-parser-js';
-import { getSafe } from '@src/tools/util';
 import style from './style.less';
 
 export interface ScrollbarProps extends ScrollBarProps {
@@ -139,7 +138,7 @@ const Scrollbar = forwardRef<ReactPerfectScrollbar, ScrollbarProps>(
       if (isWindows && (isWindowsHorizontalResident || isWindowsVerticalResident)) {
         requestAnimationFrameModule.add();
         event.on(requestAnimationFrameModule.key, () => {
-          if (typeof getSafe(scrollbarRef.current, 'updateScroll') === 'function') {
+          if (typeof scrollbarRef.current?.updateScroll === 'function') {
             scrollbarRef.current.updateScroll();
           }
         });

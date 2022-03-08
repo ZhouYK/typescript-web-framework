@@ -2,7 +2,7 @@ import React from 'react';
 import classnames from 'classnames';
 import Scrollbar from '@src/components/Scrollbar';
 import Clamp from '@src/components/Clamp';
-import { debounce, getSafe } from '@src/tools/util';
+import { debounce } from '@src/tools/util';
 import { Empty } from 'antd';
 import {
   ExternalStageCount, PipelineProps, PipelineState, StageCount, ExternalStageCountId,
@@ -54,7 +54,7 @@ class Pipeline extends React.Component<PipelineProps, PipelineState> {
 
   isInteractive = () => this.props.mode === 'interactive';
 
-  isItemDisabled = (item: StageCount | ExternalStageCount) => getSafe(item, 'disabled');
+  isItemDisabled = (item: StageCount | ExternalStageCount) => item?.disabled;
 
   onItemClick = (item: StageCount | ExternalStageCount) => () => {
     if (this.isItemDisabled(item)) return;
@@ -62,7 +62,7 @@ class Pipeline extends React.Component<PipelineProps, PipelineState> {
       active: item,
     });
     if (this.props.onClick && this.isInteractive()) {
-      this.props.onClick(getSafe(item, 'stage_id'), item);
+      this.props.onClick(item?.stage_id, item);
     }
   };
 
@@ -75,7 +75,7 @@ class Pipeline extends React.Component<PipelineProps, PipelineState> {
     ) {
       return active;
     }
-    return getSafe(active, 'stage_id');
+    return active?.stage_id;
   };
 
   genAProp = (item: StageCount | ExternalStageCount) => {
@@ -95,24 +95,24 @@ class Pipeline extends React.Component<PipelineProps, PipelineState> {
     const count = result.length;
     const activeItemId = this.getActiveItemId();
     return result.map((stage: StageCount, index: number) => {
-      const value = getSafe(stage, 'count');
+      const value = stage?.count;
       const aProp = this.genAProp(stage);
       return (
         <li
           onClick={this.onItemClick(stage)}
           className={classnames('pipeline-process-list-item', {
             'pipeline-process-list-item-active':
-              this.isInteractive() && !this.isItemDisabled(stage) && activeItemId === getSafe(stage, 'stage_id'),
+              this.isInteractive() && !this.isItemDisabled(stage) && activeItemId === stage?.stage_id,
             'pipeline-process-list-item-disabled': this.isItemDisabled(stage),
           })}
-          key={getSafe(stage, 'stage_id')}
+          key={stage?.stage_id}
         >
           <a {...aProp}>
             <span className="pipeline-process-list-item-count">
               {this.isEmpty(value) ? <Empty /> : <Clamp label={`${value}`} />}
             </span>
             <span className="pipeline-process-list-item-name">
-              <Clamp label={getSafe(stage, 'stage_i18n_name') || getSafe(stage, 'stage_name')} />
+              <Clamp label={stage?.stage_i18n_name || stage?.stage_name} />
             </span>
             {index === count - 1 ? null : (
               <i className="pipeline-process-list-item-divider">
@@ -155,8 +155,8 @@ class Pipeline extends React.Component<PipelineProps, PipelineState> {
   }
 
   componentDidUpdate(preProps: PipelineProps): void {
-    const preStageCountLength = getSafe(preProps, 'stage_count_list.length') || 0;
-    const curStageCountLength = getSafe(this.props, 'stage_count_list.length') || 0;
+    const preStageCountLength = preProps?.stage_count_list?.length || 0;
+    const curStageCountLength = this.props?.stage_count_list?.length || 0;
     if (preStageCountLength !== curStageCountLength) {
       this.detectOverflow();
     }
@@ -215,19 +215,19 @@ class Pipeline extends React.Component<PipelineProps, PipelineState> {
       return (
         <section
           onClick={this.onItemClick(item)}
-          key={getSafe(item, 'stage_i18n_name')}
+          key={item?.stage_i18n_name}
           className={classnames('pipeline-process-item-count-row', {
             'pipeline-process-item-count-row-active':
-              this.isInteractive() && !this.isItemDisabled(item) && activeItemId === getSafe(item, 'stage_id'),
+              this.isInteractive() && !this.isItemDisabled(item) && activeItemId === item?.stage_id,
             'pipeline-process-item-count-row-disabled': this.isItemDisabled(item),
           })}
         >
           <a {...aProp}>
             <span className="pipeline-process-item-count">
-              {this.isEmpty(getSafe(item, 'count')) ? <Empty /> : <Clamp label={`${getSafe(item, 'count')}`} />}
+              {this.isEmpty(item?.count) ? <Empty /> : <Clamp label={`${item?.count}`} />}
             </span>
             <span className="pipeline-process-item-name">
-              <Clamp label={getSafe(item, 'stage_i18n_name')} />
+              <Clamp label={item?.stage_i18n_name} />
             </span>
             {this.isInteractive() && !this.isItemDisabled(item) ? (
               <span className="pipeline-process-item-count-row-flag" />

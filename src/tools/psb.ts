@@ -1,4 +1,4 @@
-const registeredMap = new Map();
+const registeredMap = new Map<string, Set<Callback>>();
 
 interface Callback {
   (...args: any[]): void;
@@ -6,10 +6,10 @@ interface Callback {
 
 export const subscribe = (key: string, callback: Callback) => {
   if (!registeredMap.has(key)) {
-    registeredMap.set(key, [callback]);
+    registeredMap.set(key, new Set<Callback>([callback]));
   } else {
     const calls = registeredMap.get(key);
-    calls.push(callback);
+    calls.add(callback);
   }
 };
 
@@ -25,7 +25,9 @@ export const publish = (key: string, data?: any) => {
 export const unsubscribe = (key: string, callback: Callback) => {
   if (registeredMap.has(key)) {
     const calls = registeredMap.get(key);
-    const result = calls.filter((fn: Callback) => fn !== callback);
-    registeredMap.set(key, result);
+    calls.delete(callback);
+    if (calls.size === 0) {
+      registeredMap.delete(key);
+    }
   }
 };

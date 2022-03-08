@@ -1,12 +1,12 @@
 import React, { useCallback, useRef } from 'react';
-import { getSafe, isInViewPortVertical, throttle } from '@src/tools/util';
+import { isInViewPortVertical, throttle } from '@src/tools/util';
 
 const useScrollLoad = (refInstance: React.MutableRefObject<HTMLElement>, loadFnc: () => void): [
   (element: HTMLElement) => void
 ] => {
   const cacheRef = useRef({ lastIsInViewport: false });
   const onScrollY = useCallback(throttle(() => {
-    const lastIsInViewport = getSafe(cacheRef, 'current.lastIsInViewport');
+    const lastIsInViewport = cacheRef.current?.lastIsInViewport;
     if (refInstance.current && !lastIsInViewport && isInViewPortVertical(refInstance.current)) {
       cacheRef.current.lastIsInViewport = true;
       loadFnc();

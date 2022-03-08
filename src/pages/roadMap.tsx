@@ -6,7 +6,7 @@ import { RoadMap, RoadMapModuleType } from '@src/interface';
 import { gluer } from 'femo';
 import NotFound from '@src/components/NotFound';
 import { Redirect } from 'react-router-dom';
-import { getSafe, queryToObject } from '@src/tools/util';
+import { queryToObject } from '@src/tools/util';
 import { Femo } from '@src/pages/Demo/Femo/interface';
 import femoService from '@src/pages/Demo/Femo/service';
 
@@ -64,7 +64,7 @@ export const roadRoot: RoadMap = {
   component: (): any => {
     const roads = roadMap();
     return (
-      <Redirect to={ getSafe(roads, 'welcome.path') } />
+      <Redirect to={ roads?.welcome?.path } />
     );
   },
 };

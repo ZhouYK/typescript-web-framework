@@ -6,7 +6,6 @@ import {
 } from 'antd';
 import model from '@src/models/user/model';
 import { useModel } from 'femo';
-import { getSafe } from '@src/tools/util';
 import {
   Props,
 } from '@src/components/Header/interface';
@@ -57,8 +56,8 @@ const MisHeader: FC<Props> = (props: Props) => {
         overlay={overlay}
       >
         <section className={`${style.prefix}-header-user-info`}>
-          <Avatar src={getSafe(userInfo, 'thumbnail')} />
-          <span className={`${style.prefix}-header-user-name`}>{ getSafe(userInfo, 'name') }</span>
+          <Avatar src={userInfo?.thumbnail} />
+          <span className={`${style.prefix}-header-user-name`}>{ userInfo.name }</span>
         </section>
       </Dropdown>
     </Header>

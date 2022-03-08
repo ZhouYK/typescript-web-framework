@@ -1,7 +1,9 @@
 import { Permission, RoadMap } from '@src/interface';
-import {
-  isString, isNumber, isArray, isSet,
-} from '@src/tools/util';
+
+const isNumber = (num: any): num is number => typeof num === 'number';
+const isString = (str: any): str is string => typeof str === 'string';
+const isSet = (s: any): s is Set<any> => s instanceof Set;
+const isArray = (array: any): array is Array<any> => array instanceof Array;
 
 export const permissionCheck = (permissions: Permission = [], purviews: { [index: string]: boolean }) => {
   // 如果节点权限为undefined或者空数组，则认为该节点不需要权限即可看见

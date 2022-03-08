@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { message } from 'antd';
-import { getSafe, objectToQuery } from '@src/tools/util';
+import { objectToQuery } from '@src/tools/util';
 import { ApiResult, CustomConfig, ApiCode } from './interface';
 
 const request = axios.create({
@@ -13,7 +13,7 @@ const request = axios.create({
 });
 
 const login = (data: { login_url: string } | any, referer: string): void => {
-  window.location.href = `${getSafe(data, 'login_url')}${encodeURIComponent(referer)}`;
+  window.location.href = `${data?.login_url}${encodeURIComponent(referer)}`;
 };
 
 const defaultExtraCustomConfig = {
@@ -41,7 +41,7 @@ const customRequest = <T>(config: CustomConfig): Promise<ApiResult<T>> => {
   return request({
     ...restConfig,
   }).catch((error) => {
-    let code = getSafe(error, 'response.status') || ApiCode.httpError;
+    let code = error?.response?.status ?? ApiCode.httpError;
     if (axios.isCancel(error)) {
       code = ApiCode.cancelError;
     }
@@ -56,9 +56,9 @@ const customRequest = <T>(config: CustomConfig): Promise<ApiResult<T>> => {
     });
   }).then((res: AxiosResponse<ApiResult<T>>) => {
     const { data } = res;
-    const code = getSafe(data, 'code');
+    const code = data?.code;
     if (code === ApiCode.needLogin) {
-      login(getSafe(data, 'data'), referer);
+      login(data?.data, referer);
       return Promise.reject({
         code,
         data: null,
@@ -68,8 +68,8 @@ const customRequest = <T>(config: CustomConfig): Promise<ApiResult<T>> => {
 
     if (code !== ApiCode.ok && code !== ApiCode.limitValid) {
       if (showBizError) {
-        const msg = getSafe(data, 'msg') || getSafe(data, 'message');
-        const dataStr = getSafe(data, 'data');
+        const msg = data?.msg;
+        const dataStr = data?.data;
         let errMsg = msg;
         if (!errMsg && typeof dataStr === 'string') {
           errMsg = dataStr;
@@ -95,7 +95,7 @@ const customRequestFile = (config: CustomConfig): Promise<AxiosResponse<Blob>> =
   return request({
     ...restConfig,
   }).catch((error) => {
-    let code = getSafe(error, 'response.status') || ApiCode.httpError;
+    let code = error?.response?.status ?? ApiCode.httpError;
     if (axios.isCancel(error)) {
       code = ApiCode.cancelError;
     }
@@ -106,41 +106,6 @@ const customRequestFile = (config: CustomConfig): Promise<AxiosResponse<Blob>> =
     }
     return Promise.reject(error);
   });
-};
-
-export const makeRequestCached = <T>(apiAction: (url: string, input?: any, config?: CustomConfig) => Promise<ApiResult<T>>) => {
-  let promise: Promise<ApiResult<T>>;
-
-  return (url: string, input?: any, config?: CustomConfig): ReturnType<typeof apiAction> => {
-    const status = getSafe(promise, 'status');
-    if (status === 'done' || status === 'pending') {
-      return promise;
-    }
-
-    promise = apiAction(url, input, config);
-
-    // @ts-ignore
-    promise.status = 'pending';
-    // @ts-ignore
-    return promise.then((data) => {
-      // @ts-ignore
-      promise.status = 'done';
-      return data;
-    }).catch((err) => {
-      // @ts-ignore
-      promise.status = 'failed';
-      return Promise.reject(err);
-    });
-  };
-};
-
-export const wrapSuccessTip = (res: ApiResult<any>, callback: () => void) => {
-  const code = getSafe(res, 'code');
-  if (code === ApiCode.limitValid) {
-    message.success(getSafe(res, 'msg'));
-  } else {
-    callback();
-  }
 };
 
 export const post = <T = any>(url: string, data?: any, config?: CustomConfig): Promise<ApiResult<T>> => customRequest<T>({

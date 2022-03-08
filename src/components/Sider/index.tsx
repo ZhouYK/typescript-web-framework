@@ -2,7 +2,6 @@ import { Layout, Menu } from 'antd';
 import { pathToRegexp } from 'path-to-regexp';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { RoadMap } from '@src/interface';
-import { getSafe } from '@src/tools/util';
 import { useDerivedState } from 'femo';
 import {
   State, KeyPathItem, CurContext, Props, EXTERN_KEY_PREFIX,
@@ -14,13 +13,13 @@ const { SubMenu } = Menu;
 const MenuItem = Menu.Item;
 const { Sider } = Layout;
 
-const colapisble = (map: RoadMap[]) => !((map || []).find((r) => getSafe(r, 'path', '').indexOf('/dep-hr') !== -1));
+const colapisble = (map: RoadMap[]) => !((map || []).find((r) => (r?.path ?? '').indexOf('/dep-hr') !== -1));
 
 const EmptyIcon = (): null => null;
 
 const LeftSider = (props: Props): ReactElement => {
   const { history, sider, location } = props;
-  const pathname = getSafe(location, 'pathname', '');
+  const pathname = location?.pathname ?? '';
   const [collapsed, updateCollapsed] = useState(false);
   const onCollapse = useCallback((colla: boolean) => {
     updateCollapsed(colla);
@@ -150,7 +149,7 @@ const LeftSider = (props: Props): ReactElement => {
   // 菜单项点击事件
   const handleItemClick = useCallback(
     (obj: { item: any; key: string; keyPath: string[] } & any): any => {
-      const key: string = getSafe(obj, 'key') || '';
+      const key: string = obj?.key ?? '';
       if (key.startsWith(`${EXTERN_KEY_PREFIX}-`)) {
         return;
       }

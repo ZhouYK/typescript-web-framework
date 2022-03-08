@@ -4,7 +4,6 @@ import React, {
 import { TextAreaProps } from 'antd/es/input';
 import { Input } from 'antd';
 import classNames from 'classnames';
-import { getSafe } from '@src/tools/util';
 import style from './style.less';
 
 // 目前不能传autoSize，因为要做placeholder的高度适配。二者有冲突
@@ -27,11 +26,11 @@ const InputTextArea: FC<Props> = (props: PropsWithChildren<Props>) => {
   const calcHeight = useCallback((times = 10) => {
     if (!rest.value) {
       if (!textareaDom.current.dom) {
-        textareaDom.current.dom = getSafe(textareaRef.current, 'resizableTextArea.textArea');
+        textareaDom.current.dom = textareaRef.current?.resizableTextArea?.textArea;
       }
       if (!useTextHeight && textareaDom.current.dom && placeholderRef.current) {
-        let textHeight = getSafe(textareaDom, 'current.dom.offsetHeight');
-        let placeHeight = getSafe(placeholderRef, 'current.offsetHeight');
+        let textHeight = textareaDom.current?.dom?.offsetHeight;
+        let placeHeight = placeholderRef.current?.offsetHeight;
         if (placeHeight < minHeight) {
           placeHeight = minHeight;
         }
