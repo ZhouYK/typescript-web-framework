@@ -139,3 +139,9 @@ export const isInViewPortVertical = (element: HTMLElement) => {
   // console.log('bottom', bottom, 'viewHeight', viewHeight, get(element, 'scrollTop'));
   return top >= 0 && top < viewHeight;
 };
+
+export const variablePlaceholderReplace = (value: string, origin: { [index: string]: any }): string => value.replace(/{[a-zA-Z0-9_]+}/g, (match: string) => {
+  // match会是 {depart_name}形如这种的
+  const key = match.substring(1, match.length - 1);
+  return origin[key];
+});
