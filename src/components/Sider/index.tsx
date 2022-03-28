@@ -144,7 +144,7 @@ const LeftSider = (props: Props): ReactElement => {
       ...obj,
       openKeys: Array.from(new Set([...state.openKeys, ...obj.openKeys])),
     };
-  }, [sider, pathname]);
+  }, [sider]);
 
   // 菜单项点击事件
   const handleItemClick = useCallback(
