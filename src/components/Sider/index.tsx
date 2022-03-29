@@ -27,18 +27,12 @@ const LeftSider = (props: Props): ReactElement => {
 
   const [curContext] = useState((): CurContext => ({
     keyPaths: [],
-    cachedSider: [],
     cachedElements: [],
   }));
 
-  const renderMenus = useCallback((menus: RoadMap[], path: string[] = [], depth = 1): ReactElement[] => {
+  const renderMenus = (menus: RoadMap[], path: string[] = [], depth = 1): ReactElement[] => {
     // 第一次调用
     if (path.length === 0) {
-      // 如果sider数据发生了更新才做重新渲染
-      // 否则，从缓存中获取
-      if (curContext.cachedSider === menus) {
-        return curContext.cachedElements;
-      }
       curContext.keyPaths = [];
     }
 
@@ -89,17 +83,16 @@ const LeftSider = (props: Props): ReactElement => {
       path.pop();
       return elements;
     });
-  }, []);
+  };
 
   // 渲染menus
   // 这里没有放入useEffect和useLayoutEffect是为了在属性发生变化的第一次渲染就得到最新的元素;它们时机滞后，不合适
   useDerivedState(() => {
     curContext.cachedElements = renderMenus(sider);
-    curContext.cachedSider = sider;
   }, [sider]);
 
   // 使用url path匹配keyPaths中的路径
-  const analyzeUrlToKeys = useCallback((urlPath: string): State => {
+  const analyzeUrlToKeys = (urlPath: string): State => {
     const arr = curContext.keyPaths.filter((item): boolean => {
       const { keyPath } = item;
       const re = pathToRegexp(keyPath, [], { end: false });
@@ -135,7 +128,7 @@ const LeftSider = (props: Props): ReactElement => {
       obj.selectedKeys = [target.keyPath];
     }
     return obj;
-  }, []);
+  };
 
   // 菜单状态
   const [keys, keysModel] = useDerivedState(() => analyzeUrlToKeys(pathname), (state) => {
@@ -172,9 +165,9 @@ const LeftSider = (props: Props): ReactElement => {
     [],
   );
 
-  const backHome = useCallback(() => {
+  const backHome = () => {
     props.history.push('/');
-  }, [props.history]);
+  };
 
   const { openKeys, selectedKeys } = keys;
 

@@ -23,7 +23,6 @@ export interface KeyPathItem {
 
 export interface CurContext {
   keyPaths: KeyPathItem[];
-  cachedSider: RoadMap[];
   cachedElements: (React.ReactElement | null)[];
 }
 
