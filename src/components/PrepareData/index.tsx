@@ -14,7 +14,7 @@ interface Props extends RouteComponentProps {
 }
 
 export interface PrepareDataInjectProps<D = any> {
-  control: GluerReturn<ServiceControl<D>>;
+  control?: GluerReturn<ServiceControl<D>>;
 }
 
 const PrepareData: FC<Props> = (props) => {

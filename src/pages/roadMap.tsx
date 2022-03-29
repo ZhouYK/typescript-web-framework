@@ -49,6 +49,10 @@ const initRoadMap: RoadMapModuleType = {
 // 操作的是直接提取值成数组 extractPagesRoadMapAsArray
 const roadMap = gluer(initRoadMap);
 
+// 扁平的RoadMap，用于组件使用
+export const flatRoadMap = gluer<RoadMap[]>(Object.values(roadMap()));
+flatRoadMap.relyOn([roadMap], (result) => Object.values(result[0]));
+
 // 作为兜底的路由配置
 // 将所有路由重定向到
 export const road404: RoadMap = {

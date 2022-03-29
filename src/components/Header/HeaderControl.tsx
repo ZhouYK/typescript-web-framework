@@ -3,10 +3,9 @@ import React, {
 } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { pathToRegexp } from 'path-to-regexp';
-import { RoadMap, RoadMapModuleType } from '@src/interface';
-import roads from '@src/pages/roadMap';
-import { subscribe } from 'femo';
-import { extractPagesRoadMapAsArray } from '@src/pages/roadMapTool';
+import { RoadMap } from '@src/interface';
+import { flatRoadMap } from '@src/pages/roadMap';
+import { useModel } from 'femo';
 import { CurContext, SimpleRoute, WholeProps } from '@src/components/Header/interface';
 import {
   queryToObject, variablePlaceholderReplace,
@@ -57,12 +56,8 @@ const HeaderControl = (props: RouteComponentProps): ReactElement => {
     recordRoads: [],
   }));
 
-  const [userRoadMap, updateUserRoadMap] = useState((): RoadMap[] => extractPagesRoadMapAsArray());
+  const [userRoadMap] = useModel(flatRoadMap);
   const [breadcrumbData, updateBreadcrumbData] = useState({});
-
-  useEffect(() => subscribe([roads], (pagesRoadMap: RoadMapModuleType): void => {
-    updateUserRoadMap(extractPagesRoadMapAsArray(pagesRoadMap));
-  }), []);
 
   const mainFn = useCallback((params: WholeProps): SimpleRoute[] => {
     // 渲染menus
