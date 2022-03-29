@@ -1,18 +1,17 @@
+import { RoadMap } from '@src/interface';
+import { extractPagesRoadMapAsArray } from '@src/pages/roadMapTool';
 import React, {
-  ReactElement, useCallback, useState,
+  ReactElement, useState,
 } from 'react';
 import { pathToRegexp } from 'path-to-regexp';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { RoadMap } from '@src/interface';
-import { extractPagesRoadMapAsArray } from '@src/pages/roadMapTool';
 import pagesRoadMap from '@src/pages/roadMap';
-import { useDerivedState } from 'femo';
+import { useBatchDerivedModel, useDerivedState } from 'femo';
 
 import LeftSider from './index';
 import './style.less';
 
 interface WholeProps extends RouteComponentProps {
-  sider: RoadMap[];
 }
 
 interface SimpleRoute {
@@ -21,71 +20,95 @@ interface SimpleRoute {
 }
 
 interface CurContext {
-  cachedSider: RoadMap[];
-  recordMenus: SimpleRoute[];
+  flatSimpleRoutes: SimpleRoute[];
+  matchedPathMap: Map<string, SimpleRoute[]>;
 }
 
 const SiderControl = (props: RouteComponentProps): ReactElement => {
+  const { location } = props;
+
   const [curContext] = useState((): CurContext => ({
-    cachedSider: [],
-    recordMenus: [],
+    flatSimpleRoutes: [],
+    matchedPathMap: new Map(),
   }));
 
   const [sider] = useDerivedState(() => extractPagesRoadMapAsArray(pagesRoadMap()), [pagesRoadMap]);
 
-  // 渲染menus
-  const renderFunc = useCallback((menus: RoadMap[], path: string[] = [], parentHasSider = true): void => {
+  // 获取拍平的简单路由
+  const getFlatSimpleRoutes = (roads: RoadMap[], path: string[] = [], parentHasSider = true): void => {
     // 第一次调用
     if (path.length === 0) {
-      // 如果sider数据发生了更新才做重新渲染
-      // 否则，从缓存中获取
-      if (curContext.cachedSider === menus) {
-        return;
-      }
-      curContext.recordMenus = [];
+      curContext.flatSimpleRoutes = [];
     }
-    menus.forEach((item): void => {
+    roads.forEach((item): void => {
       path.push(item.path);
       const keyPath = path.join('');
       let { hasSider } = item;
       if (typeof hasSider !== 'boolean') {
         hasSider = parentHasSider;
       }
-      curContext.recordMenus.push({
+      curContext.flatSimpleRoutes.push({
         path: keyPath,
         hasSider,
       });
       if (item.subPaths && item.subPaths.length !== 0) {
-        renderFunc(item.subPaths, path, hasSider);
+        getFlatSimpleRoutes(item.subPaths, path, hasSider);
       } else if (item.leafPaths && item.leafPaths.length !== 0) {
-        renderFunc(item.leafPaths, path, hasSider);
+        getFlatSimpleRoutes(item.leafPaths, path, hasSider);
       }
       path.pop();
     });
-  }, []);
+  };
 
-  const mainFn = useCallback((params: WholeProps): SimpleRoute[] => {
-    const { sider, location } = params;
-    renderFunc(sider);
-    return curContext.recordMenus.filter((item: SimpleRoute): boolean => {
+  const mainFn = (params: WholeProps): SimpleRoute[] => {
+    const { location: { pathname } } = params;
+    const { flatSimpleRoutes, matchedPathMap } = curContext;
+
+    // 命中缓存，则直接返回
+    if (matchedPathMap.has(pathname)) {
+      return matchedPathMap.get(pathname);
+    }
+    const result = flatSimpleRoutes.filter((item: SimpleRoute): boolean => {
       const { path } = item;
       const re = pathToRegexp(path, [], { end: true });
-      const result = re.exec(location.pathname);
+      const result = re.exec(pathname);
       return !!result;
     });
-  }, []);
+    matchedPathMap.set(pathname, result);
+    return result;
+  };
 
-  const getSiderShow = useCallback((p: RouteComponentProps) => {
-    const arr = mainFn({ ...p, sider });
+  const getSiderShow = (p: RouteComponentProps) => {
+    const arr = mainFn(p);
     // 由于是精确匹配，取数组第一个，遵守先匹配先生效的原则
     if (arr.length === 0) {
       return false;
     }
     const target = arr[0];
     return target.hasSider;
-  }, []);
+  };
 
-  const [siderShow] = useDerivedState(() => getSiderShow(props), [props.location?.pathname, props.location?.search, sider]);
+  const [siderShow] = useBatchDerivedModel(() => {
+    getFlatSimpleRoutes(sider);
+    return getSiderShow(props);
+  }, {
+    source: location?.pathname,
+    callback: (ns, ps, s) => {
+      if (ns !== ps) return getSiderShow(props);
+      return s;
+    },
+  }, {
+    source: sider,
+    callback: (ns, ps, s, prevStatus) => {
+      const flag = ns !== ps;
+      if (flag) {
+        getFlatSimpleRoutes(sider);
+        curContext.matchedPathMap.clear();
+        if (!prevStatus.stateChanged) return getSiderShow(props);
+      }
+      return s;
+    },
+  });
 
   return (
     siderShow ? (
