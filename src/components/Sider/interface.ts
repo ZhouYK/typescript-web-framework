@@ -16,7 +16,7 @@ export interface State {
 
 export interface KeyPathItem {
   keyPath: string;
-  component?: ComponentType<RouteComponentProps & PrepareDataInjectProps>;
+  component?: ComponentType<Partial<RouteComponentProps> & Partial<PrepareDataInjectProps>>;
   depth?: number;
   name?: string | ReactNode;
 }
