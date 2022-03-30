@@ -33,10 +33,8 @@ const Routes: React.FC<Props> = (props: Props): ReactElement => {
         };
         curContext.keyPaths.push(obj);
       }
-      if (item.subPaths && item.subPaths.length !== 0) {
-        getPermittedRoutes(item.subPaths);
-      } else if (item.leafPaths && item.leafPaths.length !== 0) {
-        getPermittedRoutes(item.leafPaths);
+      if (item.subRoads && item.subRoads.length !== 0) {
+        getPermittedRoutes(item.subRoads);
       }
     });
   };

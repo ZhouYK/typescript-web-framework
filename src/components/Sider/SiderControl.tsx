@@ -2,22 +2,21 @@ import { currentExactMatchedRoad } from '@src/components/Routes/roadMapDerivedMo
 import React, {
   ReactElement,
 } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { flatRoadMap } from '@src/pages/roadMap';
 import { useModel } from 'femo';
 
 import LeftSider from './index';
 
-const SiderControl = (props: RouteComponentProps): ReactElement => {
+const SiderControl = (): ReactElement => {
   const [sider] = useModel(flatRoadMap);
 
   const [currentRoad] = useModel(currentExactMatchedRoad);
 
   return (
     currentRoad?.hasSider ? (
-      <LeftSider history={props.history} location={props.location} match={props.match} sider={sider} />
+      <LeftSider currentRoad={currentRoad} sider={sider} />
     ) : null
   );
 };
 
-export default withRouter(SiderControl);
+export default SiderControl;

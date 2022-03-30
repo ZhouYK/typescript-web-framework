@@ -16,26 +16,15 @@ import style from './style.less';
 const { Header } = Layout;
 
 const CusHeader: FC<Props> = (props: Props) => {
+  const { breadcrumbNameMap } = props;
   const [userInfo] = useModel(model);
-  const breadcrumbs = Object.keys(props.breadcrumbNameMap).map((key: string) => {
-    const names = props.breadcrumbNameMap[key];
-    if (names instanceof Array) {
-      return names.map((name: string) => (
-        <Breadcrumb.Item key={key}>
-          <Link to={key}>
-            { name }
-          </Link>
-        </Breadcrumb.Item>
-      ));
-    }
-    return (
-      <Breadcrumb.Item key={key}>
-        <Link to={key}>
-          { names }
+  const breadcrumbs = breadcrumbNameMap.map((bread) => (
+      <Breadcrumb.Item key={bread.name as any}>
+        <Link to={bread.completePath}>
+          { bread.name }
         </Link>
       </Breadcrumb.Item>
-    );
-  });
+  ));
 
   const overlay = (
     <Menu>

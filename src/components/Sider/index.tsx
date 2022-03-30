@@ -1,11 +1,9 @@
+import history from '@src/AppRoot/history';
+import { RoadMap, RoadMapType } from '@src/interface';
 import { Layout, Menu } from 'antd';
-import { pathToRegexp } from 'path-to-regexp';
-import React, { ReactElement, useCallback, useState } from 'react';
-import { RoadMap } from '@src/interface';
 import { useDerivedState } from 'femo';
-import {
-  State, KeyPathItem, CurContext, Props, EXTERN_KEY_PREFIX,
-} from './interface';
+import React, { ReactElement, useCallback, useState } from 'react';
+import { CurContext, EXTERN_KEY_PREFIX, Props } from './interface';
 
 import style from './style.less';
 
@@ -18,126 +16,90 @@ const colapisble = (map: RoadMap[]) => !((map || []).find((r) => (r?.path ?? '')
 const EmptyIcon = (): null => null;
 
 const LeftSider = (props: Props): ReactElement => {
-  const { history, sider, location } = props;
-  const pathname = location?.pathname ?? '';
+  const {
+    sider, currentRoad,
+  } = props;
   const [collapsed, updateCollapsed] = useState(false);
   const onCollapse = useCallback((colla: boolean) => {
     updateCollapsed(colla);
   }, [updateCollapsed]);
 
   const [curContext] = useState((): CurContext => ({
-    keyPaths: [],
     cachedElements: [],
   }));
 
-  const renderMenus = (menus: RoadMap[], path: string[] = [], depth = 1): ReactElement[] => {
-    // 第一次调用
-    if (path.length === 0) {
-      curContext.keyPaths = [];
-    }
-
-    return menus.map((item): ReactElement => {
-      let elements = null;
-      path.push(item.path);
-      if (item.visible !== false) {
-        const keyPath = path.join('');
-        const obj: KeyPathItem = {
-          keyPath,
-          depth,
-        };
-        if (item.component) {
-          obj.component = item.component;
-        }
-        curContext.keyPaths.push(obj);
-        const IconComponent = item.icon || EmptyIcon;
-        if (item.subPaths && item.subPaths.length !== 0) {
-          elements = (
-            <SubMenu title={item.name} key={keyPath} icon={<IconComponent />}>
-              {renderMenus(item.subPaths, path, depth + 1)}
-            </SubMenu>
-          );
-          // 跳转到非系统内的页面的链接，渲染一个 a 标签
-        } else if (item.externUrl) {
-          elements = (
-            <MenuItem icon={<IconComponent />} key={`${EXTERN_KEY_PREFIX}-${item.externUrl}`}>
-              <a href={item.externUrl} rel="noopener noreferrer" {...item.externProps || {}}>
-                {item.name}
-              </a>
-            </MenuItem>
-          );
-        } else {
-          elements = (
-            <MenuItem
-              onClick={(): void => {
-                history.push(item.completePath || keyPath);
-              }}
-              key={keyPath}
-              title={item.name}
-              icon={<IconComponent />}
-            >
+  const renderMenus = (menus: RoadMap[]): ReactElement[] => menus.map((item): ReactElement => {
+    let elements = null;
+    if (item.type === RoadMapType.living) {
+      const IconComponent = item.icon || EmptyIcon;
+      if (item.hasLivingRoadInSubRoads) {
+        elements = (
+          <SubMenu title={item.name} key={item.completePath} icon={<IconComponent />}>
+            {renderMenus(item.subRoads)}
+          </SubMenu>
+        );
+        // 跳转到非系统内的页面的链接，渲染一个 a 标签
+      } else if (item.externUrl) {
+        elements = (
+          <MenuItem icon={<IconComponent />} key={`${EXTERN_KEY_PREFIX}-${item.externUrl}`}>
+            <a href={item.externUrl} rel="noopener noreferrer" {...item.externProps || {}}>
               {item.name}
-            </MenuItem>
-          );
-        }
+            </a>
+          </MenuItem>
+        );
+      } else {
+        elements = (
+          <MenuItem
+            onClick={(): void => {
+              history.push(item.completePath);
+            }}
+            key={item.completePath}
+            title={item.name}
+            icon={<IconComponent />}
+          >
+            {item.name}
+          </MenuItem>
+        );
       }
-      path.pop();
-      return elements;
-    });
-  };
+    }
+    return elements;
+  });
 
-  // 渲染menus
-  // 这里没有放入useEffect和useLayoutEffect是为了在属性发生变化的第一次渲染就得到最新的元素;它们时机滞后，不合适
   useDerivedState(() => {
     curContext.cachedElements = renderMenus(sider);
   }, [sider]);
 
-  // 使用url path匹配keyPaths中的路径
-  const analyzeUrlToKeys = (urlPath: string): State => {
-    const arr = curContext.keyPaths.filter((item): boolean => {
-      const { keyPath } = item;
-      const re = pathToRegexp(keyPath, [], { end: false });
-      const result = re.exec(urlPath);
-      return !!result;
-    });
-    const map = new Map();
-    // 同等深度的节点，取先匹配的
-    for (let i = 0; i < arr.length; i += 1) {
-      const road = arr[i];
-      if (!map.has(road.depth)) {
-        map.set(road.depth, road);
-      }
+  // 菜单状态
+  const [keys, keysModel] = useDerivedState((state) => {
+    const { type } = currentRoad;
+    const openKeys = [];
+    let current = currentRoad.parent;
+    let selectedKeys: string[] = [];
+    const isLiving = type === RoadMapType.living;
+    if (isLiving) {
+      selectedKeys = [currentRoad.completePath];
     }
-
-    const newArr = Array.from(map.values());
-
-    // 按深度进行升序排列
-    newArr.sort((a, b): number => a.depth - b.depth);
-
+    while (current) {
+      openKeys.unshift(current.completePath);
+      if (!isLiving) {
+        if (current.type === RoadMapType.living && selectedKeys.length === 0) {
+          selectedKeys = [current.completePath];
+        }
+      }
+      current = current.parent;
+    }
     const obj: {
       openKeys: string[];
       selectedKeys: string[];
     } = {
-      openKeys: [],
-      selectedKeys: [],
+      openKeys,
+      selectedKeys,
     };
-    const { length } = newArr;
-    if (length >= 1) {
-      // 最后一个是高亮的，我们要找的
-      const target = newArr[newArr.length - 1];
-      obj.openKeys = newArr.map((n: KeyPathItem): string => n.keyPath);
-      obj.selectedKeys = [target.keyPath];
-    }
-    return obj;
-  };
-
-  // 菜单状态
-  const [keys, keysModel] = useDerivedState(() => analyzeUrlToKeys(pathname), (state) => {
-    const obj = analyzeUrlToKeys(pathname);
     return {
       ...obj,
-      openKeys: Array.from(new Set([...state.openKeys, ...obj.openKeys])),
+      openKeys: Array.from(new Set([...(state?.openKeys ?? []), ...obj.openKeys])),
     };
-  }, [sider]);
+  }, [sider, currentRoad]);
 
   // 菜单项点击事件
   const handleItemClick = useCallback(
@@ -146,7 +108,9 @@ const LeftSider = (props: Props): ReactElement => {
       if (key.startsWith(`${EXTERN_KEY_PREFIX}-`)) {
         return;
       }
-      keysModel((_d, state) => ({
+      // 避免重复渲染，此处采用静默更新
+      // 菜单项自身会 history.push
+      keysModel.silent((_d, state) => ({
         ...state,
         selectedKeys: [key],
       }));
@@ -166,23 +130,22 @@ const LeftSider = (props: Props): ReactElement => {
   );
 
   const backHome = () => {
-    props.history.push('/');
+    history.push('/');
   };
 
   const { openKeys, selectedKeys } = keys;
 
   return (
     <Sider
-      className={style.sider}
-      width={style.siderwidth}
+      className={style.misSider}
       collapsible={colapisble(sider)}
       collapsed={collapsed}
       onCollapse={onCollapse}
     >
-      <header className={`${style.prefix}-logo`} onClick={backHome}>
-        <section className={`${style.prefix}-logo-png`} />
-        <section className={`${style.prefix}-logo-placeholder`} />
-        <span className={`${style.prefix}-logo-text`}>{style.prefix}</span>
+      <header className='mis-logo' onClick={backHome}>
+        <section className='mis-logo-png' />
+        <section className='mis-logo-placeholder' />
+        <span className='mis-logo-text'>MIS</span>
       </header>
       <Menu
         openKeys={openKeys}

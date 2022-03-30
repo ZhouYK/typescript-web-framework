@@ -2,7 +2,7 @@ import {
   lazy,
   ReactElement,
 } from 'react';
-import { RoadMap, RoadMapModuleType } from '@src/interface';
+import { RoadMap, RoadMapModuleType, RoadMapType } from '@src/interface';
 import { gluer } from 'femo';
 import NotFound from '@src/components/NotFound';
 import { Redirect } from 'react-router-dom';
@@ -19,7 +19,7 @@ const initRoadMap: RoadMapModuleType = {
     name: 'Demo',
     path: '/demo',
     component: () => <Redirect to='/demo/femo' />,
-    subPaths: [{
+    subRoads: [{
       name: 'femo',
       path: '/femo',
       component: lazy(() => import('./Demo/Femo')),
@@ -49,11 +49,10 @@ const initRoadMap: RoadMapModuleType = {
 // 操作的是直接提取值成数组 extractPagesRoadMapAsArray
 const roadMap = gluer(initRoadMap);
 
-// 扁平的RoadMap，是roadMap的缓存
-// 不要直接更新这个flatRoadMap
-// 请更新roadMap来达到更新flagRoadMap的目的
-export const flatRoadMap = gluer<RoadMap[]>((_d, s) => {
-  const completeFn = (roads: RoadMap[], path: string[] = [], parent: RoadMap = null) => roads.map((item) => {
+// 处理flatRoadMap的方法
+const completeFn = (roads: RoadMap[], path: string[] = [], parent: RoadMap = null) => {
+  let hasLivingRoadInSubRoads = false;
+  const result = roads.map((item) => {
     const tempItem = {
       ...item,
     };
@@ -61,7 +60,9 @@ export const flatRoadMap = gluer<RoadMap[]>((_d, s) => {
     const keyPath = path.join('');
     // mutable方式增加parent，便于通过匹配的精确路由回溯
     tempItem.parent = parent;
-    const { hasSider, hasHeader, fallback } = tempItem;
+    const {
+      hasSider, hasHeader, fallback, type,
+    } = tempItem;
     if (typeof hasSider !== 'boolean') {
       tempItem.hasSider = parent?.hasSider ?? true;
     }
@@ -71,18 +72,32 @@ export const flatRoadMap = gluer<RoadMap[]>((_d, s) => {
     if (typeof fallback !== 'function') {
       tempItem.fallback = parent?.fallback;
     }
+    // 设置默认值为 living
+    if (type !== RoadMapType.living && type !== RoadMapType.fallen) {
+      tempItem.type = parent?.type ?? RoadMapType.living;
+    }
+
+    if (!hasLivingRoadInSubRoads && tempItem.type === RoadMapType.living) {
+      hasLivingRoadInSubRoads = true;
+    }
     tempItem.completePath = keyPath;
-    if (tempItem.subPaths && tempItem.subPaths.length !== 0) {
-      tempItem.subPaths = completeFn(tempItem.subPaths, path, tempItem);
-    } else if (tempItem.leafPaths && tempItem.leafPaths.length !== 0) {
-      tempItem.leafPaths = completeFn(tempItem.leafPaths, path, tempItem);
+    if (tempItem.subRoads && tempItem.subRoads.length !== 0) {
+      tempItem.subRoads = completeFn(tempItem.subRoads, path, tempItem);
     }
     path.pop();
     return tempItem;
   });
-  return completeFn(s);
-}, Object.values(roadMap()));
-flatRoadMap.relyOn([roadMap], (result) => Object.values(result[0]));
+  if (parent) {
+    parent.hasLivingRoadInSubRoads = hasLivingRoadInSubRoads;
+  }
+  return result;
+};
+
+// 扁平的RoadMap，是roadMap的缓存
+// 不要直接更新这个flatRoadMap
+// 请更新roadMap来达到更新flagRoadMap的目的
+export const flatRoadMap = gluer<RoadMap[]>(() => completeFn(Object.values(roadMap())));
+flatRoadMap.relyOn([roadMap], (result) => completeFn(Object.values(result[0])));
 
 // 作为兜底的路由配置
 // 将所有路由重定向到

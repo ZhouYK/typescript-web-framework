@@ -1,30 +1,30 @@
+import { BreadcrumbName } from '@src/components/Header/interface';
 import { currentExactMatchedRoad } from '@src/components/Routes/roadMapDerivedModel';
 import React, {
   ReactElement,
 } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { useDerivedState, useModel } from 'femo';
-import {
-  queryToObject, variablePlaceholderReplace,
-} from '@src/tools/util';
 import CusHeader from './index';
 
 const HeaderControl = (props: RouteComponentProps): ReactElement => {
   const [currentRoadMap] = useModel(currentExactMatchedRoad);
   const [breadcrumbData] = useDerivedState(() => {
-    const breadcrumbs: { [index: string]: any } = {};
+    const breadcrumbs: BreadcrumbName[] = [];
 
     let current = currentRoadMap;
     let tempPath = '';
-    let tempName = '';
     while (current) {
-      tempName = current.name;
-      tempPath = `${current.completePath}${props.location.search}`;
-      if (typeof tempName === 'string') {
-        const queryObj = queryToObject(props.location.search, {}, false);
-        tempName = variablePlaceholderReplace(tempName, queryObj);
+      const tempName = current.name;
+      tempPath = current.completePath;
+      if (!tempName) {
+        current = current.parent;
+        continue;
       }
-      breadcrumbs[tempPath] = tempName;
+      breadcrumbs.unshift({
+        completePath: tempPath,
+        name: tempName,
+      });
       current = current.parent;
     }
     return breadcrumbs;
