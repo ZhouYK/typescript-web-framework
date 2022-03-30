@@ -69,7 +69,7 @@ const LeftSider = (props: Props): ReactElement => {
           elements = (
             <MenuItem
               onClick={(): void => {
-                history.push(item.realPath || keyPath);
+                history.push(item.completePath || keyPath);
               }}
               key={keyPath}
               title={item.name}

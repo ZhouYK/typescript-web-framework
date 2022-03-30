@@ -15,7 +15,7 @@ import style from './style.less';
 
 const { Header } = Layout;
 
-const MisHeader: FC<Props> = (props: Props) => {
+const CusHeader: FC<Props> = (props: Props) => {
   const [userInfo] = useModel(model);
   const breadcrumbs = Object.keys(props.breadcrumbNameMap).map((key: string) => {
     const names = props.breadcrumbNameMap[key];
@@ -64,4 +64,4 @@ const MisHeader: FC<Props> = (props: Props) => {
   );
 };
 
-export default MisHeader;
+export default CusHeader;

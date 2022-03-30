@@ -4,7 +4,7 @@ import { RoadMap } from '@src/interface';
 import { useDerivedState } from 'femo';
 import React, { FC } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { currentMatchRoad } from '@src/components/Routes/roadMapDerivedModel';
+import { currentExactMatchedRoad } from '@src/components/Routes/roadMapDerivedModel';
 
 interface Props extends RouteComponentProps {
   road: RoadMap;
@@ -15,7 +15,7 @@ const RouteRenderComponent: FC<Props> = (props) => {
   const { component: Component, prepare } = road;
 
   useDerivedState(() => {
-    currentMatchRoad(road);
+    currentExactMatchedRoad(road);
   }, [road]);
 
   return (

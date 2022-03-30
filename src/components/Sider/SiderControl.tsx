@@ -1,4 +1,4 @@
-import { currentMatchRoad } from '@src/components/Routes/roadMapDerivedModel';
+import { currentExactMatchedRoad } from '@src/components/Routes/roadMapDerivedModel';
 import React, {
   ReactElement,
 } from 'react';
@@ -11,7 +11,7 @@ import LeftSider from './index';
 const SiderControl = (props: RouteComponentProps): ReactElement => {
   const [sider] = useModel(flatRoadMap);
 
-  const [currentRoad] = useModel(currentMatchRoad);
+  const [currentRoad] = useModel(currentExactMatchedRoad);
 
   return (
     currentRoad?.hasSider ? (

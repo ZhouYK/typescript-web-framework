@@ -49,8 +49,39 @@ const initRoadMap: RoadMapModuleType = {
 // 操作的是直接提取值成数组 extractPagesRoadMapAsArray
 const roadMap = gluer(initRoadMap);
 
-// 扁平的RoadMap，用于组件使用
-export const flatRoadMap = gluer<RoadMap[]>(Object.values(roadMap()));
+// 扁平的RoadMap，是roadMap的缓存
+// 不要直接更新这个flatRoadMap
+// 请更新roadMap来达到更新flagRoadMap的目的
+export const flatRoadMap = gluer<RoadMap[]>((_d, s) => {
+  const completeFn = (roads: RoadMap[], path: string[] = [], parent: RoadMap = null) => roads.map((item) => {
+    const tempItem = {
+      ...item,
+    };
+    path.push(tempItem.path);
+    const keyPath = path.join('');
+    // mutable方式增加parent，便于通过匹配的精确路由回溯
+    tempItem.parent = parent;
+    const { hasSider, hasHeader, fallback } = tempItem;
+    if (typeof hasSider !== 'boolean') {
+      tempItem.hasSider = parent?.hasSider ?? true;
+    }
+    if (typeof hasHeader !== 'boolean') {
+      tempItem.hasHeader = parent?.hasHeader ?? true;
+    }
+    if (typeof fallback !== 'function') {
+      tempItem.fallback = parent?.fallback;
+    }
+    tempItem.completePath = keyPath;
+    if (tempItem.subPaths && tempItem.subPaths.length !== 0) {
+      tempItem.subPaths = completeFn(tempItem.subPaths, path, tempItem);
+    } else if (tempItem.leafPaths && tempItem.leafPaths.length !== 0) {
+      tempItem.leafPaths = completeFn(tempItem.leafPaths, path, tempItem);
+    }
+    path.pop();
+    return tempItem;
+  });
+  return completeFn(s);
+}, Object.values(roadMap()));
 flatRoadMap.relyOn([roadMap], (result) => Object.values(result[0]));
 
 // 作为兜底的路由配置
