@@ -1,18 +1,27 @@
-import {
-  lazy,
-  ReactElement,
-} from 'react';
-import { RoadMap, RoadMapModuleType, RoadMapType } from '@src/interface';
-import { gluer } from 'femo';
 import NotFound from '@src/components/NotFound';
-import { Redirect } from 'react-router-dom';
-import { queryToObject } from '@src/tools/util';
+import { RoadMap, RoadMapModuleType, RoadMapType } from '@src/interface';
 import { Femo } from '@src/pages/Demo/Femo/interface';
 import femoService from '@src/pages/Demo/Femo/service';
+import { queryToObject } from '@src/tools/util';
+import { gluer } from 'femo';
+import { lazy, ReactElement } from 'react';
+import { Redirect } from 'react-router-dom';
 
-export interface Key {
-  [index: string]: any;
-}
+/*
+ * 根路径的路由
+ * */
+
+export const roadRoot: RoadMap = {
+  path: '/',
+  name: 'root',
+  type: RoadMapType.fallen,
+  component: (): any => {
+    const roads = roadMap();
+    return (
+      <Redirect to={ roads?.welcome?.path } />
+    );
+  },
+};
 
 const initRoadMap: RoadMapModuleType = {
   welcome: {
@@ -45,6 +54,7 @@ const initRoadMap: RoadMapModuleType = {
       component: lazy(() => import('./Demo/Benchmark')),
     }],
   },
+  roadRoot,
 };
 // 操作的是直接提取值成数组 extractPagesRoadMapAsArray
 const roadMap = gluer(initRoadMap);
@@ -96,9 +106,8 @@ const completeFn = (roads: RoadMap[], path: string[] = [], parent: RoadMap = nul
 // 扁平的RoadMap，是roadMap的缓存
 // 不要直接更新这个flatRoadMap
 // 请更新roadMap来达到更新flagRoadMap的目的
-export const flatRoadMap = gluer<RoadMap[]>(() => completeFn(Object.values(roadMap())));
+export const flatRoadMap = gluer<RoadMap[]>(completeFn(Object.values(roadMap())));
 flatRoadMap.relyOn([roadMap], (result) => completeFn(Object.values(result[0])));
-
 // 作为兜底的路由配置
 // 将所有路由重定向到
 export const road404: RoadMap = {
@@ -106,21 +115,6 @@ export const road404: RoadMap = {
   path: '*',
   component: (): ReactElement => <NotFound />,
   permissions: [], // 无权限要求
-};
-
-/*
- * 根路径的路由，比较特殊。类别和404路由一样，不放到pagesRoadmap中
- * */
-
-export const roadRoot: RoadMap = {
-  path: '/',
-  name: 'root',
-  component: (): any => {
-    const roads = roadMap();
-    return (
-      <Redirect to={ roads?.welcome?.path } />
-    );
-  },
 };
 
 export default roadMap;
