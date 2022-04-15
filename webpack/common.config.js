@@ -5,6 +5,7 @@ import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import reactRefreshBabel from 'react-refresh/babel';
 import reactRefreshTs from 'react-refresh-typescript';
 import FriendlyErrorsWebpackPlugin from '@nuxtjs/friendly-errors-webpack-plugin';
+import webpack from 'webpack';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 export const contentPath = path.resolve(__dirname, '../dist');
@@ -104,6 +105,13 @@ const plugins = [
     failOnError: true,
   }),
   new FriendlyErrorsWebpackPlugin(),
+  new webpack.container.ModuleFederationPlugin({
+    name: 'federation_test',
+    filename: 'js/myRemote.js',
+    exposes: {
+      './hello': '@src/federationTest',
+    },
+  }),
   isDevelopment && new ReactRefreshWebpackPlugin({
     overlay: false,
   }),
