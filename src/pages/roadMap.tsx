@@ -28,35 +28,41 @@ const initRoadMap: RoadMapModuleType = {
     name: 'Demo',
     path: '/demo',
     component: () => <Redirect to='/demo/femo' />,
-    subRoads: [{
-      name: 'femo',
-      path: '/femo',
-      component: lazy(() => import('./Demo/Femo')),
-      prepare: (routeParams) => {
-        const { location } = routeParams;
-        const query = queryToObject<Femo.Query>(location.search, {
-          name: '',
-          condition: '',
-        }, true);
-        return femoService.getList(query);
+    subRoads: [
+      {
+        name: 'femo',
+        path: '/femo',
+        component: lazy(() => import('./Demo/Femo')),
+        prepare: (routeParams) => {
+          const { location } = routeParams;
+          const query = queryToObject<Femo.Query>(location.search, {
+            name: '',
+            condition: '',
+          }, true);
+          return femoService.getList(query);
+        },
+      }, {
+        name: 'react hook',
+        path: '/hook',
+        component: lazy(() => import('./Demo/Hook')),
+      }, {
+        name: 'loading',
+        path: '/loading',
+        component: lazy(() => import('./Demo/Loading')),
+      }, {
+        name: 'benchmark',
+        path: '/benchmark',
+        component: lazy(() => import('./Demo/Benchmark')),
+      }, {
+        name: 'test',
+        path: '/test',
+        component: lazy(() => import('./Demo/Test')),
       },
-    }, {
-      name: 'react hook',
-      path: '/hook',
-      component: lazy(() => import('./Demo/Hook')),
-    }, {
-      name: 'loading',
-      path: '/loading',
-      component: lazy(() => import('./Demo/Loading')),
-    }, {
-      name: 'benchmark',
-      path: '/benchmark',
-      component: lazy(() => import('./Demo/Benchmark')),
-    }, {
-      name: 'test',
-      path: '/test',
-      component: lazy(() => import('./Demo/Test')),
-    }],
+      {
+        name: 'suspense',
+        path: '/suspense',
+        component: lazy(() => import('./Demo/Suspense')),
+      }],
   },
   roadRoot,
 };
@@ -111,7 +117,7 @@ const completeFn = (roads: RoadMap[], path: string[] = [], parent: RoadMap = nul
 // 不要直接更新这个flatRoadMap
 // 请更新roadMap来达到更新flagRoadMap的目的
 export const flatRoadMap = gluer<RoadMap[]>(completeFn(Object.values(roadMap())));
-flatRoadMap.relyOn([roadMap], (result) => completeFn(Object.values(result[0])));
+flatRoadMap.watch([roadMap], (result) => completeFn(Object.values(result[0])));
 // 作为兜底的路由配置
 // 将所有路由重定向到
 export const road404: RoadMap = {

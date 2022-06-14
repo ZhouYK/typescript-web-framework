@@ -46,7 +46,7 @@ const CusHeader: FC<Props> = (props: Props) => {
       >
         <section className={`${style.prefix}-header-user-info`}>
           <Avatar src={userInfo?.thumbnail} />
-          <span className={`${style.prefix}-header-user-name`}>{ userInfo.name }</span>
+          <span className={`${style.prefix}-header-user-name`}>{ userInfo?.name }</span>
         </section>
       </Dropdown>
     </Header>

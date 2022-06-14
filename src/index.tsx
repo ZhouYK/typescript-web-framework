@@ -1,4 +1,5 @@
-import { render } from 'react-dom';
+// import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { ConfigProvider } from 'antd';
 import zh from 'antd/lib/locale/zh_CN';
 import AppRoot from './AppRoot';
@@ -16,11 +17,13 @@ if (window.Promise && !window.Promise.prototype.finally) {
     });
   };
 }
-render(
-    <AppRoot>
-      <ConfigProvider locale={zh}>
-        <App />
-      </ConfigProvider>
-    </AppRoot>,
-    document.getElementById('bd'),
+
+const container = document.getElementById('bd');
+const root = createRoot(container);
+root.render(
+  <AppRoot>
+    <ConfigProvider locale={zh}>
+      <App />
+    </ConfigProvider>
+  </AppRoot>,
 );

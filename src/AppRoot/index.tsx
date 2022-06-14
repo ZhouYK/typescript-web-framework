@@ -16,7 +16,7 @@ interface RootProps {
 
 const AppRoot = (props: RootProps): ReactElement => {
   const { children } = props;
-  const [userInfo,, { loading }] = useModel(userModel, [userService.getUserInfo]);
+  const [userInfo,, { loading }] = useModel(userModel, userService.getUserInfo);
 
   if (loading) {
     return <Spinner />;
