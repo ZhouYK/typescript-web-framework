@@ -1,5 +1,5 @@
 import React, {
-  FC,
+  FC, ReactNode,
   useEffect, useRef, useState,
 } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
@@ -11,6 +11,7 @@ import { RoadMap } from '@src/interface';
 
 interface Props extends RouteComponentProps {
   prepare?: RoadMap['prepare'];
+  children?: ReactNode;
 }
 
 export interface PrepareDataInjectProps<D = any> {

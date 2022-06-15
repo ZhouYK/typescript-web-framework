@@ -62,6 +62,10 @@ const initRoadMap: RoadMapModuleType = {
         name: 'suspense',
         path: '/suspense',
         component: lazy(() => import('./Demo/Suspense')),
+      }, {
+        name: 'tearing',
+        path: '/tearing',
+        component: lazy(() => import('./Demo/Tearing')),
       }],
   },
   roadRoot,

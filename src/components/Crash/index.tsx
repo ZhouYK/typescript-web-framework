@@ -4,6 +4,7 @@ import Failed from '@src/components/Failed';
 
 interface Props {
   fallback?: (error: any) => React.ReactElement | React.ReactNode;
+  children?: React.ReactNode;
 }
 
 interface State {

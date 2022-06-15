@@ -14,6 +14,7 @@ const RouteRenderComponent: FC<Props> = (props) => {
   const { road, ...rest } = props;
   const { component: Component, prepare } = road;
 
+  // 这里需要优化，时机太靠后了
   useDerivedState(() => {
     currentExactMatchedRoad(road);
   }, [road]);
