@@ -9,6 +9,7 @@ import LeftSider from './index';
 
 const SiderControl = (): ReactElement => {
   const [sider] = useModel(flatRoadMap);
+  console.log('刷新');
 
   const [currentRoad] = useModel(currentExactMatchedRoad);
 

@@ -1,6 +1,7 @@
-import { FC, useCallback } from 'react';
-import { gluer, useIndividualModel, useModel } from 'femo';
+import { FC } from 'react';
+import { gluer, useModel } from 'femo';
 import Scrollbar from '@src/components/Scrollbar';
+import { useHistory } from 'react-router-dom';
 
 interface Props {
 
@@ -8,16 +9,17 @@ interface Props {
 
 const nameModel = gluer('测试');
 const Loading: FC<Props> = (_props) => {
-  const getCount = useCallback(() => new Promise((resolve) => {
-    setTimeout(() => resolve(200), 2000);
-  }), []);
-
-  const [count,,, { loading }] = useIndividualModel(0, [getCount]);
   const [name] = useModel(nameModel);
-  console.log('loading：', loading, ' count：', count);
+  const history = useHistory();
+
+  const jump = () => {
+    history.push('/demo/femo');
+  };
+
   return (
     <Scrollbar>
-      <span>{count} {name}</span>
+      <button onClick={jump}>跳转</button>
+      <span>{name}</span>
     </Scrollbar>
   );
 };
