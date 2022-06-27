@@ -1,0 +1,61 @@
+
+.sample {
+  :global {
+    .select-area-wrapper {
+      position: relative;
+      display: inline-block;
+      min-height: 120px;
+      width: 100%;
+
+      .select-area {
+        width: 100%;
+        white-space: pre-wrap;
+      }
+    }
+  }
+}
+
+.genRegexWrap {
+  font-size: 14px;
+  position: absolute;
+  transition: transform ease-out 0.2s;
+  border: 1px solid rgb(229, 230, 235);
+  background: #fff;
+  left: 0;
+  top: 0;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 10%);
+  padding: 12px 16px;
+  border-radius: 4px;
+
+  &:global(.hide) {
+    display: none;
+  }
+
+  :global {
+    .selected-content {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      max-width: 400px;
+
+      .content-name {
+        color: #86909c;
+        width: 110px;
+      }
+
+      .content-value {
+        padding-left: 12px;
+        white-space: pre-wrap;
+        width: calc(100% - 110px);
+        overflow: auto;
+        max-height: 300px;
+      }
+
+      margin-bottom: 19px;
+    }
+
+    .btn-wrap {
+      text-align: center;
+    }
+  }
+}

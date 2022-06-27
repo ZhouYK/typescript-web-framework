@@ -66,6 +66,10 @@ const initRoadMap: RoadMapModuleType = {
         name: 'tearing',
         path: '/tearing',
         component: lazy(() => import('./Demo/Tearing')),
+      }, {
+        name: 'ace editor',
+        path: '/ace-editor',
+        component: lazy(() => import('./Demo/AceEditor')),
       }],
   },
   roadRoot,
