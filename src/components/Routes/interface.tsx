@@ -1,4 +1,4 @@
-import { RoadMap } from '@src/interface';
+import { RoadMap } from '@src/config/interface';
 import React from 'react';
 
 export interface Props {
@@ -7,7 +7,7 @@ export interface Props {
 
 export interface CurContext {
   keyPaths: RoadMap[];
-  routeComponents: React.ReactElement[];
+  routeComponents: (React.ReactElement | React.ReactNode)[];
 }
 
 export interface PermittedRouteFunc {

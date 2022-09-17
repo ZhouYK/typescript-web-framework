@@ -1,5 +1,5 @@
 import history from '@src/AppRoot/history';
-import { RoadMap, RoadMapType } from '@src/interface';
+import { RoadMap, RoadMapType } from '@src/config/interface';
 import { Layout, Menu } from 'antd';
 import { useDerivedState } from 'femo';
 import React, { ReactElement, useCallback, useState } from 'react';

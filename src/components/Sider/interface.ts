@@ -1,5 +1,5 @@
 import React from 'react';
-import { RoadMap } from '@src/interface';
+import { RoadMap } from '@src/config/interface';
 
 export const EXTERN_KEY_PREFIX = 'EXTERN_KEY_PREFIX';
 

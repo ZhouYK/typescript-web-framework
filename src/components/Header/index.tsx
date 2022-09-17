@@ -1,11 +1,10 @@
-import {
+import useUserInfo from '@src/models/user/useUserInfo';
+import React, {
   FC,
 } from 'react';
 import {
   Layout, Avatar, Breadcrumb, Dropdown, Menu,
 } from 'antd';
-import model from '@src/models/user/model';
-import { useModel } from 'femo';
 import {
   Props,
 } from '@src/components/Header/interface';
@@ -17,9 +16,9 @@ const { Header } = Layout;
 
 const CusHeader: FC<Props> = (props: Props) => {
   const { breadcrumbNameMap } = props;
-  const [userInfo] = useModel(model);
+  const userInfo = useUserInfo();
   const breadcrumbs = breadcrumbNameMap.map((bread) => (
-      <Breadcrumb.Item key={bread.name as any}>
+      <Breadcrumb.Item key={bread.name as React.Key}>
         <Link to={bread.completePath}>
           { bread.name }
         </Link>

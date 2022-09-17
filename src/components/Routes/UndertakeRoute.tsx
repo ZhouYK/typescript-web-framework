@@ -1,10 +1,8 @@
-import React, {
-  FC, ReactElement, Suspense,
-} from 'react';
+import React, { FC, ReactElement, Suspense } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { RoadMap } from '@src/interface';
-import Spinner from '@src/components/Spinner';
+import { RoadMap } from '@src/config/interface';
 import { useDerivedState } from 'femo';
+import Spinner from '@src/components/Spinner';
 import Routes from './index';
 
 interface Props extends RouteComponentProps {
@@ -13,12 +11,10 @@ interface Props extends RouteComponentProps {
 }
 
 const UndertakeRoute: FC<Props> = (props: Props): ReactElement => {
-  const {
-    road,
-  } = props;
+  const { road } = props;
   const [routes] = useDerivedState(() => [road], [road]);
 
-  const loadingEl = <Spinner />;
+  const loadingEl = <Spinner type='mid' />;
 
   return (
     <Suspense fallback={loadingEl}>

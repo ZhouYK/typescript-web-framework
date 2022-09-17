@@ -7,7 +7,7 @@ import {
   gluer,
   GluerReturn, ServiceControl,
 } from 'femo';
-import { RoadMap } from '@src/interface';
+import { RoadMap } from '@src/config/interface';
 
 interface Props extends RouteComponentProps {
   prepare?: RoadMap['prepare'];

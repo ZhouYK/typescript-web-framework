@@ -1,14 +1,14 @@
 import { BreadcrumbName } from '@src/components/Header/interface';
-import { currentExactMatchedRoad } from '@src/components/Routes/roadMapDerivedModel';
+import useCurrentRoad from '@src/components/Routes/currentRoad/useCurrentRoad';
 import React, {
   ReactElement,
 } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { useDerivedState, useModel } from 'femo';
+import { useDerivedState } from 'femo';
 import CusHeader from './index';
 
 const HeaderControl = (props: RouteComponentProps): ReactElement => {
-  const [currentRoadMap] = useModel(currentExactMatchedRoad);
+  const currentRoadMap = useCurrentRoad();
   const [breadcrumbData] = useDerivedState(() => {
     const breadcrumbs: BreadcrumbName[] = [];
 
