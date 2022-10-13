@@ -1,14 +1,10 @@
 import webpack from 'webpack';
-import WebpackBar from 'webpackbar';
 import commonConfig, { contentPath } from './common.config';
 
 const nodeEnv = process.env.NODE_ENV || 'development';
 const devPort = process.env.PORT || '9999';
 const publicPath = '/'; // 可自定义
 const entry = { ...commonConfig.entry };
-const bar = new WebpackBar({
-  color: '#ffda00',
-});
 const config = {
   devtool: 'eval-cheap-module-source-map',
   mode: nodeEnv,
@@ -130,7 +126,6 @@ const config = {
     open: true,
   },
   plugins: [
-    bar,
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(nodeEnv),
     }),

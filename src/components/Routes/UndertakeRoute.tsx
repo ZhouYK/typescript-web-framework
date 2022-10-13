@@ -1,8 +1,8 @@
 import React, { FC, ReactElement, Suspense } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { RoadMap } from '@src/config/interface';
+import { RoadMap } from '@/config/interface';
 import { useDerivedState } from 'femo';
-import Spinner from '@src/components/Spinner';
+import Spinner from '@/components/Spinner';
 import Routes from './index';
 
 interface Props extends RouteComponentProps {

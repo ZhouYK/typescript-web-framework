@@ -1,6 +1,6 @@
 import { CSSProperties, FC, PropsWithChildren } from 'react';
 import classNames from 'classnames';
-import LoadingSVG from '@src/assets/svg/loading.svg';
+import LoadingSVG from '@/assets/svg/loading.svg';
 import styleLess from './style.less';
 
 interface Props {

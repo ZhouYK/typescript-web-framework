@@ -1,4 +1,4 @@
-import Sub from '@src/pages/Demo/Test/Sub';
+import Sub from '@/pages/Demo/Test/Sub';
 import { Button } from 'antd';
 import { FC, useRef, useState } from 'react';
 

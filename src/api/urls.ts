@@ -1,4 +1,4 @@
-import { objectToQuery } from '@src/tools/util';
+import { objectToQuery } from '@/tools/util';
 
 const prefix = '/api';
 const genUrl = (path: string): string => `${prefix}${path}`;

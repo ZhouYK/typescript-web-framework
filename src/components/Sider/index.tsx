@@ -1,5 +1,5 @@
-import history from '@src/AppRoot/history';
-import { RoadMap, RoadMapType } from '@src/config/interface';
+import history from '@/AppRoot/history';
+import { RoadMap, RoadMapType } from '@/config/interface';
 import { Layout, Menu } from 'antd';
 import { useDerivedState } from 'femo';
 import React, { ReactElement, useCallback, useState } from 'react';
@@ -22,7 +22,7 @@ const LeftSider = (props: Props): ReactElement => {
   const [collapsed, updateCollapsed] = useState(false);
   const onCollapse = useCallback((colla: boolean) => {
     updateCollapsed(colla);
-  }, [updateCollapsed]);
+  }, []);
 
   const [curContext] = useState((): CurContext => ({
     cachedElements: [],

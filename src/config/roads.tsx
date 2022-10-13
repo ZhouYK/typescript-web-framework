@@ -1,8 +1,8 @@
-import NotFound from '@src/components/NotFound';
-import { RoadMap, RoadMapModuleType, RoadMapType } from '@src/config/interface';
-import { Femo } from '@src/pages/Demo/Femo/interface';
-import femoService from '@src/pages/Demo/Femo/service';
-import { queryToObject } from '@src/tools/util';
+import NotFound from '@/components/NotFound';
+import { RoadMap, RoadMapModuleType, RoadMapType } from '@/config/interface';
+import { Femo } from '@/pages/Demo/Femo/interface';
+import femoService from '@/pages/Demo/Femo/service';
+import { queryToObject } from '@/tools/util';
 import { gluer, GluerReturn } from 'femo';
 import { lazy, ReactElement } from 'react';
 import { Redirect } from 'react-router-dom';
@@ -28,8 +28,13 @@ const initRoadMap: RoadMapModuleType = {
   welcome: {
     name: 'Demo',
     path: '/demo',
-    component: () => <Redirect to='/demo/femo' />,
+    component: () => <Redirect to='/demo/foroxy' />,
     subRoads: [
+      {
+        name: 'foroxy',
+        path: '/foroxy',
+        component: lazy(() => import('@/pages/Demo/Foroxy')),
+      },
       {
         name: 'femo',
         path: '/femo',
@@ -75,7 +80,7 @@ const initRoadMap: RoadMapModuleType = {
   },
   roadRoot,
 };
-// 操作的是直接提取值成数组 extractPagesRoadMapAsArray
+// 操作的时直接提取值成数组 extractPagesRoadMapAsArray
 roads = gluer(initRoadMap);
 // 作为兜底的路由配置
 // 将所有路由重定向到

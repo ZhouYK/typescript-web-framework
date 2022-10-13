@@ -1,4 +1,4 @@
-import Container from '@src/pages/Demo/Suspense/Container';
+import Container from '@/pages/Demo/Suspense/Container';
 import React, {
   Suspense, FC, useState, useRef,
 } from 'react';

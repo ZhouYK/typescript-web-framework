@@ -1,4 +1,4 @@
-import { RoadMap, RoadMapType } from '@src/config/interface';
+import { RoadMap, RoadMapType } from '@/config/interface';
 import { gluer, useModel } from 'femo';
 import roads from './roads';
 

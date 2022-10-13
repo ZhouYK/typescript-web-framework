@@ -2,12 +2,12 @@ import React, {
   ReactElement,
 } from 'react';
 import { Router } from 'react-router-dom';
-import userModel from '@src/models/user/model';
-import userService from '@src/models/user/service';
-import Spinner from '@src/components/Spinner';
-import NotFound from '@src/components/NotFound';
+import userModel from '@/models/user/model';
+import userService from '@/models/user/service';
+import Spinner from '@/components/Spinner';
+import NotFound from '@/components/NotFound';
 import { useModel } from 'femo';
-import { safeCrash } from '@src/hocs';
+import { safeCrash } from '@/hocs';
 import history from './history';
 
 interface RootProps {

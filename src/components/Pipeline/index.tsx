@@ -1,8 +1,8 @@
 import React from 'react';
 import classnames from 'classnames';
-import Scrollbar from '@src/components/Scrollbar';
-import Clamp from '@src/components/Clamp';
-import { debounce } from '@src/tools/util';
+import Scrollbar from '@/components/Scrollbar';
+import Clamp from '@/components/Clamp';
+import { debounce } from '@/tools/util';
 import { Empty } from 'antd';
 import {
   ExternalStageCount, PipelineProps, PipelineState, StageCount, ExternalStageCountId,

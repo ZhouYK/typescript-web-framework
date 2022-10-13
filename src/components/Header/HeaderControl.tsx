@@ -1,5 +1,5 @@
-import { BreadcrumbName } from '@src/components/Header/interface';
-import useCurrentRoad from '@src/components/Routes/currentRoad/useCurrentRoad';
+import { BreadcrumbName } from '@/components/Header/interface';
+import useCurrentRoad from '@/components/Routes/currentRoad/useCurrentRoad';
 import React, {
   ReactElement,
 } from 'react';

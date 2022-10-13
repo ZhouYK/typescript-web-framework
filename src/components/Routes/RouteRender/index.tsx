@@ -1,5 +1,5 @@
-import RenderContent from '@src/components/Routes/RouteRender/Content';
-import { RoadMap } from '@src/config/interface';
+import RenderContent from '@/components/Routes/RouteRender/Content';
+import { RoadMap } from '@/config/interface';
 import { useDerivedState } from 'femo';
 import React, { FC } from 'react';
 import { RouteComponentProps } from 'react-router-dom';

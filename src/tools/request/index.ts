@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { message } from 'antd';
-import { objectToQuery } from '@src/tools/util';
+import { objectToQuery } from '@/tools/util';
 import { ApiResult, CustomConfig, ApiCode } from './interface';
 
 const request = axios.create({

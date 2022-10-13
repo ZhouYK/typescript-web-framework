@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { isInViewPortVertical, throttle } from '@src/tools/util';
+import { isInViewPortVertical, throttle } from '@/tools/util';
 
 const useScrollLoad = (refInstance: React.MutableRefObject<HTMLElement>, loadFnc: () => void): [
   (element: HTMLElement) => void

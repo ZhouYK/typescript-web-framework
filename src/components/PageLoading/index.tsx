@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import Spinner from '@src/components/Spinner';
+import Spinner from '@/components/Spinner';
 import styleLess from './style.less';
 
 interface Props {

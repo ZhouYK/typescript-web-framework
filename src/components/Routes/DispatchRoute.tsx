@@ -1,7 +1,7 @@
-import useFlatRoads from '@src/config/useFlatRoads';
+import useFlatRoads from '@/config/useFlatRoads';
 import React, { ReactElement } from 'react';
 import { Route, Switch, RouteComponentProps } from 'react-router-dom';
-import { RoadMap } from '@src/config/interface';
+import { RoadMap } from '@/config/interface';
 import { useDerivedState } from 'femo';
 
 import UndertakeRoute from './UndertakeRoute';

@@ -1,11 +1,11 @@
 import {
   ComponentType, ReactElement, ReactNode, useState,
 } from 'react';
-import Index from '@src/components/Routes/RouteRender';
+import Index from '@/components/Routes/RouteRender';
 import { Route, Switch, RouteComponentProps } from 'react-router-dom';
-import { road404 } from '@src/config/roads';
-import { RoadMap } from '@src/config/interface';
-import CrashPage from '@src/components/Crash';
+import { road404 } from '@/config/roads';
+import { RoadMap } from '@/config/interface';
+import CrashPage from '@/components/Crash';
 import { useDerivedState } from 'femo';
 import { CurContext, PermittedRouteFunc } from './interface';
 

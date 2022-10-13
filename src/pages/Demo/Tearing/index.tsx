@@ -1,4 +1,4 @@
-import model from '@src/pages/Demo/Tearing/model';
+import model from '@/pages/Demo/Tearing/model';
 import { useDerivedState, useModel } from 'femo';
 import React, { FC, useRef } from 'react';
 import Dot from './Dot';

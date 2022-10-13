@@ -2,7 +2,7 @@ import {
   AnchorHTMLAttributes, ComponentType,
 } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { PrepareDataInjectProps } from '@src/components/PrepareData';
+import { PrepareDataInjectProps } from '@/components/PrepareData';
 import { ServiceOptions } from 'femo';
 
 export type Permission = Set<any> | any[];

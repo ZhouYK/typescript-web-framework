@@ -1,4 +1,4 @@
-import useUserInfo from '@src/models/user/useUserInfo';
+import useUserInfo from '@/models/user/useUserInfo';
 import React, {
   FC,
 } from 'react';
@@ -7,7 +7,7 @@ import {
 } from 'antd';
 import {
   Props,
-} from '@src/components/Header/interface';
+} from '@/components/Header/interface';
 import { Link } from 'react-router-dom';
 
 import style from './style.less';

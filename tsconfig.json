@@ -21,7 +21,7 @@
     "noUnusedParameters": true,
     "typeRoots": ["node_modules/@types", "typings"],
 	"paths": {
-	  "@src/*": ["src/*"]
+	  "@/*": ["src/*"]
 	}
   },
   "exclude": ["node_modules", "dist", "config", "scripts", "test"]

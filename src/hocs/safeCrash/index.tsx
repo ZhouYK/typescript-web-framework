@@ -1,6 +1,6 @@
 import React from 'react';
-import Crash from '@src/components/Crash';
-import Placeholder from '@src/components/Placeholder';
+import Crash from '@/components/Crash';
+import Placeholder from '@/components/Placeholder';
 
 const defaultFallback = () => <Placeholder text='Oops, something went wrong o(╥﹏╥)o !' />;
 const safeCrash = <P, _>(TargetComponent: React.ComponentType<P>, fallback?: (error: any) => any) => class SecurityCrash extends React.Component<P, any> {

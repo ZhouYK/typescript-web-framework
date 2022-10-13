@@ -1,8 +1,8 @@
 import { FC, ReactElement } from 'react';
 import { Layout } from 'antd';
-import SiderControl from '@src/components/Sider/SiderControl';
-import DispatchRoute from '@src/components/Routes/DispatchRoute';
-import HeaderControl from '@src/components/Header/HeaderControl';
+import SiderControl from '@/components/Sider/SiderControl';
+import DispatchRoute from '@/components/Routes/DispatchRoute';
+import HeaderControl from '@/components/Header/HeaderControl';
 
 import style from './style.less';
 

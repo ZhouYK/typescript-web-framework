@@ -1,6 +1,6 @@
-import CrashPage from '@src/components/Crash';
-import PrepareData from '@src/components/PrepareData';
-import { RoadMap } from '@src/config/interface';
+import CrashPage from '@/components/Crash';
+import PrepareData from '@/components/PrepareData';
+import { RoadMap } from '@/config/interface';
 import React, { ComponentType, FC } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 

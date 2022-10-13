@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import classNames from 'classnames';
 import { Modal } from 'antd';
 import { ModalProps } from 'antd/es/modal';
-import Scrollbar from '@src/components/Scrollbar';
+import Scrollbar from '@/components/Scrollbar';
 import style from './style.less';
 
 interface Props extends ModalProps {

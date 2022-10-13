@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { ApiResult, ApiCode } from '@src/tools/request/interface';
+import { ApiResult, ApiCode } from '@/tools/request/interface';
 
 const useApiAuth = (initAuth: boolean): [
   boolean,

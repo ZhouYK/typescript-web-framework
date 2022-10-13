@@ -2,7 +2,7 @@ import {
   FC, PropsWithChildren, useCallback, useEffect, useRef, useState,
 } from 'react';
 import { Button, Space } from 'antd';
-import { safeCrash } from '@src/hocs';
+import { safeCrash } from '@/hocs';
 
 interface Props {
 

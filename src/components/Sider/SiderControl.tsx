@@ -1,5 +1,5 @@
-import useCurrentRoad from '@src/components/Routes/currentRoad/useCurrentRoad';
-import useFlatRoads from '@src/config/useFlatRoads';
+import useCurrentRoad from '@/components/Routes/currentRoad/useCurrentRoad';
+import useFlatRoads from '@/config/useFlatRoads';
 import React from 'react';
 
 import LeftSider from './index';

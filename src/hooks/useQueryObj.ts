@@ -1,4 +1,4 @@
-import { queryToObject } from '@src/tools/util';
+import { queryToObject } from '@/tools/util';
 import { useDerivedState } from 'femo';
 
 interface UseQueryObjOptions<T> {

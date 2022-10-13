@@ -1,6 +1,6 @@
 import React from 'react';
-import sentry from '@src/tools/sentry';
-import Failed from '@src/components/Failed';
+import sentry from '@/tools/sentry';
+import Failed from '@/components/Failed';
 
 interface Props {
   fallback?: (error: any) => React.ReactElement | React.ReactNode;

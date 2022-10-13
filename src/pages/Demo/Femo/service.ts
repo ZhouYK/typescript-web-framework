@@ -1,4 +1,4 @@
-import { Femo } from '@src/pages/Demo/Femo/interface';
+import { Femo } from '@/pages/Demo/Femo/interface';
 
 const getList = (query: Femo.Query): Promise<Femo.ListApiResult> => new Promise((resolve) => {
   setTimeout(() => {

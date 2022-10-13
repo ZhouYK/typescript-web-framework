@@ -1,4 +1,4 @@
-import { Permission, RoadMap } from '@src/config/interface';
+import { Permission, RoadMap } from '@/config/interface';
 
 const isNumber = (num: any): num is number => typeof num === 'number';
 const isString = (str: any): str is string => typeof str === 'string';

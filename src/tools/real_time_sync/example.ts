@@ -1,5 +1,5 @@
-import rt_sync, { Code, SyncData } from '@src/tools/real_time_sync/index';
-import { post } from '@src/tools/request';
+import rt_sync, { Code, SyncData } from '@/tools/real_time_sync/index';
+import { post } from '@/tools/request';
 
 const interviewSync = rt_sync('interview');
 

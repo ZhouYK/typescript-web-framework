@@ -1,6 +1,6 @@
 import { FC, PropsWithChildren } from 'react';
 import classNames from 'classnames';
-import FailedSvg from '@src/assets/svg/failed.svg';
+import FailedSvg from '@/assets/svg/failed.svg';
 import style from './style.less';
 
 interface Props {

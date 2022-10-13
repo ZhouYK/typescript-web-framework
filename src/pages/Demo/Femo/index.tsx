@@ -2,8 +2,8 @@ import {
   FC, useCallback, useRef,
 } from 'react';
 import { useIndividualModel, useModel } from 'femo';
-import { safeCrash } from '@src/hocs';
-import { PrepareDataInjectProps } from '@src/components/PrepareData';
+import { safeCrash } from '@/hocs';
+import { PrepareDataInjectProps } from '@/components/PrepareData';
 
 import Say from './Say';
 import model from './model';

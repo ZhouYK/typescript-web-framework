@@ -1,4 +1,4 @@
-import { RoadMap } from '@src/config/interface';
+import { RoadMap } from '@/config/interface';
 import React from 'react';
 
 export interface Props {

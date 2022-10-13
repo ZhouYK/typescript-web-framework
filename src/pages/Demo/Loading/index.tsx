@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { gluer, useModel } from 'femo';
-import Scrollbar from '@src/components/Scrollbar';
+import Scrollbar from '@/components/Scrollbar';
 import { useHistory } from 'react-router-dom';
 
 interface Props {

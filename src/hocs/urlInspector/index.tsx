@@ -1,6 +1,6 @@
 import React, { ComponentClass, ReactElement } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { queryToObject, objectToQuery } from '@src/tools/util';
+import { queryToObject, objectToQuery } from '@/tools/util';
 
 interface Query {
   [index: string]: any;

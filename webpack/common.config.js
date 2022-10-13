@@ -109,7 +109,7 @@ const plugins = [
     name: 'federation_test',
     filename: 'js/myRemote.js',
     exposes: {
-      './hello': '@src/federationTest',
+      './hello': '@/federationTest',
     },
   }),
   isDevelopment && new ReactRefreshWebpackPlugin({
@@ -138,7 +138,7 @@ const config = {
   },
   resolve: {
     alias: {
-      '@src': path.resolve('src'),
+      '@': path.resolve('src'),
     },
     mainFiles: ['index'],
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.d.ts', '.less'],

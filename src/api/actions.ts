@@ -1,7 +1,7 @@
 // import {
 //   get,
-// } from '@src/tools/request';
-// import User from '@src/commonModelService/user/interface';
+// } from '@/tools/request';
+// import User from '@/commonModelService/user/interface';
 // import { commonApiUrls } from './urls';
 
 export const commonApiActions = {
