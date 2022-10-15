@@ -12,7 +12,9 @@ interface Props extends RouteComponentProps {
 const RouterRender: FC<Props> = (props) => {
   const { road } = props;
   useDerivedState(() => {
-    currentRoadModel(road);
+    setTimeout(() => {
+      currentRoadModel(road);
+    });
   }, [road]);
 
   return <RenderContent {...props} />;
