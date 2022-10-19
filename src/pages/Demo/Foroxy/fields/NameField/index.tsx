@@ -1,5 +1,5 @@
-import ComponentProxy from '@/pages/Demo/Foroxy/ComponentProxy';
 import { AgeFieldProxy } from '@/pages/Demo/Foroxy/fields/AgeField';
+import useComponentProxy from '@/pages/Demo/Foroxy/hooks/useComponentProxy';
 import useFieldProxy from '@/pages/Demo/Foroxy/hooks/useFieldProxy';
 import React, {
   FC, ReactElement, ReactNode, useEffect,
@@ -30,19 +30,19 @@ const NameField: FC<Props> = (props) => {
   }), [name, label]);
 
   const [ageField] = useQueryField<AgeFieldProxy>('age');
-
+  const [InnerInput] = useComponentProxy(Input, proxyModel);
   useEffect(() => proxyModel.onChange((_state) => {
-    ageField?.((_d, s) => ({
-      ...s,
-      value: undefined,
-    }));
+    console.log('name info', _state);
+    console.log('ageField', ageField);
+    // ageField?.((_d, s) => ({
+    //   ...s,
+    //   value: undefined,
+    // }));
   }), [ageField]);
 
   return (
     <Form.Item label={label} name={fieldProxy.name}>
-      <ComponentProxy proxyModel={proxyModel}>
-        <Input />
-      </ComponentProxy>
+      <InnerInput />
     </Form.Item>
   );
 };

@@ -20,7 +20,6 @@ const ComponentProxy: FC<Props> = (props) => {
   }, []);
 
   const [result] = useDerivedModel(props.children, props, (nextSource, _prevSource) => {
-    console.log('nextSource', nextSource);
     if ('value' in nextSource) {
       const currentProxy = propsRef.current.proxyModel();
       if (firstRef.current || !Object.is(currentProxy.value, nextSource.value)) {

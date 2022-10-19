@@ -33,6 +33,7 @@ const AgeField: FC<Props> = (props) => {
 
   useEffect(() => proxyModel.onChange((state) => {
     if (state.value === 20) {
+      console.log('nameField', nameField);
       nameField?.((_d, s) => ({
         ...s,
         value: '小明',
