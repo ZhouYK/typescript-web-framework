@@ -1,8 +1,9 @@
 import { AgeFieldProxy } from '@/pages/Demo/Foroxy/fields/AgeField';
 import useComponentProxy from '@/pages/Demo/Foroxy/hooks/useComponentProxy';
 import useFieldProxy from '@/pages/Demo/Foroxy/hooks/useFieldProxy';
+import useWatchField from '@/pages/Demo/Foroxy/hooks/useWatchField';
 import React, {
-  FC, ReactElement, ReactNode, useEffect,
+  FC, ReactElement, ReactNode,
 } from 'react';
 import { Form, Input } from 'antd';
 import useQueryField from '../../hooks/useQueryField';
@@ -28,17 +29,15 @@ const NameField: FC<Props> = (props) => {
     name,
     label,
   }), [name, label]);
-
-  const [ageField] = useQueryField<AgeFieldProxy>('age');
+  const [, ageField] = useQueryField<AgeFieldProxy>('age');
   const [InnerInput] = useComponentProxy(Input, proxyModel);
-  useEffect(() => proxyModel.onChange((_state) => {
-    console.log('name info', _state);
-    console.log('ageField', ageField);
-    // ageField?.((_d, s) => ({
-    //   ...s,
-    //   value: undefined,
-    // }));
-  }), [ageField]);
+
+  useWatchField(name, (_state) => {
+    ageField((_d, s) => ({
+      ...s,
+      label: `好年龄${Date.now()}`,
+    }));
+  });
 
   return (
     <Form.Item label={label} name={fieldProxy.name}>

@@ -1,4 +1,5 @@
 import NotFound from '@/components/NotFound';
+import prepareData from '@/hocs/prepareData';
 import { RoadMap, RoadMapModuleType, RoadMapType } from '@/config/interface';
 import { Femo } from '@/pages/Demo/Femo/interface';
 import femoService from '@/pages/Demo/Femo/service';
@@ -38,7 +39,7 @@ const initRoadMap: RoadMapModuleType = {
       {
         name: 'femo',
         path: '/femo',
-        component: lazy(() => import('../pages/Demo/Femo')),
+        component: prepareData(lazy(() => import('../pages/Demo/Femo'))),
         prepare: (routeParams) => {
           const { location } = routeParams;
           const query = queryToObject<Femo.Query>(location.search, {

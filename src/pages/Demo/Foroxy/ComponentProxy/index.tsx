@@ -39,6 +39,7 @@ const ComponentProxy: FC<Props> = (props) => {
   if (firstRef.current) {
     firstRef.current = false;
   }
+  console.log('ComponentProxy');
 
   useEffect(() => propsRef.current.proxyModel.onChange((s) => {
     onChange(s.value);

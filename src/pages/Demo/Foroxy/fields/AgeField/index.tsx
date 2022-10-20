@@ -1,9 +1,10 @@
-import ComponentProxy from '@/pages/Demo/Foroxy/ComponentProxy';
 import { NameFieldProxy } from '@/pages/Demo/Foroxy/fields/NameField';
+import useComponentProxy from '@/pages/Demo/Foroxy/hooks/useComponentProxy';
 import useFieldProxy from '@/pages/Demo/Foroxy/hooks/useFieldProxy';
 import useQueryField from '@/pages/Demo/Foroxy/hooks/useQueryField';
+import useWatchField from '@/pages/Demo/Foroxy/hooks/useWatchField';
 import React, {
-  FC, ReactElement, ReactNode, useEffect,
+  FC, ReactElement, ReactNode,
 } from 'react';
 import { Form, InputNumber } from 'antd';
 
@@ -29,22 +30,20 @@ const AgeField: FC<Props> = (props) => {
     label,
   }), [name, label]);
 
-  const [nameField] = useQueryField<NameFieldProxy>('name');
+  const [, nameField] = useQueryField<NameFieldProxy>('name');
+  const [InnerInputNumber] = useComponentProxy(InputNumber, proxyModel);
 
-  useEffect(() => proxyModel.onChange((state) => {
+  useWatchField<AgeFieldProxy>(name, (state) => {
     if (state.value === 20) {
-      console.log('nameField', nameField);
-      nameField?.((_d, s) => ({
+      nameField((_d, s) => ({
         ...s,
         value: '小明',
       }));
     }
-  }), [nameField]);
+  });
   return (
-    <Form.Item label={label} name={fieldProxy.name}>
-      <ComponentProxy proxyModel={proxyModel}>
-        <InputNumber />
-      </ComponentProxy>
+    <Form.Item label={fieldProxy.label} name={fieldProxy.name}>
+      <InnerInputNumber />
     </Form.Item>
   );
 };

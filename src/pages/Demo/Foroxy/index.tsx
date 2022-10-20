@@ -15,6 +15,7 @@ const Foroxy: FC<Props> = (_props) => {
       console.log('values', values);
     });
   };
+  console.log('form');
   return (
     <>
       <Form form={form}>
@@ -28,4 +29,4 @@ const Foroxy: FC<Props> = (_props) => {
   );
 };
 
-export default Foroxy;
+export default React.memo(Foroxy);

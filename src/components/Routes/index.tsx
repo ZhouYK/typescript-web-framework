@@ -1,11 +1,11 @@
+import currentRoad from '@/components/Routes/currentRoad/model';
 import {
-  ComponentType, ReactElement, ReactNode, useState,
+  FC,
+  ReactElement, ReactNode, useState,
 } from 'react';
-import Index from '@/components/Routes/RouteRender';
-import { Route, Switch, RouteComponentProps } from 'react-router-dom';
+import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { road404 } from '@/config/roads';
 import { RoadMap } from '@/config/interface';
-import CrashPage from '@/components/Crash';
 import { useDerivedState } from 'femo';
 import { CurContext, PermittedRouteFunc } from './interface';
 
@@ -20,6 +20,7 @@ const Routes: React.FC<Props> = (props: Props): ReactElement => {
     (): CurContext => ({
       keyPaths: [],
       routeComponents: [],
+      componentMap: new Map(),
     }),
   );
 
@@ -30,6 +31,32 @@ const Routes: React.FC<Props> = (props: Props): ReactElement => {
           ...item,
         };
         curContext.keyPaths.push(obj);
+        const { completePath } = obj;
+        const genComponent = () => {
+          const ResultComponent: FC<RouteComponentProps> = (props) => {
+            currentRoad(curContext.componentMap.get(completePath).obj);
+            const Component = obj.component;
+            return (
+              <Component {...props} />
+            );
+          };
+          ResultComponent.displayName = obj.component.displayName;
+          return ResultComponent;
+        };
+        if (curContext.componentMap.has(completePath)) {
+          const curResult = curContext.componentMap.get(completePath);
+          curResult.obj = obj;
+          if (!Object.is(obj.component, curResult.origin)) {
+            curResult.result = genComponent();
+            curResult.origin = obj.component;
+          }
+        } else {
+          curContext.componentMap.set(completePath, {
+            result: genComponent(),
+            origin: obj.component,
+            obj,
+          });
+        }
       }
       if (item.subRoads && item.subRoads.length !== 0) {
         getPermittedRoutes(item.subRoads);
@@ -53,14 +80,7 @@ const Routes: React.FC<Props> = (props: Props): ReactElement => {
             key={route.completePath}
             exact
             path={route.completePath}
-            render={(props: RouteComponentProps): any => {
-              const Fallback = route.fallback as ComponentType<any>;
-              return (
-                <CrashPage>
-                  <Fallback {...props} />
-                </CrashPage>
-              );
-            }}
+            component={route.fallback}
           />
         );
       }
@@ -69,7 +89,7 @@ const Routes: React.FC<Props> = (props: Props): ReactElement => {
           key={route.completePath}
           exact
           path={route.completePath}
-          render={(props) => <Index {...props} road={route} />}
+          component={curContext.componentMap.get(route.completePath).result}
         />
       );
     });

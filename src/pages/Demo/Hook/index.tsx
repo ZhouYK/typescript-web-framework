@@ -9,6 +9,7 @@ interface Props {
 }
 
 const Hook: FC<Props> = (_props: PropsWithChildren<Props>) => {
+  console.log('hook');
   const [loading, updateLoading] = useState(false);
   const firstRenderFlag = useRef(true);
   const countRef = useRef(0);

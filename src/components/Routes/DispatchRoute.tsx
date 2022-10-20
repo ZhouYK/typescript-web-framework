@@ -1,5 +1,6 @@
+import Crash from '@/components/Crash';
 import useFlatRoads from '@/config/useFlatRoads';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { Route, Switch, RouteComponentProps } from 'react-router-dom';
 import { RoadMap } from '@/config/interface';
 import { useDerivedState } from 'femo';
@@ -22,7 +23,11 @@ const DispatchRoute = (): ReactElement => {
   // 后续UndertakeRoute中不会再校验road中第一层的权限
   const [routeElements] = useDerivedState(() => renderRoutes(flatRoutes), [flatRoutes]);
 
-  return <Switch>{routeElements}</Switch>;
+  return (
+    <Crash>
+      <Switch>{routeElements}</Switch>
+    </Crash>
+  );
 };
 
 export default DispatchRoute;

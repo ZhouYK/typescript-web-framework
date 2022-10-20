@@ -2,7 +2,7 @@ import {
   AnchorHTMLAttributes, ComponentType,
 } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { PrepareDataInjectProps } from '@/components/PrepareData';
+import { PrepareDataInjectProps } from '@/hocs/prepareData';
 import { ServiceOptions } from 'femo';
 
 export type Permission = Set<any> | any[];
@@ -19,7 +19,7 @@ export interface RoadMap {
   externUrl?: string; // 跳转到外部的链接，如果需要在新标签打开需要配置 externProps = {target: '_blank'}。配置了externUrl将会忽略 path和realPath
   externProps?: AnchorHTMLAttributes<any>; // <a> 标签的所有可选属性
   subRoads?: RoadMap[];
-  component?: ComponentType<Partial<RouteComponentProps> & PrepareDataInjectProps>; // 只和subPaths互斥，与leafPaths可以共存。没有下级菜单的才会有组件
+  component?: ComponentType<RouteComponentProps & PrepareDataInjectProps>; // 只和subPaths互斥，与leafPaths可以共存。没有下级菜单的才会有组件
   permissions?: Permission; // 每个节点权限码。如果不指定permissions或者permissions为空数组，则认为该节点默认所有可见。普通数组代表'且', Set代表'或'
   fallback?: ComponentType<any>; // 当没有权限时的回退函数（重定向，还是绘制其他视图，都通过fallback）
   access?: boolean; // 是否可以访问到，是权限码校验的结果。配合fallback使用

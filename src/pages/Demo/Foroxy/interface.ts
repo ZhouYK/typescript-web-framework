@@ -1,6 +1,9 @@
 import { GluerReturn } from 'femo';
 
-export type ProxyContextValue = Map<string, GluerReturn<any>>
+export interface ProxyContextValue {
+  fields: Map<string, GluerReturn<any>>;
+  subscriptions: Map<string, (<S>(target: GluerReturn<S>) => void)[]>;
+}
 export interface NecessaryProps {
   name: string;
 }

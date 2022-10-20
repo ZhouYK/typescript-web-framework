@@ -3,7 +3,7 @@ import {
 } from 'react';
 import { useIndividualModel, useModel } from 'femo';
 import { safeCrash } from '@/hocs';
-import { PrepareDataInjectProps } from '@/components/PrepareData';
+import { PrepareDataInjectProps } from '@/hocs/prepareData';
 
 import Say from './Say';
 import model from './model';
@@ -26,7 +26,7 @@ const Demo: FC<Props> = (props) => {
       condition: '条件',
     });
   }, []);
-  const [preparedData,,, status] = useIndividualModel(null, [getList], {
+  const [preparedData,,, status] = useIndividualModel(null, getList, [], {
     control,
   });
   console.log('preparedData', preparedData, status);
