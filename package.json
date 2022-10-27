@@ -65,6 +65,7 @@
   ],
   "dependencies": {
     "@ant-design/icons": "4.7.0",
+    "@arco-design/web-react": "2.40.2",
     "ace-builds": "1.6.0",
     "antd": "4.23.1",
     "axios": "0.21.1",

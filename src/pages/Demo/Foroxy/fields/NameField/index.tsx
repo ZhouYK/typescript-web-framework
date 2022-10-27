@@ -5,7 +5,8 @@ import useWatchField from '@/pages/Demo/Foroxy/hooks/useWatchField';
 import React, {
   FC, ReactElement, ReactNode,
 } from 'react';
-import { Form, Input } from 'antd';
+// import { Form, Input } from 'antd';
+import { Form, Input } from '@arco-design/web-react';
 import useQueryField from '../../hooks/useQueryField';
 
 interface Props {
@@ -40,7 +41,7 @@ const NameField: FC<Props> = (props) => {
   });
 
   return (
-    <Form.Item label={label} name={fieldProxy.name}>
+    <Form.Item label={label} field={fieldProxy.name}>
       <InnerInput />
     </Form.Item>
   );

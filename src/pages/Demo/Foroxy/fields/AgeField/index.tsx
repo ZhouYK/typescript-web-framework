@@ -6,7 +6,8 @@ import useWatchField from '@/pages/Demo/Foroxy/hooks/useWatchField';
 import React, {
   FC, ReactElement, ReactNode,
 } from 'react';
-import { Form, InputNumber } from 'antd';
+// import { Form, InputNumber } from 'antd';
+import { Form, InputNumber } from '@arco-design/web-react';
 
 interface Props {
   name: string;
@@ -42,7 +43,7 @@ const AgeField: FC<Props> = (props) => {
     }
   });
   return (
-    <Form.Item label={fieldProxy.label} name={fieldProxy.name}>
+    <Form.Item label={fieldProxy.label} field={fieldProxy.name}>
       <InnerInputNumber />
     </Form.Item>
   );
