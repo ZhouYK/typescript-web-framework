@@ -12,7 +12,6 @@ const useQueryField = <T>(name: string): [T | undefined, GluerReturn<T> | null] 
   const callback = useCallback((target: GluerReturn<any>) => {
     if (!Object.is(currentModelRef.current, target)) {
       currentModelRef.current = target;
-      console.log('useQueryField');
       // target 没有，则表示字段卸载了。此时该字段已从 formContext.fields 中删除。
       rerender((prevState) => prevState + 1);
     }

@@ -1,8 +1,8 @@
 import AgeField from '@/pages/Demo/Foroxy/fields/AgeField';
 import NameField from '@/pages/Demo/Foroxy/fields/NameField';
+import useFormProxy from '@/pages/Demo/Foroxy/hooks/useFormProxy';
 import { Button, Form } from 'antd';
 import React, { FC } from 'react';
-import FormProvider from './FormProvider';
 
 interface Props {
 
@@ -15,15 +15,13 @@ const Foroxy: FC<Props> = (_props) => {
       console.log('values', values);
     });
   };
-  console.log('form');
+  const [FormProxy] = useFormProxy(Form);
   return (
     <>
-      <Form form={form}>
-        <FormProvider>
-          <NameField name='name' label='名字' />
-          <AgeField name='age' label='年龄' />
-        </FormProvider>
-      </Form>
+      <FormProxy form={form}>
+        <NameField name='name' label='名字' />
+        <AgeField name='age' label='年龄' />
+      </FormProxy>
       <Button onClick={onSubmit}>提交</Button>
     </>
   );

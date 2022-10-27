@@ -1,12 +1,11 @@
 import { GluerReturn, useDerivedModel } from 'femo';
 import React, {
-  ComponentType, useCallback, useEffect, useRef, useState,
+  ComponentType, ForwardRefExoticComponent, useCallback, useEffect, useRef, useState,
 } from 'react';
 
-function useComponentProxy<P, S>(component: ComponentType<P>, proxyModel: GluerReturn<S>) {
+function useComponentProxy<P, S>(component: ComponentType<P> | ForwardRefExoticComponent<P>, proxyModel: GluerReturn<S>) {
   const proxyModelRef = useRef(proxyModel);
-  console.log('useComponentProxy outer');
-  const FinalComponent = useCallback(React.forwardRef((props, ref) => {
+  const FinalComponent = useCallback(React.forwardRef<P, P>((props, ref) => {
     const Component = component;
     const propsRef = useRef(props);
     propsRef.current = props;
@@ -14,7 +13,6 @@ function useComponentProxy<P, S>(component: ComponentType<P>, proxyModel: GluerR
       // @ts-ignore
       propsRef.current?.onChange?.(...args);
     }, []);
-    console.log('useComponentProxy');
 
     useState(() => {
       if ('value' in props) {

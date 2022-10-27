@@ -9,7 +9,6 @@ const useFieldProxy = <S extends NecessaryProps>(initProxyState: S, handle: (sta
   useEffect(() => {
     context.fields.set(fieldProxy.name, fieldProxyModel);
     if (context.subscriptions.has(fieldProxy.name)) {
-      console.log('fieldProxy.name', fieldProxy.name, fieldProxyModel);
       context.subscriptions.get(fieldProxy.name).forEach((callback) => callback(fieldProxyModel));
     }
     return () => {
