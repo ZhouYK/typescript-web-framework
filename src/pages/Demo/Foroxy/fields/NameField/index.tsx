@@ -3,7 +3,7 @@ import useComponentProxy from '@/pages/Demo/Foroxy/hooks/useComponentProxy';
 import useFieldProxy from '@/pages/Demo/Foroxy/hooks/useFieldProxy';
 import useWatchField from '@/pages/Demo/Foroxy/hooks/useWatchField';
 import React, {
-  FC, ReactElement, ReactNode,
+  FC, ReactElement, ReactNode, useState,
 } from 'react';
 // import { Form, Input } from 'antd';
 import { Form, Input } from '@arco-design/web-react';
@@ -22,6 +22,9 @@ export interface NameFieldProxy {
 
 const NameField: FC<Props> = (props) => {
   const { name, label } = props;
+
+  const [labels] = useState(['年龄', '身高', '汽车', '体重']);
+
   const [fieldProxy, proxyModel] = useFieldProxy({
     name,
     label,
@@ -36,7 +39,7 @@ const NameField: FC<Props> = (props) => {
   useWatchField(name, (_state) => {
     ageField((_d, s) => ({
       ...s,
-      label: `好年龄${Date.now()}`,
+      label: labels[Math.floor(Math.random() * 4)],
     }));
   });
 
