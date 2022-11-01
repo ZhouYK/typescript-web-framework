@@ -18,6 +18,11 @@ if (window.Promise && !window.Promise.prototype.finally) {
   };
 }
 
+window.addEventListener('unhandledrejection', (event) => {
+  event.preventDefault();
+  console.warn(`unhandled promise rejection: ${event.reason}`);
+});
+
 const container = document.getElementById('bd');
 const root = createRoot(container);
 root.render(
