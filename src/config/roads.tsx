@@ -32,6 +32,11 @@ const initRoadMap: RoadMapModuleType = {
     component: () => <Redirect to='/demo/foroxy' />,
     subRoads: [
       {
+        name: 'wusong',
+        path: '/wusong',
+        component: lazy(() => import('@/pages/Demo/Wusong')),
+      },
+      {
         name: 'foroxy',
         path: '/foroxy',
         component: lazy(() => import('@/pages/Demo/Foroxy')),
