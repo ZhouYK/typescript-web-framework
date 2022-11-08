@@ -8,8 +8,8 @@ export function isSyntheticEvent(e: any): e is SyntheticEvent {
   return e?.constructor?.name === 'SyntheticEvent' || e?.nativeEvent instanceof Event;
 }
 
-function useComponent<P>(component: ComponentType<P> | ForwardRefExoticComponent<P>) {
-  const FinalComponent = useCallback(React.forwardRef<P, P>((props, ref) => {
+function useComponent<P, T = any>(component: ComponentType<P> | ForwardRefExoticComponent<P>) {
+  const FinalComponent = useCallback(React.forwardRef<T, P>((props, ref) => {
     const Component = component;
     // todo 值 与 字段模型可能会有交互
     const fieldModel = useContext(WuSongFormItemContext);
