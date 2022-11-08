@@ -1,4 +1,4 @@
-import { GluerReturn } from 'femo';
+import { gluer, GluerReturn, useModel } from 'femo';
 import {
   useCallback,
   useContext, useEffect, useRef, useState,
@@ -9,6 +9,7 @@ const useQueryField = <T>(name: string): [T | undefined, GluerReturn<T> | null] 
   const [, rerender] = useState(null);
   const formContext = useContext(WuSongFormContext);
   const currentModelRef = useRef(null);
+  const [defaultModel] = useState(() => gluer(undefined));
   const callback = useCallback((target: GluerReturn<any>) => {
     if (!Object.is(currentModelRef.current, target)) {
       currentModelRef.current = target;
@@ -39,7 +40,10 @@ const useQueryField = <T>(name: string): [T | undefined, GluerReturn<T> | null] 
       formContext.subscriptions.delete(name);
     }
   }, []);
-  return [currentModelRef.current?.(), currentModelRef.current];
+
+  const [result, model] = useModel(currentModelRef.current || defaultModel);
+
+  return [result, model];
 };
 
 export default useQueryField;

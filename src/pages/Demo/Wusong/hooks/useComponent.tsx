@@ -1,18 +1,19 @@
-import { FieldModelProps } from '@/pages/Demo/Wusong/interface';
-import { GluerReturn, useModel } from 'femo';
+import WuSongFormItemContext from '@/pages/Demo/Wusong/FormItemProvider/WuSongFormItemContext';
+import { useModel } from 'femo';
 import React, {
-  ComponentType, ForwardRefExoticComponent, SyntheticEvent, useCallback,
+  ComponentType, ForwardRefExoticComponent, SyntheticEvent, useCallback, useContext,
 } from 'react';
 
 export function isSyntheticEvent(e: any): e is SyntheticEvent {
   return e?.constructor?.name === 'SyntheticEvent' || e?.nativeEvent instanceof Event;
 }
 
-function useComponent<P, V = any>(component: ComponentType<P> | ForwardRefExoticComponent<P>, valueModel: GluerReturn<V>, fieldModel: GluerReturn<FieldModelProps>) {
+function useComponent<P>(component: ComponentType<P> | ForwardRefExoticComponent<P>) {
   const FinalComponent = useCallback(React.forwardRef<P, P>((props, ref) => {
     const Component = component;
     // todo 值 与 字段模型可能会有交互
-    const [v] = useModel(valueModel);
+    const fieldModel = useContext(WuSongFormItemContext);
+    const [fieldState] = useModel(fieldModel);
 
     const onChange = useCallback((...args: any[]) => {
       const [evt] = args;
@@ -22,10 +23,13 @@ function useComponent<P, V = any>(component: ComponentType<P> | ForwardRefExotic
         // @ts-ignore
         value = evt.target?.value;
       }
-      valueModel(value);
+      fieldModel((_d, s) => ({
+        ...s,
+        value,
+      }));
     }, []);
 
-    return <Component {...props} onChange={onChange} value={v} ref={ref} />;
+    return <Component {...props} onChange={onChange} value={fieldState.value} ref={ref} />;
   }), [component]);
 
   return [FinalComponent];

@@ -1,29 +1,18 @@
-import useFieldModel from '@/pages/Demo/Wusong/hooks/useFieldModel';
-import useFormItem from '@/pages/Demo/Wusong/hooks/useFormItem';
+import FormItem from '@/pages/Demo/Wusong/FormItem';
 import useComponent from '@/pages/Demo/Wusong/hooks/useComponent';
-import { Form, InputNumber } from 'antd';
-import { gluer } from 'femo';
-import React, { FC, useState } from 'react';
+import { InputNumber } from 'antd';
+import React, { FC } from 'react';
 
 interface Props {
 
 }
 
 const AgeField: FC<Props> = (_props) => {
-  const [fieldState, fieldModel] = useFieldModel({
-    name: 'age',
-  });
-  const [FormItem] = useFormItem(Form.Item, (p) => ({
-    name: p.name,
-    label: '年龄',
-  }));
-  const [valueModel] = useState(() => gluer(''));
-
-  const [InnerInput] = useComponent(InputNumber, valueModel, fieldModel);
-
+  const [InnerInput] = useComponent(InputNumber);
   return (
     <FormItem
-      name={fieldState.name}
+      name='age'
+      label='年龄'
     >
       <InnerInput />
     </FormItem>
