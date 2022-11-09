@@ -11,7 +11,7 @@ const AgeField: FC<Props> = (_props) => (
       name='age'
       label='年龄'
     >
-      <InputNumber />
+      <InputNumber placeholder='请输入年龄' />
     </FormItem>
 );
 

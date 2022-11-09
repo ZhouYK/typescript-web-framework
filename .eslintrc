@@ -48,6 +48,7 @@
     "func-names": 0,
     "camelcase": "off",
     "class-methods-use-this": "off",
+    "arrow-body-style": "off",
     "max-len": ["error", { "code": 1000 }],
     "array-callback-return": "off",
     "prefer-promise-reject-errors": "off",
