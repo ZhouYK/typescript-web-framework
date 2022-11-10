@@ -1,7 +1,6 @@
-import { WuSongFormItemContext } from '@/pages/Demo/Wusong/interface';
-import { gluer } from 'femo';
+import { FieldNode } from '@/pages/Demo/Wusong/interface';
 import React from 'react';
 
-const WuSongFormItemContext = React.createContext<WuSongFormItemContext>(gluer(null));
+const WuSongFormItemContext = React.createContext<FieldNode>(null);
 
 export default WuSongFormItemContext;

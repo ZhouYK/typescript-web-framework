@@ -1,31 +1,15 @@
 import AgeField from '@/pages/Demo/Wusong/fields/AgeField';
 import Test, { Text } from '@/pages/Demo/Wusong/components/Test';
-import { Button } from 'antd';
+import NestedField from '@/pages/Demo/Wusong/fields/NestedField';
+import Form from '@/pages/Demo/Wusong/Form';
 import React, {
-  FC, useContext, useEffect, useState,
+  FC, useEffect, useState,
 } from 'react';
 import NameField from '@/pages/Demo/Wusong/fields/NameField';
-import WuSongFormContextCons from '@/pages/Demo/Wusong/FormProvider/WuSongFormContext';
-import FormProvider from './FormProvider';
 
 interface Props {
 
 }
-
-const FormComponent = (p: { children?: any }) => {
-  const formContext = useContext(WuSongFormContextCons);
-  const onClick = () => {
-    formContext.fields.forEach((f) => {
-      console.log(f());
-    });
-  };
-  return (
-    <>
-      {p.children}
-      <Button onClick={onClick}>提交</Button>
-    </>
-  );
-};
 
 const WuSong: FC<Props> = (_props) => {
   const [n, update] = useState(0);
@@ -43,15 +27,14 @@ const WuSong: FC<Props> = (_props) => {
     };
   }, []);
   return (
-    <FormProvider>
-      <FormComponent>
-        <NameField />
-        <AgeField />
-      </FormComponent>
+    <Form>
+      <NameField />
+      <AgeField />
+      <NestedField />
       <Test>
         <Text n={n} text='hello' />
       </Test>
-    </FormProvider>
+    </Form>
   );
 };
 

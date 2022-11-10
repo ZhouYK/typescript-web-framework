@@ -1,6 +1,6 @@
 import FormItem from '@/pages/Demo/Wusong/FormItem';
+import { InputNumber } from 'antd';
 import React, { FC } from 'react';
-import InputNumber from '../components/InputNumber';
 
 interface Props {
 

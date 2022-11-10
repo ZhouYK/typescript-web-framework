@@ -1,15 +1,14 @@
-import { FieldModelProps } from '@/pages/Demo/Wusong/interface';
-import { GluerReturn } from 'femo';
+import { FieldNode } from '@/pages/Demo/Wusong/interface';
 import React, { FC } from 'react';
 import WuSongFormItemContext from './WuSongFormItemContext';
 
 interface Props {
   children: any;
-  field: GluerReturn<FieldModelProps>;
+  fieldNode: FieldNode;
 }
 
 const WuSongFormItemProvider: FC<Props> = (props) => (
-    <WuSongFormItemContext.Provider value={props.field}>
+    <WuSongFormItemContext.Provider value={props.fieldNode}>
       {
         props.children
       }

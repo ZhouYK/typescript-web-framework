@@ -1,7 +1,7 @@
 import FormItem from '@/pages/Demo/Wusong/FormItem';
+import { Input } from 'antd';
 // import useQueryField from '@/pages/Demo/Wusong/hooks/useQueryField';
 import React, { FC } from 'react';
-import Input from '../components/Input';
 
 interface Props {
 
