@@ -1,8 +1,8 @@
-import WuSongFormItemProvider from '@/pages/Demo/Wusong/FormItemProvider';
-import useFieldNode from '@/pages/Demo/Wusong/hooks/useFieldNode';
+import WuSongFormItemContext from '@/pages/Demo/Wusong/FormItemProvider/WuSongFormItemContext';
 import { FieldModelProps } from '@/pages/Demo/Wusong/interface';
+import WuSongNodeContext from '@/pages/Demo/Wusong/NodeProvider/WuSongNodeContext';
 import React, {
-  ComponentType, ForwardRefExoticComponent, SyntheticEvent, useCallback,
+  ComponentType, ForwardRefExoticComponent, SyntheticEvent, useCallback, useContext, useRef,
 } from 'react';
 
 function isSyntheticEvent(e: any): e is SyntheticEvent {
@@ -11,9 +11,15 @@ function isSyntheticEvent(e: any): e is SyntheticEvent {
 
 const linkDecorator = <P extends { children?: any }, R = any>(component: ComponentType<P> | ForwardRefExoticComponent<P>, mapPropsFromFieldModelToComponent: (p: FieldModelProps) => P) => React.memo(React.forwardRef<R, FieldModelProps>((props, ref) => {
   const { children, ...rest } = props;
+  const propsRef = useRef(props);
+  propsRef.current = props;
   const Decorator = component as ComponentType<P>;
-  const [fieldState, fieldNode] = useFieldNode(rest);
-  const formItemProps = mapPropsFromFieldModelToComponent(fieldState);
+  const formItemProps = mapPropsFromFieldModelToComponent(rest);
+  const fieldState = useContext(WuSongFormItemContext);
+  const fieldNode = useContext(WuSongNodeContext);
+  const fieldNodeRef = useRef(fieldNode);
+  fieldNodeRef.current = fieldNode;
+
   const onChange = useCallback((...args: any[]) => {
     const [evt] = args;
     let value = evt;
@@ -22,23 +28,29 @@ const linkDecorator = <P extends { children?: any }, R = any>(component: Compone
       // @ts-ignore
       value = evt.target?.value;
     }
-    fieldNode.state.model((_d, s) => ({
-      ...s,
-      value,
-    }));
+    if (fieldNodeRef.current.type === 'field') {
+      fieldNodeRef.current.instance.model((_d, s) => ({
+        ...s,
+        value,
+      }));
+    } else {
+      propsRef.current?.onChange(...args);
+    }
   }, []);
+
+  const ps = {
+    ...children.props,
+    onChange,
+  };
+  if (fieldNodeRef.current.type === 'field') {
+    ps.value = fieldState?.value;
+  }
   return (
-    <WuSongFormItemProvider fieldNode={fieldNode}>
-      <Decorator {...formItemProps} ref={ref}>
-          {
-            React.cloneElement(children, {
-              ...children.props,
-              onChange,
-              value: fieldState.value,
-            })
-          }
-      </Decorator>
-    </WuSongFormItemProvider>
+    <Decorator {...formItemProps} ref={ref}>
+      {
+        React.cloneElement(children, ps)
+      }
+    </Decorator>
   );
 }));
 

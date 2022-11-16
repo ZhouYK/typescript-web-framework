@@ -1,5 +1,4 @@
-import WuSongFormItemContext from '@/pages/Demo/Wusong/FormItemProvider/WuSongFormItemContext';
-import WuSongFormContextCons from '@/pages/Demo/Wusong/FormProvider/WuSongFormContext';
+import WuSongNodeContext from '@/pages/Demo/Wusong/NodeProvider/WuSongNodeContext';
 import nodeHelper from '@/pages/Demo/Wusong/utils/nodeHelper';
 import { useIndividualModel } from 'femo';
 import {
@@ -27,8 +26,7 @@ const useFieldNode = <V>(initState: FieldModelProps<V>): [FieldModelProps<V>, Fi
   //   }
   // }, [state.name]);
 
-  const parentFieldNode = useContext(WuSongFormItemContext);
-  const parentFormNode = useContext(WuSongFormContextCons);
+  const parentNode = useContext(WuSongNodeContext);
 
   const [fieldNode] = useState<FieldNode>(() => {
     return {
@@ -47,16 +45,13 @@ const useFieldNode = <V>(initState: FieldModelProps<V>): [FieldModelProps<V>, Fi
   });
 
   useEffect(() => {
-    if (parentFieldNode) {
-      parentFieldNode.pushChild(fieldNode);
-      return () => parentFieldNode.removeChild(fieldNode);
-    }
-    if (parentFormNode) {
-      parentFormNode.pushField(fieldNode);
-      return () => parentFormNode.removeField(fieldNode);
+    if (parentNode) {
+      parentNode.pushChild(fieldNode);
+      return () => parentNode.removeChild(fieldNode);
     }
     return null;
-  }, []);
+  }, [parentNode]);
+
   return [state, fieldNode];
 };
 

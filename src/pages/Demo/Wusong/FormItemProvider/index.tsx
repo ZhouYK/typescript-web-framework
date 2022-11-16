@@ -1,18 +1,20 @@
-import { FieldNode } from '@/pages/Demo/Wusong/interface';
+import { FieldModelProps } from '@/pages/Demo/Wusong/interface';
 import React, { FC } from 'react';
 import WuSongFormItemContext from './WuSongFormItemContext';
 
 interface Props {
   children: any;
-  fieldNode: FieldNode;
+  fieldState: FieldModelProps;
 }
 
-const WuSongFormItemProvider: FC<Props> = (props) => (
-    <WuSongFormItemContext.Provider value={props.fieldNode}>
+const WuSongFormItemProvider: FC<Props> = (props) => {
+  return (
+    <WuSongFormItemContext.Provider value={props.fieldState}>
       {
         props.children
       }
     </WuSongFormItemContext.Provider>
-);
+  );
+};
 
 export default WuSongFormItemProvider;

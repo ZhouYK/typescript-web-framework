@@ -1,7 +1,6 @@
-import WuSongFormItemProvider from '@/pages/Demo/Wusong/FormItemProvider';
-import FormProvider from '@/pages/Demo/Wusong/FormProvider';
 import useFormNode from '@/pages/Demo/Wusong/hooks/useFormNode';
 import { FormModelProps } from '@/pages/Demo/Wusong/interface';
+import NodeProvider from '@/pages/Demo/Wusong/NodeProvider';
 import React, { ComponentType, ForwardRefExoticComponent, useEffect } from 'react';
 
 const linkForm = <P extends { children?: any }, R = any>(component: ComponentType<P> | ForwardRefExoticComponent<P>, mapPropsFromFormModelToComponent: (p: FormModelProps) => P) => {
@@ -12,20 +11,19 @@ const linkForm = <P extends { children?: any }, R = any>(component: ComponentTyp
     const formProps = mapPropsFromFormModelToComponent(formState);
     // todo 测试，需要删除
     useEffect(() => {
-      console.log('formNode', Array.from(formNode.fields.values()));
+      console.log('formNode', formNode);
     }, []);
-    // 此处加 FormItem 的 Provider 是为了防止表单下的 FormItem 越过 FormProvider 访问到了外面的
+    // 此处加 field 的 Provider 是为了防止表单下的 field 越过 FieldProvider 访问到了外面的
+    // formItem 的 Provider 同理
     return (
-      <FormProvider formNode={formNode}>
-        <WuSongFormItemProvider fieldNode={null}>
+        <NodeProvider node={formNode}>
           <Form
             { ...formProps }
             ref={ref}
           >
             {children}
           </Form>
-        </WuSongFormItemProvider>
-      </FormProvider>
+        </NodeProvider>
     );
   }));
 };

@@ -38,9 +38,6 @@ export interface Node<T, P> {
 }
 
 export interface FormNode extends Node<FormNode, FormModelProps>{
-  fields: Map<any, FieldNode>;
-  pushField: (field: FieldNode) => void;
-  removeField: (field: FieldNode) => void;
 }
 
 export interface FieldNode extends Node<FieldNode, FieldModelProps>{
