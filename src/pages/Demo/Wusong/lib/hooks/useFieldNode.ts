@@ -1,5 +1,5 @@
-import WuSongNodeContext from '@/pages/Demo/Wusong/NodeProvider/WuSongNodeContext';
-import nodeHelper from '@/pages/Demo/Wusong/utils/nodeHelper';
+import WuSongNodeContext from '@/pages/Demo/Wusong/lib/NodeProvider/WuSongNodeContext';
+import nodeHelper from '@/pages/Demo/Wusong/lib/utils/nodeHelper';
 import { useIndividualModel } from 'femo';
 import {
   useContext, useEffect, useState,

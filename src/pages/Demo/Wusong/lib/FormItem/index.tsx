@@ -1,20 +1,19 @@
-import WuSongFormItemContext from '@/pages/Demo/Wusong/FormItemProvider/WuSongFormItemContext';
-import { FieldModelProps } from '@/pages/Demo/Wusong/interface';
-import WuSongNodeContext from '@/pages/Demo/Wusong/NodeProvider/WuSongNodeContext';
+import WuSongFormItemContext from '@/pages/Demo/Wusong/lib/FormItemProvider/WuSongFormItemContext';
+import { DecoratorProps } from '@/pages/Demo/Wusong/lib/interface';
+import WuSongNodeContext from '@/pages/Demo/Wusong/lib/NodeProvider/WuSongNodeContext';
 import React, {
-  ComponentType, ForwardRefExoticComponent, SyntheticEvent, useCallback, useContext, useRef,
+  FC, SyntheticEvent, useCallback, useContext, useRef,
 } from 'react';
 
 function isSyntheticEvent(e: any): e is SyntheticEvent {
   return e?.constructor?.name === 'SyntheticEvent' || e?.nativeEvent instanceof Event;
 }
 
-const linkDecorator = <P extends { children?: any }, R = any>(component: ComponentType<P> | ForwardRefExoticComponent<P>, mapPropsFromFieldModelToComponent: (p: FieldModelProps) => P) => React.memo(React.forwardRef<R, FieldModelProps>((props, ref) => {
+const FormItem: FC<Partial<DecoratorProps>> = (props) => {
+  // todo rest 和 fieldState 进行融合
   const { children, ...rest } = props;
   const propsRef = useRef(props);
   propsRef.current = props;
-  const Decorator = component as ComponentType<P>;
-  const formItemProps = mapPropsFromFieldModelToComponent(rest);
   const fieldState = useContext(WuSongFormItemContext);
   const fieldNode = useContext(WuSongNodeContext);
   const fieldNodeRef = useRef(fieldNode);
@@ -46,12 +45,13 @@ const linkDecorator = <P extends { children?: any }, R = any>(component: Compone
     ps.value = fieldState?.value;
   }
   return (
-    <Decorator {...formItemProps} ref={ref}>
-      {
-        React.cloneElement(children, ps)
-      }
-    </Decorator>
+    <section>
+      <section>{rest.label}</section>
+      <section>
+        {React.cloneElement(children, ps)}
+      </section>
+    </section>
   );
-}));
+};
 
-export default linkDecorator;
+export default FormItem;

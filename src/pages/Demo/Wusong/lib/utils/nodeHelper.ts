@@ -1,4 +1,4 @@
-import { FieldNode, FormNode } from '@/pages/Demo/Wusong/interface';
+import { FieldNode, FormNode } from '@/pages/Demo/Wusong/lib/interface';
 
 class NodeHelper {
   chainChild = (inputNode: FieldNode | FormNode, originNode: FieldNode | FormNode) => {

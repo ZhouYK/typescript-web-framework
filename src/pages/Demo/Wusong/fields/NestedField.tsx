@@ -1,5 +1,6 @@
 import NameField from '@/pages/Demo/Wusong/fields/NameField';
-import FormItem from '@/pages/Demo/Wusong/FormItem';
+import FormItem from '@/pages/Demo/Wusong/lib/FormItem';
+import linkField from '@/pages/Demo/Wusong/lib/hoc/linkField';
 import React, { FC } from 'react';
 
 import AgeField from '@/pages/Demo/Wusong/fields/AgeField';
@@ -14,10 +15,10 @@ const NestedComponent = () => {
 
 const NestedField: FC<Props> = () => {
   return (
-    <FormItem name='nested'>
+    <FormItem>
       <NestedComponent />
     </FormItem>
   );
 };
 
-export default NestedField;
+export default linkField(NestedField);

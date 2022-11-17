@@ -1,4 +1,4 @@
-import { FieldModelProps } from '@/pages/Demo/Wusong/interface';
+import { FieldModelProps } from '@/pages/Demo/Wusong/lib/interface';
 import React, { FC } from 'react';
 import WuSongFormItemContext from './WuSongFormItemContext';
 

@@ -1,7 +1,7 @@
 import AgeField from '@/pages/Demo/Wusong/fields/AgeField';
 import Test, { Text } from '@/pages/Demo/Wusong/components/Test';
 import NestedField from '@/pages/Demo/Wusong/fields/NestedField';
-import Form from '@/pages/Demo/Wusong/Form';
+import Form from '@/pages/Demo/Wusong/lib/Form';
 import React, {
   FC, useEffect, useState,
 } from 'react';
@@ -28,9 +28,9 @@ const WuSong: FC<Props> = (_props) => {
   }, []);
   return (
     <Form>
-      <NameField />
-      <AgeField />
-      <NestedField />
+      <NameField name='name' />
+      <AgeField name='age' />
+      <NestedField name='test' />
       <Test>
         <Text n={n} text='hello' />
       </Test>

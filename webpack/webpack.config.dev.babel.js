@@ -111,11 +111,7 @@ const config = {
     // quiet: true,
     proxy: {
       context: ['/api/'],
-      // target: 'http://172.16.40.96:8080/',
-      target: 'https://mesh-dev.baicizhan.com/',
       headers: {
-        host: 'mesh-dev.baicizhan.com',
-        // host: '172.16.111.13',
       },
       onProxyReq: (proxyReq, req) => {
         // let { cookie } = req.headers;

@@ -6,15 +6,14 @@ export interface FieldModelProps<V = any> {
   [index: string]: any;
 }
 
-export interface FormModelProps {
-  name: string;
+export interface DecoratorProps {
+  children?: any;
+  label?: any;
   [index: string]: any;
 }
 
-export interface WuSongFormContext {
-  form: GluerReturn<FormModelProps>;
-  fields: Map<string, GluerReturn<any>>;
-  subscriptions: Map<string, (<S>(target: GluerReturn<S>) => void)[]>;
+export interface FormModelProps {
+  [index: string]: any;
 }
 
 export interface Instance<P> {

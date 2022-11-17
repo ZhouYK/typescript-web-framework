@@ -1,4 +1,5 @@
-import FormItem from '@/pages/Demo/Wusong/FormItem';
+import FormItem from '@/pages/Demo/Wusong/lib/FormItem';
+import linkField from '@/pages/Demo/Wusong/lib/hoc/linkField';
 import { Input } from 'antd';
 // import useQueryField from '@/pages/Demo/Wusong/hooks/useQueryField';
 import React, { FC } from 'react';
@@ -8,11 +9,8 @@ interface Props {
 }
 
 const NameField: FC<Props> = (_props) => {
-  // const [age, ageField] = useQueryField('age');
-  // console.log('age, ageField', age, ageField);
   return (
     <FormItem
-      name='name'
       label='名字'
     >
       <Input placeholder='请输入名字' />
@@ -20,4 +18,4 @@ const NameField: FC<Props> = (_props) => {
   );
 };
 
-export default NameField;
+export default linkField(NameField);

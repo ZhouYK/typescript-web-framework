@@ -1,6 +1,6 @@
-import { FormModelProps, FormNode } from '@/pages/Demo/Wusong/interface';
-import WuSongNodeContext from '@/pages/Demo/Wusong/NodeProvider/WuSongNodeContext';
-import nodeHelper from '@/pages/Demo/Wusong/utils/nodeHelper';
+import { FormModelProps, FormNode } from '@/pages/Demo/Wusong/lib/interface';
+import WuSongNodeContext from '@/pages/Demo/Wusong/lib/NodeProvider/WuSongNodeContext';
+import nodeHelper from '@/pages/Demo/Wusong/lib/utils/nodeHelper';
 import { useIndividualModel } from 'femo';
 import { useContext, useEffect, useState } from 'react';
 

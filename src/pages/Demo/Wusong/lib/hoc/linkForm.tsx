@@ -1,6 +1,6 @@
-import useFormNode from '@/pages/Demo/Wusong/hooks/useFormNode';
-import { FormModelProps } from '@/pages/Demo/Wusong/interface';
-import NodeProvider from '@/pages/Demo/Wusong/NodeProvider';
+import useFormNode from '@/pages/Demo/Wusong/lib/hooks/useFormNode';
+import { FormModelProps } from '@/pages/Demo/Wusong/lib/interface';
+import NodeProvider from '@/pages/Demo/Wusong/lib/NodeProvider';
 import React, { ComponentType, ForwardRefExoticComponent, useEffect } from 'react';
 
 const linkForm = <P extends { children?: any }, R = any>(component: ComponentType<P> | ForwardRefExoticComponent<P>, mapPropsFromFormModelToComponent: (p: FormModelProps) => P) => {

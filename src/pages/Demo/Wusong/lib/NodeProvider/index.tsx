@@ -1,5 +1,5 @@
-import { Node } from '@/pages/Demo/Wusong/interface';
-import WuSongNodeContext from '@/pages/Demo/Wusong/NodeProvider/WuSongNodeContext';
+import { Node } from '@/pages/Demo/Wusong/lib/interface';
+import WuSongNodeContext from '@/pages/Demo/Wusong/lib/NodeProvider/WuSongNodeContext';
 import React, { FC } from 'react';
 
 interface Props {
