@@ -16,10 +16,10 @@ const useFormNode = (initState: FormModelProps):[FormModelProps, FormNode] => {
         model: form,
       },
       pushChild: (f) => {
-        nodeHelper.chainChild(f, formNode);
+        nodeHelper.chainNode(f, formNode);
       },
       removeChild: (f) => {
-        nodeHelper.cutChild(f, formNode);
+        nodeHelper.cutNode(f, formNode);
       },
     };
   });

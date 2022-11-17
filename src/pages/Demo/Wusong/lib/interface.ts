@@ -5,6 +5,7 @@ export interface FieldModelProps<V = any> {
   value: V;
   [index: string]: any;
 }
+export type FieldModel<V = any> = GluerReturn<FieldModelProps<V>>
 
 export interface DecoratorProps {
   children?: any;
@@ -17,27 +18,30 @@ export interface FormModelProps {
 }
 
 export interface Instance<P> {
-  model: GluerReturn<P>;
+  model: FieldModel<P>;
   [index: string]: any;
 }
 
 export type NodeType = 'form' | 'field';
+export type FPath = string | string[];
 
-export interface Node<T, P> {
+export interface FNode<T extends FNode = any, P = any> {
   type: NodeType;
+  // 如果没有 name，则该节点及后续的子节点将会无效（不会出现在表单的任何处理之中，比如获取值，校验，查找节点等）。该节点的兄弟节点不受影响
+  // 同一层级 name 应该保持唯一性，跨层级不用管
   name: string;
   instance: Instance<P>;
-  parent?: T | null;
-  sibling?: T | null;
-  child?: T | null;
+  parent?: FNode<T, P> | null;
+  sibling?: FNode<T, P> | null;
+  child?: FNode<T, P> | null;
   // 用于收集后代
-  pushChild: (field: T) => void;
+  pushChild: (field: FNode<T, P>) => void;
   // 用于删除后代
-  removeChild: (field: T) => void;
+  removeChild: (field: FNode<T, P>) => void;
 }
 
-export interface FormNode extends Node<FormNode, FormModelProps>{
+export interface FormNode extends FNode<FormNode, FormModelProps>{
 }
 
-export interface FieldNode extends Node<FieldNode, FieldModelProps>{
+export interface FieldNode extends FNode<FieldNode, FieldModelProps>{
 }

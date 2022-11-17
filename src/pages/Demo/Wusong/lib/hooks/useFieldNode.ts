@@ -36,10 +36,10 @@ const useFieldNode = <V>(initState: FieldModelProps<V>): [FieldModelProps<V>, Fi
         model: field,
       },
       pushChild: (f: FieldNode) => {
-        nodeHelper.chainChild(f, fieldNode);
+        nodeHelper.chainNode(f, fieldNode);
       },
       removeChild: (f: FieldNode) => {
-        nodeHelper.cutChild(f, fieldNode);
+        nodeHelper.cutNode(f, fieldNode);
       },
     };
   });

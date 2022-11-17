@@ -1,6 +1,6 @@
-import { Node } from '@/pages/Demo/Wusong/lib/interface';
+import { FNode } from '@/pages/Demo/Wusong/lib/interface';
 import React from 'react';
 
-const WuSongNodeContext = React.createContext<Node<any, any>>(null);
+const WuSongNodeContext = React.createContext<FNode>(null);
 
 export default WuSongNodeContext;
