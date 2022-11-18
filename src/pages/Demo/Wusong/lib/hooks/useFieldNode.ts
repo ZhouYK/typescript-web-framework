@@ -1,12 +1,12 @@
 import WuSongNodeContext from '@/pages/Demo/Wusong/lib/NodeProvider/WuSongNodeContext';
 import nodeHelper from '@/pages/Demo/Wusong/lib/utils/nodeHelper';
-import { useIndividualModel } from 'femo';
+import { useDerivedState, useIndividualModel } from 'femo';
 import {
-  useContext, useEffect, useState,
+  useContext, useState,
 } from 'react';
-import { FieldModelProps, FieldNode } from '../interface';
+import { FieldModelProps, FNode } from '../interface';
 
-const useFieldNode = <V>(initState: FieldModelProps<V>): [FieldModelProps<V>, FieldNode] => {
+const useFieldNode = <V>(initState: FieldModelProps<V>): [FieldModelProps<V>, FNode<FieldModelProps<V>>] => {
   const [state, field] = useIndividualModel(initState);
   // const context = useContext(WuSongFormContextCons);
   // @ts-ignore
@@ -28,23 +28,22 @@ const useFieldNode = <V>(initState: FieldModelProps<V>): [FieldModelProps<V>, Fi
 
   const parentNode = useContext(WuSongNodeContext);
 
-  const [fieldNode] = useState<FieldNode>(() => {
+  const [fieldNode] = useState<FNode<FieldModelProps<V>>>(() => {
     return {
       type: 'field',
       name: state.name,
       instance: {
         model: field,
       },
-      pushChild: (f: FieldNode) => {
+      pushChild: (f: FNode) => {
         nodeHelper.chainNode(f, fieldNode);
       },
-      removeChild: (f: FieldNode) => {
+      removeChild: (f: FNode) => {
         nodeHelper.cutNode(f, fieldNode);
       },
     };
   });
-
-  useEffect(() => {
+  useDerivedState(() => {
     if (parentNode) {
       parentNode.pushChild(fieldNode);
       return () => parentNode.removeChild(fieldNode);

@@ -1,10 +1,10 @@
 import {
-  FieldNode, FormNode, FNode, FPath,
+  FNode, FPath,
 } from '@/pages/Demo/Wusong/lib/interface';
 
 class NodeHelper {
   // 链接节点
-  chainNode = (inputNode: FieldNode | FormNode, originNode: FieldNode | FormNode) => {
+  chainNode = (inputNode: FNode, originNode: FNode) => {
     if (!originNode.child) {
       originNode.child = inputNode;
       inputNode.parent = originNode;
@@ -24,7 +24,7 @@ class NodeHelper {
   }
 
   // 删除节点
-  cutNode = (inputNode: FieldNode | FormNode, originNode: FieldNode | FormNode) => {
+  cutNode = (inputNode: FNode, originNode: FNode) => {
     if (!originNode.child) {
       return;
     }
