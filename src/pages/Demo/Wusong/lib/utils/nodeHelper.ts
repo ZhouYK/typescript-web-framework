@@ -1,22 +1,23 @@
 import {
-  FNode, FPath,
+  FieldState,
+  FNode, FormState, FPath,
 } from '@/pages/Demo/Wusong/lib/interface';
 
 class NodeHelper {
   // 链接节点
-  chainNode = (inputNode: FNode, originNode: FNode) => {
-    if (!originNode.child) {
-      originNode.child = inputNode;
-      inputNode.parent = originNode;
+  chainChildNode = (inputNode: FNode, parentNode: FNode) => {
+    if (!parentNode.child) {
+      parentNode.child = inputNode;
+      inputNode.parent = parentNode;
       return;
     }
-    let curNode = originNode.child;
+    let curNode = parentNode.child;
     // todo 每次都从头找最后一个，可能会性能问题，可以优化
     // todo 这里会成环吗？
     while (curNode) {
       if (!curNode.sibling) {
         curNode.sibling = inputNode;
-        inputNode.parent = originNode;
+        inputNode.parent = parentNode;
         return;
       }
       curNode = curNode.sibling;
@@ -24,30 +25,39 @@ class NodeHelper {
   }
 
   // 删除节点
-  cutNode = (inputNode: FNode, originNode: FNode) => {
-    if (!originNode.child) {
+  // 只有在节点树中的节点，才谈得上删除
+  // todo 有个问题：节点删除了过后，其他地方通过 useField 获取到节点，并做了监听的，如何处理？
+  cutNode = (inputNode: FNode) => {
+    // 如果 inputNode 没有父节点，就不存在兄弟节点
+    // 只处理 child 指针
+    if (!inputNode.parent) {
+      inputNode.child = null;
       return;
     }
-    let prevNode = originNode;
-    let curNode = originNode.child;
-    if (curNode === inputNode) {
-      prevNode.child = curNode?.sibling ?? null;
+    // 如果 inputNode 是第一个孩子
+    if (inputNode === inputNode.parent.child) {
+      inputNode.parent.child = inputNode.sibling;
+      inputNode.parent = null;
+      inputNode.child = null;
+      inputNode.sibling = null;
       return;
     }
-    prevNode = curNode;
-    curNode = curNode?.sibling ?? null;
-    while (curNode) {
-      if (curNode === inputNode) {
-        prevNode.sibling = curNode?.sibling ?? null;
+    // 如果 inputNode 不是第一个孩子
+    let cur = inputNode.parent.child;
+    while (cur) {
+      if (cur.sibling === inputNode) {
+        cur.sibling = inputNode.sibling;
+        inputNode.parent = null;
+        inputNode.sibling = null;
+        inputNode.child = null;
         return;
       }
-      prevNode = curNode;
-      curNode = curNode?.sibling ?? null;
+      cur = cur.sibling;
     }
   }
 
   // 根据路径和起始节点（查找时不包含该节点）查找节点
-  findNode = (node: FNode, path?: FPath): FNode | undefined => {
+  findNode = (node: FNode, path: FPath): FNode | undefined => {
     if (!path || !node) return undefined;
     let length = 0;
     let tmpPath = path;
@@ -89,6 +99,43 @@ class NodeHelper {
       cur = cur.parent;
     }
     return undefined;
+  }
+
+  // 根据节点获取：节点以及其子节点的结构化数据
+  // todo 添加验证
+  getValues = (node: FNode<FieldState | FormState>) => {
+    const result: { [index: string]: any } = {};
+    let tmp = result;
+    let cur = node;
+
+    if (!cur.child) {
+      if (node.type === 'form') {
+        return result;
+      }
+
+      tmp[cur.name] = cur.instance.model().value;
+      return result;
+    }
+
+    tmp[cur.name] = {};
+    tmp = tmp[cur.name];
+    cur = cur.child;
+    while (cur) {
+      if (cur.child) {
+        tmp[cur.name] = {};
+        tmp = tmp[cur.name];
+        cur = cur.child;
+        continue;
+      } else {
+        tmp[cur.name] = cur.instance.model().value;
+        if (cur.sibling) {
+          cur = cur.sibling;
+          continue;
+        }
+      }
+      cur = null;
+    }
+    return result;
   }
 }
 

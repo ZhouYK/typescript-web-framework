@@ -1,33 +1,36 @@
-import { FormModelProps, FormNode } from '@/pages/Demo/Wusong/lib/interface';
+import { FNode, FormState } from '@/pages/Demo/Wusong/lib/interface';
 import WuSongNodeContext from '@/pages/Demo/Wusong/lib/NodeProvider/WuSongNodeContext';
 import nodeHelper from '@/pages/Demo/Wusong/lib/utils/nodeHelper';
-import { useIndividualModel } from 'femo';
-import { useContext, useEffect, useState } from 'react';
+import { useDerivedState, useIndividualModel } from 'femo';
+import { useContext, useState } from 'react';
 
-const useFormNode = (initState: FormModelProps):[FormModelProps, FormNode] => {
+const useFormNode = (initState: FormState):[FormState, FNode] => {
   const [state, form] = useIndividualModel(initState);
 
   const parentNode = useContext(WuSongNodeContext);
-  const [formNode] = useState<FormNode>(() => {
+  const [formNode] = useState<FNode>(() => {
     return {
       type: 'form',
       name: state.name,
       instance: {
         model: form,
       },
-      pushChild: (f) => {
-        nodeHelper.chainNode(f, formNode);
+      pushChild: (f: FNode) => {
+        nodeHelper.chainChildNode(f, formNode);
       },
-      removeChild: (f) => {
-        nodeHelper.cutNode(f, formNode);
+      detach: () => {
+        nodeHelper.cutNode(formNode);
       },
     };
   });
 
-  useEffect(() => {
+  useDerivedState(() => {
     parentNode?.pushChild(formNode);
-    return () => parentNode?.removeChild(formNode);
+  }, () => {
+    formNode.detach();
+    parentNode?.pushChild(formNode);
   }, [parentNode]);
+
   return [state, formNode];
 };
 

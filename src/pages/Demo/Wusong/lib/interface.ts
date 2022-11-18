@@ -1,7 +1,7 @@
 import { GluerReturn } from 'femo';
 
-export interface FieldModelProps<V = any> {
-  name: string;
+export interface FieldState<V = any> {
+  name?: string;
   value: V;
   [index: string]: any;
 }
@@ -13,13 +13,13 @@ export interface DecoratorProps {
   [index: string]: any;
 }
 
-export interface FormModelProps {
+export interface FormState {
+  name?: string;
   [index: string]: any;
 }
 
 export interface Instance<P> {
   model: NodeModel<P>;
-  [index: string]: any;
 }
 
 export type NodeType = 'form' | 'field';
@@ -36,6 +36,8 @@ export interface FNode<P = any> {
   child?: FNode<P> | null;
   // 用于收集后代
   pushChild: (field: FNode<P>) => void;
-  // 用于删除后代
-  removeChild: (field: FNode<P>) => void;
+  // 节点自己脱落
+  detach: () => void;
 }
+
+export type TraverseDirection = 'up' | 'down' | 'left' | 'right' | 'horizon' | 'vertical';

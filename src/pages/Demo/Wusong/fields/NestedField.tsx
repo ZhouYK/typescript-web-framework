@@ -10,7 +10,7 @@ interface Props {
 }
 
 const NestedComponent = () => {
-  return <section><AgeField /><NameField/></section>;
+  return <section><AgeField name='sub-age' /><NameField name='sub-name'/></section>;
 };
 
 const NestedField: FC<Props> = () => {

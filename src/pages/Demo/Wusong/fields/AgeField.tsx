@@ -9,15 +9,14 @@ interface Props {
 }
 
 const AgeField: FC<Props> = (_props) => {
-  const [state, model] = useField('name');
-
-  console.log('state, model', state, model);
-
+  const [name] = useField<string>('name');
+  const [age] = useField();
+  console.log('age', age.value);
   return (
     <FormItem
       label='年龄'
     >
-      <InputNumber placeholder='请输入年龄' />
+      <InputNumber placeholder={!name.value ? '请输入年龄' : name.value} />
     </FormItem>
   );
 };
