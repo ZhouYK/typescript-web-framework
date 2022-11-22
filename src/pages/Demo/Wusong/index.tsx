@@ -15,9 +15,9 @@ const WuSong: FC<Props> = (_props) => {
   const [n] = useState(0);
   return (
     <Form name='form'>
-      <NameField name='name' />
-      <AgeField name='age' />
-      <NestedField name='test' />
+      <NameField/>
+      <AgeField />
+      <NestedField/>
       <Test>
         <Text n={n} text='hello' />
       </Test>

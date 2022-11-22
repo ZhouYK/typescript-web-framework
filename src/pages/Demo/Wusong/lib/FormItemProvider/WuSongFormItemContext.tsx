@@ -1,6 +1,6 @@
-import { FieldModelProps } from '@/pages/Demo/Wusong/lib/interface';
+import { FieldState } from '@/pages/Demo/Wusong/lib/interface';
 import React from 'react';
 
-const WuSongFormItemContext = React.createContext<FieldModelProps>(null);
+const WuSongFormItemContext = React.createContext<FieldState>(null);
 
 export default WuSongFormItemContext;

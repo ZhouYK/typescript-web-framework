@@ -1,21 +1,21 @@
-import FormItem from '@/pages/Demo/Wusong/lib/FormItem';
-import linkField from '@/pages/Demo/Wusong/lib/hoc/linkField';
+import Field from '@/pages/Demo/Wusong/lib/Field';
 import { Input } from 'antd';
-// import useQueryField from '@/pages/Demo/Wusong/hooks/useQueryField';
 import React, { FC } from 'react';
 
 interface Props {
-
+  name?: string;
 }
 
-const NameField: FC<Props> = (_props) => {
+const NameField: FC<Props> = (props) => {
+  const { name } = props;
   return (
-    <FormItem
+    <Field
+      name={name || 'name'}
       label='名字'
     >
       <Input placeholder='请输入名字' />
-    </FormItem>
+    </Field>
   );
 };
 
-export default linkField(NameField);
+export default NameField;
