@@ -1,9 +1,17 @@
 import {
   FieldState,
-  FNode, FormState, FPath,
+  FNode, FormState, FPath, NodeType,
 } from '@/pages/Demo/Wusong/lib/interface';
 
 class NodeHelper {
+  isForm = (type: NodeType) => {
+    return type === 'form';
+  }
+
+  isField = (type: NodeType) => {
+    return type === 'field' || type === 'array-field';
+  }
+
   // 链接节点
   chainChildNode = (inputNode: FNode, parentNode: FNode) => {
     if (!parentNode.child) {
@@ -93,7 +101,7 @@ class NodeHelper {
   findNearlyParentFormNode = (node: FNode): FNode | undefined => {
     let cur = node;
     while (cur) {
-      if (cur?.type === 'form') {
+      if (this.isForm(cur?.type)) {
         return cur;
       }
       cur = cur.parent;
@@ -109,7 +117,7 @@ class NodeHelper {
     let cur = node;
 
     if (!cur.child) {
-      if (node.type === 'form') {
+      if (this.isForm(node.type)) {
         return result;
       }
 

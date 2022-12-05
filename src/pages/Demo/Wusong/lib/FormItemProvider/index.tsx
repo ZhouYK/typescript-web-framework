@@ -1,19 +1,19 @@
-import { FieldModelProps } from '@/pages/Demo/Wusong/lib/interface';
+import { FieldState } from '@/pages/Demo/Wusong/lib/interface';
 import React, { FC } from 'react';
-import WuSongFormItemContext from './WuSongFormItemContext';
+import FormItemContext from './FormItemContext';
 
 interface Props {
   children: any;
-  fieldState: FieldModelProps;
+  fieldState: FieldState;
 }
 
 const WuSongFormItemProvider: FC<Props> = (props) => {
   return (
-    <WuSongFormItemContext.Provider value={props.fieldState}>
+    <FormItemContext.Provider value={props.fieldState}>
       {
         props.children
       }
-    </WuSongFormItemContext.Provider>
+    </FormItemContext.Provider>
   );
 };
 

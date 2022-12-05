@@ -1,6 +1,7 @@
-import WuSongFormItemContext from '@/pages/Demo/Wusong/lib/FormItemProvider/WuSongFormItemContext';
+import FormItemContext from '@/pages/Demo/Wusong/lib/FormItemProvider/FormItemContext';
 import { DecoratorProps } from '@/pages/Demo/Wusong/lib/interface';
-import WuSongNodeContext from '@/pages/Demo/Wusong/lib/NodeProvider/WuSongNodeContext';
+import NodeContext from '@/pages/Demo/Wusong/lib/NodeProvider/NodeContext';
+import nodeHelper from '@/pages/Demo/Wusong/lib/utils/nodeHelper';
 import React, {
   FC, SyntheticEvent, useCallback, useContext, useRef,
 } from 'react';
@@ -10,12 +11,12 @@ function isSyntheticEvent(e: any): e is SyntheticEvent {
 }
 
 const FormItem: FC<Partial<DecoratorProps>> = (props) => {
-  // todo rest 和 fieldState 进行融合
+  // TODO rest 和 fieldState 进行融合
   const { children, ...rest } = props;
   const propsRef = useRef(props);
   propsRef.current = props;
-  const fieldState = useContext(WuSongFormItemContext);
-  const fieldNode = useContext(WuSongNodeContext);
+  const fieldState = useContext(FormItemContext);
+  const fieldNode = useContext(NodeContext);
   const fieldNodeRef = useRef(fieldNode);
   fieldNodeRef.current = fieldNode;
 
@@ -27,7 +28,7 @@ const FormItem: FC<Partial<DecoratorProps>> = (props) => {
       // @ts-ignore
       value = evt.target?.value;
     }
-    if (fieldNodeRef.current.type === 'field') {
+    if (nodeHelper.isField(fieldNodeRef.current.type)) {
       fieldNodeRef.current.instance.model((_d, s) => ({
         ...s,
         value,
@@ -41,7 +42,7 @@ const FormItem: FC<Partial<DecoratorProps>> = (props) => {
     ...children.props,
     onChange,
   };
-  if (fieldNodeRef.current.type === 'field') {
+  if (nodeHelper.isField(fieldNodeRef.current.type)) {
     ps.value = fieldState?.value;
   }
   return (

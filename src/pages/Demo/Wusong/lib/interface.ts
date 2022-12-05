@@ -2,16 +2,17 @@ import { GluerReturn } from 'femo';
 
 export type NodeModel<V = any> = GluerReturn<V>
 
-export interface NodeInstance<P> {
+export interface NodeInstance<P, V = any> {
   model: NodeModel<P>;
-  value?: P;
+  validate: () => Promise<V>;
+  value?: V;
   [index: string]: any;
 }
 
-export interface FormInstance<V = any> extends NodeInstance<V> {
+export interface FormInstance<V = any> extends NodeInstance<FormState<V>, V> {
 }
 
-export interface FieldInstance<V = any> extends NodeInstance<V> {
+export interface FieldInstance<V = any> extends NodeInstance<FieldState<V>, V> {
 }
 
 export interface DecoratorProps {

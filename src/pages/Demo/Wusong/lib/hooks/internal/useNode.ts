@@ -1,4 +1,4 @@
-import WuSongNodeContext from '@/pages/Demo/Wusong/lib/NodeProvider/WuSongNodeContext';
+import NodeContext from '@/pages/Demo/Wusong/lib/NodeProvider/NodeContext';
 import instanceHelper from '@/pages/Demo/Wusong/lib/utils/instanceHelper';
 import nodeHelper from '@/pages/Demo/Wusong/lib/utils/nodeHelper';
 import { useDerivedState, useDerivedStateWithModel } from 'femo';
@@ -9,6 +9,7 @@ import {
   FieldState, FNode, NodeInstance, NodeStateMap, NodeType,
 } from '../../interface';
 
+const protectedProperties = ['model', 'validate'];
 // todo 需要一个默认的 fieldState 和 formState
 const useNode = <V>(initState: Partial<FieldState<V>>, type: NodeType, instance?: NodeInstance<NodeStateMap<V>[typeof type]>): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>] => {
   const insRef = useRef(instance || instanceHelper.createInstance(initState));
@@ -31,7 +32,7 @@ const useNode = <V>(initState: Partial<FieldState<V>>, type: NodeType, instance?
   //   }
   // }, [state.name]);
 
-  const parentNode = useContext(WuSongNodeContext);
+  const parentNode = useContext(NodeContext);
 
   const [node] = useState<FNode<NodeStateMap<V>[typeof type]>>(() => {
     return {
@@ -52,7 +53,7 @@ const useNode = <V>(initState: Partial<FieldState<V>>, type: NodeType, instance?
       ...st,
       ...initState,
     };
-  }, [...Object.values(initState)]);
+  }, [...Object.values(initState || {})]);
 
   useDerivedState(() => {
     // todo model.silent 更新的属性如果出现在 node 中，也需要同步
@@ -60,7 +61,7 @@ const useNode = <V>(initState: Partial<FieldState<V>>, type: NodeType, instance?
     // 保持 instance 的引用不变很重要
     // 这里覆写属性有一定风险：用户可以传入 model 名字来覆盖，因此禁止覆盖 model
     Object.keys(state).forEach((k) => {
-      if (k !== 'model') {
+      if (!protectedProperties.includes(k)) {
         node.instance[k] = state[k];
       }
     });

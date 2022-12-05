@@ -1,6 +1,6 @@
 import { FormState } from '@/pages/Demo/Wusong/lib/interface';
 import React, { FC } from 'react';
-import WuSongFormContext from './WuSongFormContext';
+import FormContext from './FormContext';
 
 interface Props {
   children: any;
@@ -9,11 +9,11 @@ interface Props {
 
 const WuSongFormItemProvider: FC<Props> = (props) => {
   return (
-    <WuSongFormContext.Provider value={props.formState}>
+    <FormContext.Provider value={props.formState}>
       {
         props.children
       }
-    </WuSongFormContext.Provider>
+    </FormContext.Provider>
   );
 };
 

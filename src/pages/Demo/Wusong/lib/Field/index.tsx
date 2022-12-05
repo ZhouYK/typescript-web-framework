@@ -1,5 +1,5 @@
 import FormItem from '@/pages/Demo/Wusong/lib/FormItem';
-import WuSongFormItemProvider from '@/pages/Demo/Wusong/lib/FormItemProvider';
+import FormItemProvider from '@/pages/Demo/Wusong/lib/FormItemProvider';
 import useNode from '@/pages/Demo/Wusong/lib/hooks/internal/useNode';
 import { FieldInstance, FieldState } from '@/pages/Demo/Wusong/lib/interface';
 import NodeProvider from '@/pages/Demo/Wusong/lib/NodeProvider';
@@ -15,17 +15,15 @@ const Field: FC<Props> = (props) => {
   const [fieldState, fieldNode] = useNode(rest, 'field', field);
   return (
     <NodeProvider node={fieldNode}>
-      <WuSongFormItemProvider fieldState={fieldState}>
+      <FormItemProvider fieldState={fieldState}>
         <FormItem
           label={fieldState.label}
         >
           {
-            React.cloneElement(children, {
-              ...fieldState,
-            })
+            children
           }
         </FormItem>
-      </WuSongFormItemProvider>
+      </FormItemProvider>
     </NodeProvider>
   );
 };
