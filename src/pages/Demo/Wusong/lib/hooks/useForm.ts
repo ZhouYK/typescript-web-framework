@@ -1,12 +1,11 @@
-import { FormInstance, FormState } from '@/pages/Demo/Wusong/lib/interface';
-import instanceHelper from '@/pages/Demo/Wusong/lib/utils/instanceHelper';
-import { useState } from 'react';
+import useInstance from '@/pages/Demo/Wusong/lib/hooks/internal/useInstance';
+import {
+  FormInstance, FPath, UseInstanceOptions,
+} from '@/pages/Demo/Wusong/lib/interface';
 
-const useForm = <V = any>(initState?: Partial<FormState<V>>, instance?: FormInstance<FormState<V>>): [FormInstance<FormState<V>>] => {
-  const [ins] = useState(() => {
-    return instance || instanceHelper.createInstance(initState);
-  });
-  return [ins];
+const useForm = <V = any>(path?: FPath, options?: UseInstanceOptions): [FormInstance<V> | null] => {
+  const [instance] = useInstance(path, options, 'form');
+  return [instance];
 };
 
 export default useForm;

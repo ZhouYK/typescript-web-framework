@@ -1,36 +1,32 @@
 import {
-  FieldState, FNode, FPath, NodeModel,
+  FieldInstance, FormInstance, FPath, NodeType, UseInstanceOptions,
 } from '@/pages/Demo/Wusong/lib/interface';
 import NodeContext from '@/pages/Demo/Wusong/lib/NodeProvider/NodeContext';
 import nodeHelper from '@/pages/Demo/Wusong/lib/utils/nodeHelper';
 import { subscribe, useDerivedState } from 'femo';
 import { useContext, useEffect, useState } from 'react';
 
-interface Options {
-  context?: FNode;
-  watch?: boolean;
-}
-
-/**
- * 根据路径（字段name组成的数组）获取到字段state和model
- * @param path 路径（字段name组成的数组）
- * @param options context: 指定搜索的起始节点（搜索时不包含该节点），默认是最近的表单节点(FormNode)；
- * watch：是否订阅字段的变化，默认true
- */
-const useQueryField = <V>(path?: FPath, options?: Options): [FieldState<V> | undefined, NodeModel<FieldState<V>> | undefined] => {
+// 所有的搜索都必须在一个 context 下进行.
+// 如果传了 context ，则以传入为准；
+// 如果没传统一规定在一个 formNode context 查询，不论所查的 field 还是 form
+const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?: NodeType): [FieldInstance<V> | FormInstance<V> | null] => {
   const { context, watch = true } = options || {};
   const node = useContext(NodeContext);
 
   const [formNode] = useDerivedState(() => {
-    return nodeHelper.findNearlyParentFormNode(node);
+    return nodeHelper.findNearlyParentFormNode(node, type === 'form');
   }, [node]);
 
   const contextNode = context || formNode;
 
   const [target] = useDerivedState(() => {
-    // 没有 path，则返回当前所属的 fieldNode
+    // 没有 path，则返回当前所属的 node
     if (!path) return nodeHelper.isForm(node.type) ? null : node;
-    return nodeHelper.findNode(contextNode, path);
+    if (!path || !path.length) {
+      if (type === node.type) return node;
+      return null;
+    }
+    return nodeHelper.findNode(contextNode, path, type);
   }, [contextNode, path]);
   const [, updateState] = useState<any>();
 
@@ -42,7 +38,7 @@ const useQueryField = <V>(path?: FPath, options?: Options): [FieldState<V> | und
     }
     return null;
   }, [target, watch, target.instance.model]);
-  return [target?.instance?.model?.(), target?.instance?.model];
+  return [target?.instance];
 };
 
-export default useQueryField;
+export default useInstance;

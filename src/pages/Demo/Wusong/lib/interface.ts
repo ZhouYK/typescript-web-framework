@@ -2,46 +2,48 @@ import { GluerReturn } from 'femo';
 
 export type NodeModel<V = any> = GluerReturn<V>
 
-export interface NodeInstance<P, V = any> {
-  model: NodeModel<P>;
-  validate: () => Promise<V>;
-  value?: V;
-  [index: string]: any;
-}
-
-export interface FormInstance<V = any> extends NodeInstance<FormState<V>, V> {
-}
-
-export interface FieldInstance<V = any> extends NodeInstance<FieldState<V>, V> {
-}
-
-export interface DecoratorProps {
-  children?: any;
-  label?: any;
-  [index: string]: any;
-}
-
 export interface FieldState<V = any> {
   name?: string;
   value?: V;
-  label?: any;
-  [index: string]: any;
-}
-
-export interface FormProps<V = any> {
-  name?: string;
-  form?: FormInstance<V>;
-  value?: V;
-  children: any;
+  required?: boolean;
+  errors?: any[];
+  validateStatus?: ValidateStatus;
+  validator?: (value: V, field: FieldInstance<V>, form: FormInstance<any>) => string;
 }
 
 export interface FormState<V = any> {
   name?: string;
   value?: V;
+}
+
+export interface NodeInstance<P, V = any> {
+  model: NodeModel<P>;
+  validate: () => Promise<V>;
+  value?: V;
+}
+
+export interface FormInstance<V = any> extends NodeInstance<FormState<V>, V>, FormState<V> {
+}
+
+export interface FieldInstance<V = any> extends NodeInstance<FieldState<V>, V>, FieldState<V> {
+}
+
+type ValidateStatus = 'validating' | 'error' | 'warning' | 'success';
+
+export interface FieldProps<V = any> extends FieldState<V> {
+  label?: any;
+  children: any;
+  field?: FieldInstance<V>;
   [index: string]: any;
 }
 
-export type NodeType = 'form' | 'field' | 'array-field';
+export interface FormProps<V = any> extends FormState<V>{
+  form?: FormInstance<V>;
+  children: any;
+  [index: string]: any;
+}
+
+export type NodeType = 'form' | 'field';
 export type FPath = string | string[];
 
 export interface FNode<P = any> {
@@ -62,5 +64,9 @@ export interface FNode<P = any> {
 export interface NodeStateMap<V> {
   form: FormState<V>;
   field: FieldState<V>;
-  'array-field': FieldState<V>;
+}
+
+export interface UseInstanceOptions {
+  context?: FNode;
+  watch?: boolean;
 }

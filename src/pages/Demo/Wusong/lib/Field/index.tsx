@@ -1,23 +1,27 @@
 import FormItem from '@/pages/Demo/Wusong/lib/FormItem';
 import FormItemProvider from '@/pages/Demo/Wusong/lib/FormItemProvider';
 import useNode from '@/pages/Demo/Wusong/lib/hooks/internal/useNode';
-import { FieldInstance, FieldState } from '@/pages/Demo/Wusong/lib/interface';
+import { FieldProps, FieldState } from '@/pages/Demo/Wusong/lib/interface';
 import NodeProvider from '@/pages/Demo/Wusong/lib/NodeProvider';
-import React, { FC, ReactElement } from 'react';
+import React, { FC } from 'react';
 
-interface Props<V = any> extends FieldState<V> {
-  children: ReactElement;
-  field?: FieldInstance<V>;
+const fieldStateKeys: (keyof FieldState)[] = ['name', 'value', 'required', 'errors', 'validateStatus', 'validator'];
+function filterFieldState<V = any>(props: FieldProps<V>): FieldState<V> {
+  return fieldStateKeys.reduce((pre, cur) => {
+    // @ts-ignore
+    pre[cur] = props[cur];
+    return pre;
+  }, {} as FieldState<V>);
 }
 
-const Field: FC<Props> = (props) => {
-  const { children, field, ...rest } = props;
-  const [fieldState, fieldNode] = useNode(rest, 'field', field);
+const Field: FC<FieldProps> = (props) => {
+  const { children, field } = props;
+  const [fieldState, fieldNode] = useNode(filterFieldState(props), 'field', field);
   return (
     <NodeProvider node={fieldNode}>
       <FormItemProvider fieldState={fieldState}>
         <FormItem
-          label={fieldState.label}
+          label={props.label}
         >
           {
             children

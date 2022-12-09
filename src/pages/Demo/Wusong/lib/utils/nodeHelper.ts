@@ -9,7 +9,7 @@ class NodeHelper {
   }
 
   isField = (type: NodeType) => {
-    return type === 'field' || type === 'array-field';
+    return type === 'field';
   }
 
   // 链接节点
@@ -65,7 +65,7 @@ class NodeHelper {
   }
 
   // 根据路径和起始节点（查找时不包含该节点）查找节点
-  findNode = (node: FNode, path: FPath): FNode | undefined => {
+  findNode = (node: FNode, path: FPath, type?: NodeType): FNode | undefined => {
     if (!path || !node) return undefined;
     let length = 0;
     let tmpPath = path;
@@ -84,7 +84,7 @@ class NodeHelper {
       // 同一层级只会找第一个，同一层级 name 应该保持唯一性
       if (name === cur.name) {
         dep += 1;
-        if (dep === length) {
+        if (dep === length && ((!type) || cur.type === type)) {
           result = cur;
         }
         cur = cur.child;
@@ -98,8 +98,13 @@ class NodeHelper {
   }
 
   // 根据节点查找最近所属的表单父节点(如果传入的 node 就是表单节点，则返回自己)
-  findNearlyParentFormNode = (node: FNode): FNode | undefined => {
+  findNearlyParentFormNode = (node: FNode, notSelf?: boolean): FNode | undefined => {
     let cur = node;
+    if (notSelf) {
+      if (this.isForm(cur?.type)) {
+        cur = cur.parent;
+      }
+    }
     while (cur) {
       if (this.isForm(cur?.type)) {
         return cur;
@@ -120,7 +125,6 @@ class NodeHelper {
       if (this.isForm(node.type)) {
         return result;
       }
-
       tmp[cur.name] = cur.instance.model().value;
       return result;
     }
@@ -144,6 +148,24 @@ class NodeHelper {
       cur = null;
     }
     return result;
+  }
+
+  // 遍历节点
+  inspect = (node: FNode<FieldState | FormState>, callback: (n: FNode<FieldState | FormState>) => boolean) => {
+    let cur = node;
+    let flag = true;
+    while (flag && cur) {
+      flag = callback(cur);
+      if (cur.child) {
+        cur = cur.child;
+        continue;
+      }
+      if (cur.sibling) {
+        cur = cur.sibling;
+        continue;
+      }
+      cur = null;
+    }
   }
 }
 

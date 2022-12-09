@@ -6,12 +6,12 @@ import {
   useContext, useEffect, useRef, useState,
 } from 'react';
 import {
-  FieldState, FNode, NodeInstance, NodeStateMap, NodeType,
+  FieldInstance,
+  FieldState, FNode, FormState, NodeInstance, NodeStateMap, NodeType,
 } from '../../interface';
 
-const protectedProperties = ['model', 'validate'];
 // todo 需要一个默认的 fieldState 和 formState
-const useNode = <V>(initState: Partial<FieldState<V>>, type: NodeType, instance?: NodeInstance<NodeStateMap<V>[typeof type]>): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>] => {
+const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: NodeType, instance?: NodeInstance<NodeStateMap<V>[typeof type]>): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>] => {
   const insRef = useRef(instance || instanceHelper.createInstance(initState));
 
   // const context = useContext(WuSongFormContextCons);
@@ -59,12 +59,22 @@ const useNode = <V>(initState: Partial<FieldState<V>>, type: NodeType, instance?
     // todo model.silent 更新的属性如果出现在 node 中，也需要同步
     node.name = state.name;
     // 保持 instance 的引用不变很重要
-    // 这里覆写属性有一定风险：用户可以传入 model 名字来覆盖，因此禁止覆盖 model
-    Object.keys(state).forEach((k) => {
-      if (!protectedProperties.includes(k)) {
-        node.instance[k] = state[k];
+    Object.assign(node.instance, state);
+    node.instance.validate = async () => {
+      const formNode = nodeHelper.findNearlyParentFormNode(node);
+      const errors: string[] = [];
+      nodeHelper.inspect(node, (n) => {
+        const error = (n.instance as FieldInstance<V>)?.validator?.(n.instance.value, n.instance, formNode.instance);
+        if (error) {
+          errors.push(error);
+        }
+        return true;
+      });
+      if (errors.length) {
+        return Promise.reject(errors);
       }
-    });
+      return nodeHelper.getValues(node);
+    };
   }, [state]);
 
   useDerivedState(() => {

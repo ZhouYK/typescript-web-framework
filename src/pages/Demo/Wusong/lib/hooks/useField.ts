@@ -1,12 +1,11 @@
-import { FieldInstance, FieldState } from '@/pages/Demo/Wusong/lib/interface';
-import instanceHelper from '@/pages/Demo/Wusong/lib/utils/instanceHelper';
-import { useState } from 'react';
+import useInstance from '@/pages/Demo/Wusong/lib/hooks/internal/useInstance';
+import {
+  FieldInstance, FPath, UseInstanceOptions,
+} from '@/pages/Demo/Wusong/lib/interface';
 
-const useField = <V = any>(initState?: Partial<FieldState<V>>, instance?: FieldInstance<FieldState<V>>): [FieldInstance<FieldState<V>>] => {
-  const [ins] = useState(() => {
-    return instance || instanceHelper.createInstance(initState);
-  });
-  return [ins];
+const useField = <V = any>(path?: FPath, options?: UseInstanceOptions): [FieldInstance<V> | null] => {
+  const [instance] = useInstance(path, options, 'field');
+  return [instance];
 };
 
 export default useField;
