@@ -3,6 +3,7 @@ import {
 } from 'react';
 import { Button, Space } from 'antd';
 import { safeCrash } from '@/hocs';
+import HookOrderTest from './HookOrderTest';
 
 interface Props {
 
@@ -57,6 +58,7 @@ const Hook: FC<Props> = (_props: PropsWithChildren<Props>) => {
     <Space>
       <Button onClick={onClick}>测试 reverse</Button>
       <Button onClick={onUpdateClick}>不改变顺序</Button>
+      <HookOrderTest />
     </Space>
   );
 };

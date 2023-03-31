@@ -56,7 +56,18 @@ const initRoadMap: RoadMapModuleType = {
       }, {
         name: 'react hook',
         path: '/hook',
-        component: lazy(() => import('../pages/Demo/Hook')),
+        component: () => {
+          return <Redirect to='/demo/hook/order' />;
+        },
+        subRoads: [{
+          name: '顺序测试',
+          path: '/order',
+          component: lazy(() => import('../pages/Demo/Hook/Order')),
+        }, {
+          name: '闭包测试',
+          path: '/closure',
+          component: lazy(() => import('../pages/Demo/Hook/Closure')),
+        }],
       }, {
         name: 'loading',
         path: '/loading',
