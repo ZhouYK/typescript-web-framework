@@ -11,7 +11,7 @@ import {
 } from '../../interface';
 
 // todo 需要一个默认的 fieldState 和 formState
-const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: NodeType, instance?: NodeInstance<NodeStateMap<V>[typeof type]>): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>] => {
+const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: NodeType, instance?: NodeInstance<NodeStateMap<V>[typeof type]>): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>, NodeInstance<NodeStateMap<V>[typeof type]>] => {
   const insRef = useRef(instance || instanceHelper.createInstance(initState));
 
   // const context = useContext(WuSongFormContextCons);
@@ -59,39 +59,50 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     // todo model.silent 更新的属性如果出现在 node 中，也需要同步
     node.name = state.name;
     // 保持 instance 的引用不变很重要
+    // 这里 state 中不能有名为 model 和 validate 的属性，因为这个是 instance 的保留属性名
     Object.assign(node.instance, state);
     const tmpState = node.instance.model();
     console.log('tmpState', tmpState);
     node.instance.validate = async () => {
       const formNode = nodeHelper.findNearlyParentFormNode(node);
-      const errors: string[] = [];
+      const errors: Promise<any>[] = [];
       nodeHelper.inspect(node, (n) => {
         if (nodeHelper.isForm(n.type)) {
           return true;
         }
-        const error = (n.instance as FieldInstance<V>)?.validator?.(n.instance.value, n.instance, formNode.instance);
-        if (error) {
-          n.instance.model((s) => {
+        const error = (n.instance as FieldInstance<V>)?.validator?.(n.instance.value, n.instance, formNode?.instance);
+
+        const errorPromise = Promise.resolve(error).then((e) => {
+          return e;
+        }).catch((err) => {
+          return err;
+        });
+        errors.push(errorPromise);
+
+        n.instance.model.race((s) => {
+          return errorPromise.then((res) => {
+            if (!res && !(s?.errors?.length)) return s;
+            if (!res) {
+              return ({
+                ...s,
+                errors: [],
+              });
+            }
             return {
               ...s,
-              errors: [error],
+              errors: [res],
             };
           });
-          errors.push(error);
-        } else {
-          n.instance.model((s) => {
-            return {
-              ...s,
-              errors: [],
-            };
-          });
-        }
+        });
         return true;
       });
-      if (errors.length) {
-        return Promise.reject(errors);
-      }
-      return nodeHelper.getValues(node);
+
+      return Promise.all(errors).then((errs) => {
+        if (errs.every((er) => !er)) {
+          return Promise.reject(errs);
+        }
+        return nodeHelper.getValues(node);
+      });
     };
   }, [state]);
 
@@ -106,7 +117,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     return () => node.detach();
   }, []);
 
-  return [state, node];
+  return [state, node, insRef.current];
 };
 
 export default useNode;

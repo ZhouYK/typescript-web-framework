@@ -13,6 +13,7 @@ export interface FieldState<V = any> {
 }
 
 export interface FormState<V = any> {
+  errors?: any[];
   name?: string;
   value?: V;
 }

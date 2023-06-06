@@ -1,9 +1,9 @@
 import FormItem from '@/pages/Demo/Form/lib/FormItem';
 import FormItemProvider from '@/pages/Demo/Form/lib/FormItemProvider';
 import useNode from '@/pages/Demo/Form/lib/hooks/internal/useNode';
-import { FieldProps, FieldState } from '@/pages/Demo/Form/lib/interface';
+import { FieldInstance, FieldProps, FieldState } from '@/pages/Demo/Form/lib/interface';
 import NodeProvider from '@/pages/Demo/Form/lib/NodeProvider';
-import React, { FC } from 'react';
+import React, { FC, forwardRef, useImperativeHandle } from 'react';
 
 const fieldStateKeys: (keyof FieldState)[] = ['label', 'name', 'value', 'required', 'errors', 'validateStatus', 'validator'];
 function filterFieldState<V = any>(props: FieldProps<V>): FieldState<V> {
@@ -17,9 +17,12 @@ function filterFieldState<V = any>(props: FieldProps<V>): FieldState<V> {
   }, {} as FieldState<V>);
 }
 
-const Field: FC<FieldProps> = (props) => {
+const Field: FC<FieldProps> = forwardRef<FieldInstance, FieldProps>((props, ref) => {
   const { children, field } = props;
-  const [fieldState, fieldNode] = useNode(filterFieldState(props), 'field', field);
+  const [fieldState, fieldNode, instance] = useNode(filterFieldState(props), 'field', field);
+  useImperativeHandle(ref, () => {
+    return instance;
+  });
   return (
     <NodeProvider node={fieldNode}>
       <FormItemProvider fieldState={fieldState}>
@@ -31,5 +34,5 @@ const Field: FC<FieldProps> = (props) => {
       </FormItemProvider>
     </NodeProvider>
   );
-};
+});
 export default Field;

@@ -4,7 +4,7 @@ interface Props {
 
 }
 
-const ClosureTest: FC<Props> = (_props) => {
+const ClosureTest: FC<Props> = (props) => {
   const [a, setA] = useState(0);
 
   console.log('outer a', a);

@@ -1,13 +1,19 @@
 import FormProvider from '@/pages/Demo/Form/lib/FormProvider';
 import useNode from '@/pages/Demo/Form/lib/hooks/internal/useNode';
-import { FormProps } from '@/pages/Demo/Form/lib/interface';
+import { FormInstance, FormProps } from '@/pages/Demo/Form/lib/interface';
 import NodeProvider from '@/pages/Demo/Form/lib/NodeProvider';
 import nodeHelper from '@/pages/Demo/Form/lib/utils/nodeHelper';
-import { FC, useEffect } from 'react';
+import {
+  FC, forwardRef, useEffect, useImperativeHandle,
+} from 'react';
 
-const Form: FC<FormProps> = (props) => {
+const Form: FC<FormProps> = forwardRef<FormInstance, FormProps>((props, ref) => {
   const { children, form, ...rest } = props;
-  const [formState, formNode] = useNode(rest, 'form', form);
+  const [formState, formNode, instance] = useNode(rest, 'form', form);
+
+  useImperativeHandle(ref, () => {
+    return instance;
+  });
   useEffect(() => {
     console.log('formNode', formNode);
     setTimeout(() => {
@@ -23,6 +29,6 @@ const Form: FC<FormProps> = (props) => {
       </FormProvider>
     </NodeProvider>
   );
-};
+});
 
 export default Form;

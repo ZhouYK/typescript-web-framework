@@ -8,7 +8,7 @@ import { useContext, useEffect, useState } from 'react';
 
 // 所有的搜索都必须在一个 context 下进行.
 // 如果传了 context ，则以传入为准；
-// 如果没传统一规定在一个 formNode context 查询，不论所查的 field 还是 form
+// 如果没传，统一规定在一个 formNode context 查询，不论所查的 field 还是 form
 const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?: NodeType): [FieldInstance<V> | FormInstance<V> | null] => {
   const { context, watch = true } = options || {};
   const node = useContext(NodeContext);
