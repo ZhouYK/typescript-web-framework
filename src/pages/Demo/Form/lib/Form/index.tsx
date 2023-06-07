@@ -8,8 +8,8 @@ import {
 } from 'react';
 
 const Form: FC<FormProps> = forwardRef<FormInstance, FormProps>((props, ref) => {
-  const { children, form, ...rest } = props;
-  const [formState, formNode, instance] = useNode(rest, 'form', form);
+  const { children, ...rest } = props;
+  const [formState, formNode, instance] = useNode(rest, 'form');
 
   useImperativeHandle(ref, () => {
     return instance;

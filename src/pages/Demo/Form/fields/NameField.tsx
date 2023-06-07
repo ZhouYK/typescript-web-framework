@@ -10,6 +10,7 @@ const NameField: FC<Props> = (props) => {
   const { name } = props;
   return (
     <Field
+      value='张三丰'
       name={name || 'name'}
       label='名字'
     >

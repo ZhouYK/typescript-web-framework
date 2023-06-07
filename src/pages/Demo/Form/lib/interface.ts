@@ -34,12 +34,10 @@ type ValidateStatus = 'validating' | 'error' | 'warning' | 'success';
 
 export interface FieldProps<V = any> extends FieldState<V> {
   children: any;
-  field?: FieldInstance<V>;
   [index: string]: any;
 }
 
 export interface FormProps<V = any> extends FormState<V>{
-  form?: FormInstance<V>;
   children: any;
   [index: string]: any;
 }

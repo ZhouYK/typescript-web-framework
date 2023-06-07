@@ -18,8 +18,8 @@ function filterFieldState<V = any>(props: FieldProps<V>): FieldState<V> {
 }
 
 const Field: FC<FieldProps> = forwardRef<FieldInstance, FieldProps>((props, ref) => {
-  const { children, field } = props;
-  const [fieldState, fieldNode, instance] = useNode(filterFieldState(props), 'field', field);
+  const { children } = props;
+  const [fieldState, fieldNode, instance] = useNode(filterFieldState(props), 'field');
   useImperativeHandle(ref, () => {
     return instance;
   });

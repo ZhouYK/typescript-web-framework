@@ -3,6 +3,7 @@ import instanceHelper from '@/pages/Demo/Form/lib/utils/instanceHelper';
 import nodeHelper from '@/pages/Demo/Form/lib/utils/nodeHelper';
 import { useDerivedState, useDerivedStateWithModel } from 'femo';
 import {
+  useCallback,
   useContext, useEffect, useRef, useState,
 } from 'react';
 import {
@@ -11,8 +12,24 @@ import {
 } from '../../interface';
 
 // todo 需要一个默认的 fieldState 和 formState
-const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: NodeType, instance?: NodeInstance<NodeStateMap<V>[typeof type]>): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>, NodeInstance<NodeStateMap<V>[typeof type]>] => {
-  const insRef = useRef(instance || instanceHelper.createInstance(initState));
+const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: NodeType): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>, NodeInstance<NodeStateMap<V>[typeof type]>] => {
+  const reducerRef = useRef(null);
+  reducerRef.current = (st: typeof initState) => {
+    return {
+      ...st,
+      ...initState,
+    };
+  };
+
+  const reducer = useCallback((s: typeof initState) => {
+    return reducerRef.current(s);
+  }, []);
+
+  const [instance] = useState(() => {
+    return instanceHelper.createInstance(initState, reducer);
+  });
+
+  const insRef = useRef(instance);
 
   // const context = useContext(WuSongFormContextCons);
   // @ts-ignore
@@ -61,8 +78,6 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     // 保持 instance 的引用不变很重要
     // 这里 state 中不能有名为 model 和 validate 的属性，因为这个是 instance 的保留属性名
     Object.assign(node.instance, state);
-    const tmpState = node.instance.model();
-    console.log('tmpState', tmpState);
     node.instance.validate = async () => {
       const formNode = nodeHelper.findNearlyParentFormNode(node);
       const errors: Promise<any>[] = [];

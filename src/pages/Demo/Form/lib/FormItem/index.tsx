@@ -40,7 +40,6 @@ const FormItem: FC<Props> = (props) => {
     value: fieldState?.value,
     onChange,
   };
-  console.log('fieldState', fieldState);
   return (
     <section>
       <section>{fieldState.label}</section>
