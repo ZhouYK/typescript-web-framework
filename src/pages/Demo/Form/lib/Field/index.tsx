@@ -4,8 +4,10 @@ import useNode from '@/pages/Demo/Form/lib/hooks/internal/useNode';
 import { FieldInstance, FieldProps, FieldState } from '@/pages/Demo/Form/lib/interface';
 import NodeProvider from '@/pages/Demo/Form/lib/NodeProvider';
 import React, { FC, forwardRef, useImperativeHandle } from 'react';
+import { defaultState } from '../config';
 
-const fieldStateKeys: (keyof FieldState)[] = ['label', 'name', 'value', 'required', 'errors', 'validateStatus', 'validator'];
+const fieldStateKeys: (keyof FieldState)[] = ['label', 'name', 'value', 'visible', 'preserve', 'required', 'errors', 'validateStatus', 'validator'];
+
 function filterFieldState<V = any>(props: FieldProps<V>): FieldState<V> {
   return fieldStateKeys.reduce((pre, cur) => {
     // 在props中传入了的才会控制state
@@ -14,7 +16,7 @@ function filterFieldState<V = any>(props: FieldProps<V>): FieldState<V> {
       pre[cur] = props[cur];
     }
     return pre;
-  }, {} as FieldState<V>);
+  }, { ...defaultState });
 }
 
 const Field: FC<FieldProps> = forwardRef<FieldInstance, FieldProps>((props, ref) => {
@@ -23,6 +25,10 @@ const Field: FC<FieldProps> = forwardRef<FieldInstance, FieldProps>((props, ref)
   useImperativeHandle(ref, () => {
     return instance;
   });
+  // 不可见则卸载组件
+  if (!(fieldState.visible)) {
+    return null;
+  }
   return (
     <NodeProvider node={fieldNode}>
       <FormItemProvider fieldState={fieldState}>

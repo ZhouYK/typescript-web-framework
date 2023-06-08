@@ -6,10 +6,14 @@ import nodeHelper from '@/pages/Demo/Form/lib/utils/nodeHelper';
 import {
   FC, forwardRef, useEffect, useImperativeHandle,
 } from 'react';
+import { defaultState } from '../config';
 
 const Form: FC<FormProps> = forwardRef<FormInstance, FormProps>((props, ref) => {
   const { children, ...rest } = props;
-  const [formState, formNode, instance] = useNode(rest, 'form');
+  const [formState, formNode, instance] = useNode({
+    ...defaultState,
+    ...rest,
+  }, 'form');
 
   useImperativeHandle(ref, () => {
     return instance;

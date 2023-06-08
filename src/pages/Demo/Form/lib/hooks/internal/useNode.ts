@@ -28,7 +28,6 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   const [instance] = useState(() => {
     return instanceHelper.createInstance(initState, reducer);
   });
-
   const insRef = useRef(instance);
 
   // const context = useContext(WuSongFormContextCons);
@@ -50,7 +49,6 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   // }, [state.name]);
 
   const parentNode = useContext(NodeContext);
-
   const [node] = useState<FNode<NodeStateMap<V>[typeof type]>>(() => {
     return {
       type,
@@ -114,9 +112,9 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
 
       return Promise.all(errors).then((errs) => {
         if (errs.every((er) => !er)) {
-          return Promise.reject(errs);
+          return nodeHelper.getValues(node);
         }
-        return nodeHelper.getValues(node);
+        return Promise.reject(errs);
       });
     };
   }, [state]);
@@ -129,8 +127,23 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   }, [parentNode]);
 
   useEffect(() => {
-    return () => node.detach();
+    return () => {
+      // 如果节点是不保存状态，则卸载掉节点
+      if (!(node.instance.preserve)) {
+        node.detach();
+      }
+    };
   }, []);
+
+  useEffect(() => {
+    // 隐藏字段时
+    if (!(state?.visible)) {
+      // 不保存状态，则卸载掉节点
+      if (!(state?.preserve)) {
+        node.detach();
+      }
+    }
+  }, [state?.visible]);
 
   return [state, node, insRef.current];
 };

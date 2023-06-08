@@ -6,6 +6,8 @@ export interface FieldState<V = any> {
   label?: any;
   name?: string;
   value?: V;
+  visible?: boolean; // 是否显示字段，默认为 true
+  preserve?: boolean; // 是否保存字段状态，默认为 false
   required?: boolean;
   errors?: any[];
   validateStatus?: ValidateStatus;
@@ -15,13 +17,17 @@ export interface FieldState<V = any> {
 export interface FormState<V = any> {
   errors?: any[];
   name?: string;
+  visible?: boolean; // 是否显示表单，默认为 true
+  preserve?: boolean; // 是否保存表单状态，默认为false
   value?: V;
 }
 
-export interface NodeInstance<P, V = any> {
+export type NodeInstance<P, V = any> = {
   model: NodeModel<P>;
   validate: () => Promise<V>;
   value?: V;
+} & {
+  [k in keyof P]: P[k];
 }
 
 export interface FormInstance<V = any> extends NodeInstance<FormState<V>, V>, FormState<V> {
@@ -34,6 +40,7 @@ type ValidateStatus = 'validating' | 'error' | 'warning' | 'success';
 
 export interface FieldProps<V = any> extends FieldState<V> {
   children: any;
+  onFieldChange?: (value: V, field: FieldInstance<V>) => void;
   [index: string]: any;
 }
 

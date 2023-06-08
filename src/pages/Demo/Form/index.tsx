@@ -1,6 +1,6 @@
 import AgeField from '@/pages/Demo/Form/fields/AgeField';
 import Test, { Text } from '@/pages/Demo/Form/components/Test';
-import NestedField from '@/pages/Demo/Form/fields/NestedField';
+// import NestedField from '@/pages/Demo/Form/fields/NestedField';
 import Form from '@/pages/Demo/Form/lib/Form';
 // import useCreateForm from '@/pages/Demo/Form/lib/hooks/useCreateForm';
 import { FormInstance } from '@/pages/Demo/Form/lib/interface';
@@ -33,7 +33,7 @@ const WuSong: FC<Props> = (_props) => {
       name='form'>
       <NameField/>
       <AgeField />
-      <NestedField/>
+      {/* <NestedField/> */}
       <Test>
         <Text n={n} text='hello' />
       </Test>
