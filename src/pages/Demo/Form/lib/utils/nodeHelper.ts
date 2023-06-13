@@ -14,6 +14,11 @@ class NodeHelper {
 
   // 链接节点
   chainChildNode = (inputNode: FNode, parentNode: FNode) => {
+    // 如果传入的 inputNode 已存在于链表中，则不操作
+    if (inputNode.parent || inputNode.sibling) {
+      console.warn(`节点: ${inputNode.name} 已存在，请检查表单的 name 是否重复!`);
+      return;
+    }
     if (!parentNode.child) {
       parentNode.child = inputNode;
       inputNode.parent = parentNode;

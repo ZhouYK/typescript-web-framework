@@ -11,13 +11,15 @@ import {
   FieldState, FNode, FormState, NodeInstance, NodeStateMap, NodeType,
 } from '../../interface';
 
-// todo 需要一个默认的 fieldState 和 formState
+// initState 中 name 必须一开始就有，且不允许变更
 const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: NodeType): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>, NodeInstance<NodeStateMap<V>[typeof type]>] => {
+  const initStateRef = useRef(initState);
   const reducerRef = useRef(null);
   reducerRef.current = (st: typeof initState) => {
     return {
       ...st,
-      ...initState,
+      ...initState, // 外部传入的属性，控制 model
+      name: initStateRef.current.name, // name 不可变
     };
   };
 
@@ -30,29 +32,18 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   });
   const insRef = useRef(instance);
 
-  // const context = useContext(WuSongFormContextCons);
-  // @ts-ignore
-  // eslint-disable-next-line consistent-return
-  // useEffect(() => {
-  //   if (typeof state.name === 'string' && state.name) {
-  //     context.fields.set(state.name, field);
-  //     if (context.subscriptions.has(state.name)) {
-  //       context.subscriptions.get(state.name).forEach((callback) => callback(field));
-  //     }
-  //     return () => {
-  //       context.fields.delete(state.name);
-  //       if (context.subscriptions.has(state.name)) {
-  //         context.subscriptions.get(state.name).forEach((callback) => callback(null));
-  //       }
-  //     };
-  //   }
-  // }, [state.name]);
-
   const parentNode = useContext(NodeContext);
   const [node] = useState<FNode<NodeStateMap<V>[typeof type]>>(() => {
+    // 如果找到了同层的同名节点，则复用
+    const reuseNode = nodeHelper.findNode(parentNode, initStateRef.current?.name);
+    if (reuseNode) {
+      return reuseNode;
+    }
     return {
       type,
       name: '',
+      status: 'mount',
+      deleted: false,
       instance: insRef.current,
       pushChild: (f: FNode) => {
         nodeHelper.chainChildNode(f, node);
@@ -63,7 +54,30 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     };
   });
 
-  const [state] = useDerivedStateWithModel(insRef.current.model, (st) => {
+  // 组件的卸载，则需要判断 preserve 来决定
+  // 不需要保存状态，则硬删除节点
+  // 需要保存状态，则软删除
+  const nodeDetach = () => {
+    if (!(node.instance.preserve)) {
+      node.detach();
+      node.status = 'umount';
+      return true;
+    }
+    node.deleted = true;
+    return false;
+  };
+
+  const nodePush = (f: FNode) => {
+    node.deleted = false;
+    if (node.status === 'umount') {
+      node.pushChild(f);
+      node.status = 'mount';
+      return true;
+    }
+    return false;
+  };
+
+  const [state] = useDerivedStateWithModel(node.instance.model, (st) => {
     return {
       ...st,
       ...initState,
@@ -72,7 +86,11 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
 
   useDerivedState(() => {
     // todo model.silent 更新的属性如果出现在 node 中，也需要同步
-    node.name = state.name;
+    // name 的赋值只会生效一次，因为 name 作为同层节点的唯一标识，不允许改变
+    // 并且在初次挂载的时候，会根据 name 来复用 node
+    if (!node.name && initStateRef.current?.name) {
+      node.name = initStateRef.current?.name;
+    }
     // 保持 instance 的引用不变很重要
     // 这里 state 中不能有名为 model 和 validate 的属性，因为这个是 instance 的保留属性名
     Object.assign(node.instance, state);
@@ -122,30 +140,28 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   useDerivedState(() => {
     parentNode?.pushChild(node);
   }, () => {
+    // 已经是卸载状态的节点，不做挂载操作
+    if (node.status === 'umount') return;
     node.detach();
     parentNode?.pushChild(node);
   }, [parentNode]);
 
   useEffect(() => {
     return () => {
-      // 如果节点是不保存状态，则卸载掉节点
-      if (!(node.instance.preserve)) {
-        node.detach();
-      }
+      nodeDetach();
     };
   }, []);
 
   useEffect(() => {
-    // 隐藏字段时
+    // state 控制显示/隐藏
     if (!(state?.visible)) {
-      // 不保存状态，则卸载掉节点
-      if (!(state?.preserve)) {
-        node.detach();
-      }
+      nodeDetach();
+      return;
     }
+    nodePush(node);
   }, [state?.visible]);
 
-  return [state, node, insRef.current];
+  return [state, node, node.instance];
 };
 
 export default useNode;

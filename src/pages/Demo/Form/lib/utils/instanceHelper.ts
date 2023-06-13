@@ -9,6 +9,7 @@ class InstanceHelper {
       return reducer(state, data);
     }, initState) : gluer(initState);
     return {
+      // @ts-ignore
       model,
       validate: () => Promise.resolve(model()?.value),
     };
