@@ -37,7 +37,7 @@ export interface FormInstance<V = any> extends NodeInstance<FormState<V>, V>, Fo
 export interface FieldInstance<V = any> extends NodeInstance<FieldState<V>, V>, FieldState<V> {
 }
 
-type ValidateStatus = 'validating' | 'error' | 'warning' | 'success';
+type ValidateStatus = 'validating' | 'error' | 'warning' | 'success' | 'default';
 
 export interface FieldProps<V = any> extends FieldState<V> {
   children: any;
@@ -64,6 +64,7 @@ export interface FNode<P = any> {
   name: string;
   status: FemoModel<NodeStatus>; // 节点状态: mount 在节点链表中；umount 不在节点链表中（与组件的挂载/卸载没有对应关系，有可能组件卸载了，但是节点还在链表）
   deleted: boolean; // 标记删除（软删），可恢复
+  searchingPath?: Map<() => void, Set<string>>;
   instance: NodeInstance<P>;
   parent?: FNode<P> | null;
   sibling?: FNode<P> | null;

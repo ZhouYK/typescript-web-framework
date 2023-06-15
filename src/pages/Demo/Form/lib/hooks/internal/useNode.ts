@@ -11,8 +11,9 @@ import {
   FieldInstance, FieldState, FNode, FormState, NodeInstance, NodeStateMap, NodeStatusEnum, NodeType,
 } from '../../interface';
 
-// initState 中 name 必须一开始就有
+// initState 中 name 必填 TODO 需要做校验
 const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: NodeType): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>, NodeInstance<NodeStateMap<V>[typeof type]>] => {
+  const [, refresh] = useState(null);
   const listenersRef = useRef([]);
   const reducerRef = useRef(null);
   reducerRef.current = (st: typeof initState) => {
@@ -57,7 +58,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   });
 
   // 节点卸载只能走这个方法
-  const nodeDetach = () => {
+  const nodeDetach = (callback?: () => void) => {
     // 只要保留状态，那么节点就只做软删除，不做卸载
     if (node.instance.preserve) {
       node.deleted = true;
@@ -70,10 +71,15 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     });
     // 卸载过后，解绑所有监听
     unsubscribe([node.instance.model]);
+    // 补充执行函数
+    callback?.();
   };
 
   const pushChild = (changeStatus = true) => {
     parentNode?.pushChild(node);
+    // 每次挂载 node 过后，都往上寻找需要该节点的 context node，并执行触发 rerender 的动作
+    console.log('backtrackForContextNode', node.name);
+    nodeHelper.backtrackForContextNode(node);
     if (changeStatus) {
       node.status.race(() => Promise.resolve(NodeStatusEnum.mount));
     }
@@ -89,7 +95,12 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     // 下面的情况属于 情况 2
     if (node.status() === NodeStatusEnum.unmount) {
       if (!node.instance.preserve) {
-        node.instance.model.reset();
+        node.instance.model((state) => ({
+          ...state,
+          value: undefined,
+          errors: [],
+          validateStatus: 'default',
+        }));
       }
       pushChild();
       return true;
@@ -185,7 +196,13 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   useDerivedState(() => {
     // state 控制显示/隐藏
     if (!(state?.visible)) {
-      nodeDetach();
+      // 可能会把所有 node.instance.model 上的监听都解绑
+      // 需要保持当前 useNode 里面有监听
+      nodeDetach(() => {
+        node.instance.model.onChange(() => {
+          refresh({});
+        });
+      });
       return;
     }
     nodePush();

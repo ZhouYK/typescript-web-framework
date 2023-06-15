@@ -25,6 +25,7 @@ const Field: FC<FieldProps> = forwardRef<FieldInstance, FieldProps>((props, ref)
   useImperativeHandle(ref, () => {
     return instance;
   });
+  console.log('fieldState', fieldState);
   // 不可见则卸载组件
   if (!(fieldState.visible)) {
     return null;

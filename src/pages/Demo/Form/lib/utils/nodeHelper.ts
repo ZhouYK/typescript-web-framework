@@ -69,9 +69,7 @@ class NodeHelper {
     }
   }
 
-  // 根据路径和起始节点（查找时不包含该节点）查找节点
-  findNode = (node: FNode, path: FPath, type?: NodeType): FNode | undefined => {
-    if (!path || !node) return undefined;
+  pathToArr = (path: FPath) => {
     let length = 0;
     let tmpPath = path;
     if (path instanceof Array) {
@@ -80,6 +78,17 @@ class NodeHelper {
       length = 1;
       tmpPath = [path];
     }
+    return {
+      length,
+      tmpPath,
+    };
+  }
+
+  // 根据路径和起始节点（查找时不包含该节点）查找节点
+  findNode = (node: FNode, path: FPath, type?: NodeType): FNode | undefined => {
+    if (!path || !node) return undefined;
+    const { length, tmpPath } = this.pathToArr(path);
+
     let result: FNode | undefined;
     let cur = node.child;
     let dep = 0;
@@ -175,6 +184,25 @@ class NodeHelper {
         continue;
       }
       cur = null;
+    }
+  }
+
+  // 回溯节点，直到找到目标上下文节点
+  backtrackForContextNode = (curNode: FNode<FieldState | FormState>) => {
+    let parent = curNode?.parent;
+    const path = [curNode.name];
+    while (parent) {
+      const tmpPath = JSON.stringify(path);
+      parent?.searchingPath?.forEach((value, key) => {
+        if (value.has(tmpPath)) {
+          // 避免副作用警告
+          Promise.resolve().then(() => {
+            key?.();
+          });
+        }
+      });
+      path.unshift(parent.name);
+      parent = parent.parent;
     }
   }
 }

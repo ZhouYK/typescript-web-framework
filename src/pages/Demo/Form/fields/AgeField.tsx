@@ -14,11 +14,12 @@ const AgeField: FC<Props> = (props) => {
   const [nameField] = useField<string>('name');
   // const [field] = useCreateField<number>();
   const fieldRef = useRef<FieldInstance<number>>();
-
   return (
     <Field
       // field={field}
       ref={fieldRef}
+      visible={nameField?.value !== '张三丰'}
+      preserve
       name={name || 'age'}
       label='年龄'
       validator={(v) => {
@@ -29,7 +30,7 @@ const AgeField: FC<Props> = (props) => {
         return '';
       }}
     >
-      <InputNumber placeholder={nameField?.value ? '请输入年龄' : nameField?.value} />
+      <InputNumber style={{ width: 200 }} placeholder={nameField?.value ? '请输入年龄' : nameField?.value} />
     </Field>
   );
 };
