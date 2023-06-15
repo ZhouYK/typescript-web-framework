@@ -32,12 +32,19 @@ const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?:
 
   useEffect(() => {
     if (target && watch) {
-      return subscribe([target.instance.model], () => {
+      const sub_1 = subscribe([target?.instance?.model], () => {
         updateState({});
       }, false);
+      const sub_2 = subscribe([target?.status], () => {
+        updateState({});
+      }, false);
+      return () => {
+        sub_1();
+        sub_2();
+      };
     }
     return null;
-  }, [target, watch, target?.instance?.model]);
+  }, [target, watch, target?.instance?.model, target?.status]);
   return [target?.instance];
 };
 

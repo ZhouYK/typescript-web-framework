@@ -1,25 +1,24 @@
 import NodeContext from '@/pages/Demo/Form/lib/NodeProvider/NodeContext';
 import instanceHelper from '@/pages/Demo/Form/lib/utils/instanceHelper';
 import nodeHelper from '@/pages/Demo/Form/lib/utils/nodeHelper';
-import { useDerivedState, useDerivedStateWithModel } from 'femo';
 import {
-  useCallback,
-  useContext, useEffect, useRef, useState,
+  gluer, unsubscribe, useDerivedState, useDerivedStateWithModel,
+} from 'femo';
+import {
+  useCallback, useContext, useEffect, useRef, useState,
 } from 'react';
 import {
-  FieldInstance,
-  FieldState, FNode, FormState, NodeInstance, NodeStateMap, NodeType,
+  FieldInstance, FieldState, FNode, FormState, NodeInstance, NodeStateMap, NodeStatusEnum, NodeType,
 } from '../../interface';
 
-// initState 中 name 必须一开始就有，且不允许变更
+// initState 中 name 必须一开始就有
 const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: NodeType): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>, NodeInstance<NodeStateMap<V>[typeof type]>] => {
-  const initStateRef = useRef(initState);
+  const listenersRef = useRef([]);
   const reducerRef = useRef(null);
   reducerRef.current = (st: typeof initState) => {
     return {
       ...st,
       ...initState, // 外部传入的属性，控制 model
-      name: initStateRef.current.name, // name 不可变
     };
   };
 
@@ -33,16 +32,19 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   const insRef = useRef(instance);
 
   const parentNode = useContext(NodeContext);
+
+  const findSameNameSiblingNode = (n: string) => nodeHelper.findNode(parentNode, n);
+
   const [node] = useState<FNode<NodeStateMap<V>[typeof type]>>(() => {
     // 如果找到了同层的同名节点，则复用
-    const reuseNode = nodeHelper.findNode(parentNode, initStateRef.current?.name);
+    const reuseNode = findSameNameSiblingNode(initState.name);
     if (reuseNode) {
       return reuseNode;
     }
     return {
       type,
-      name: '',
-      status: 'mount',
+      name: initState.name,
+      status: gluer<NodeStatusEnum>(NodeStatusEnum.mount),
       deleted: false,
       instance: insRef.current,
       pushChild: (f: FNode) => {
@@ -54,27 +56,64 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     };
   });
 
-  // 组件的卸载，则需要判断 preserve 来决定
-  // 不需要保存状态，则硬删除节点
-  // 需要保存状态，则软删除
+  // 节点卸载只能走这个方法
   const nodeDetach = () => {
-    if (!(node.instance.preserve)) {
-      node.detach();
-      node.status = 'umount';
+    // 只要保留状态，那么节点就只做软删除，不做卸载
+    if (node.instance.preserve) {
+      node.deleted = true;
+      return;
+    }
+    node.detach();
+    // 走异步，避免副作用告警
+    node.status.race(() => Promise.resolve(NodeStatusEnum.unmount)).then(() => {
+      unsubscribe([node.status]);
+    });
+    // 卸载过后，解绑所有监听
+    unsubscribe([node.instance.model]);
+  };
+
+  const pushChild = (changeStatus = true) => {
+    parentNode?.pushChild(node);
+    if (changeStatus) {
+      node.status.race(() => Promise.resolve(NodeStatusEnum.mount));
+    }
+    dealWithSameNameNode(node.name);
+  };
+
+  const nodePush = () => {
+    node.deleted = false;
+    // 出现 unmount 节点只可能有两种可能：
+    // 1. 组件节点卸载 2. visible 为 false，且 preserve 为 false
+    // 情况 1，unmount 的节点不会在一个组件里面出现，因为组件已经卸载了，不存在执行环境了
+    // 情况 2，unmount 的节点则可能出现在同一个组件中，当组件 visible 变为 true 时，则会重入节点。
+    // 下面的情况属于 情况 2
+    if (node.status() === NodeStatusEnum.unmount) {
+      if (!node.instance.preserve) {
+        node.instance.model.reset();
+      }
+      pushChild();
       return true;
     }
-    node.deleted = true;
     return false;
   };
 
-  const nodePush = (f: FNode) => {
-    node.deleted = false;
-    if (node.status === 'umount') {
-      node.pushChild(f);
-      node.status = 'mount';
-      return true;
+  const dealWithSameNameNode = (n: string) => {
+    const sameNameNode = findSameNameSiblingNode(n);
+    if (sameNameNode && !Object.is(sameNameNode, node)) {
+      listenersRef.current.forEach((fn) => {
+        fn?.();
+      });
+      listenersRef.current = [];
+      // 同步状态
+      node.instance.model(sameNameNode.instance.model());
+      const listener_1 = node.instance.model.onChange((state) => {
+        sameNameNode.instance.model(state);
+      });
+      const listener_2 = sameNameNode.instance.model.onChange((state) => {
+        node.instance.model(state);
+      });
+      listenersRef.current.push(listener_1, listener_2);
     }
-    return false;
   };
 
   const [state] = useDerivedStateWithModel(node.instance.model, (st) => {
@@ -86,11 +125,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
 
   useDerivedState(() => {
     // todo model.silent 更新的属性如果出现在 node 中，也需要同步
-    // name 的赋值只会生效一次，因为 name 作为同层节点的唯一标识，不允许改变
-    // 并且在初次挂载的时候，会根据 name 来复用 node
-    if (!node.name && initStateRef.current?.name) {
-      node.name = initStateRef.current?.name;
-    }
+    node.name = state.name;
     // 保持 instance 的引用不变很重要
     // 这里 state 中不能有名为 model 和 validate 的属性，因为这个是 instance 的保留属性名
     Object.assign(node.instance, state);
@@ -98,7 +133,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
       const formNode = nodeHelper.findNearlyParentFormNode(node);
       const errors: Promise<any>[] = [];
       nodeHelper.inspect(node, (n) => {
-        if (nodeHelper.isForm(n.type)) {
+        if (nodeHelper.isForm(n.type) || n.deleted) {
           return true;
         }
         const error = (n.instance as FieldInstance<V>)?.validator?.(n.instance.value, n.instance, formNode?.instance);
@@ -138,28 +173,29 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   }, [state]);
 
   useDerivedState(() => {
-    parentNode?.pushChild(node);
+    pushChild();
   }, () => {
     // 已经是卸载状态的节点，不做挂载操作
-    if (node.status === 'umount') return;
+    if (node.status() === NodeStatusEnum.unmount) return;
     node.detach();
-    parentNode?.pushChild(node);
+    node.status.silent(NodeStatusEnum.unmount);
+    pushChild();
   }, [parentNode]);
+
+  useDerivedState(() => {
+    // state 控制显示/隐藏
+    if (!(state?.visible)) {
+      nodeDetach();
+      return;
+    }
+    nodePush();
+  }, [state?.visible]);
 
   useEffect(() => {
     return () => {
       nodeDetach();
     };
   }, []);
-
-  useEffect(() => {
-    // state 控制显示/隐藏
-    if (!(state?.visible)) {
-      nodeDetach();
-      return;
-    }
-    nodePush(node);
-  }, [state?.visible]);
 
   return [state, node, node.instance];
 };
