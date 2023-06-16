@@ -45,7 +45,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     return {
       type,
       name: initState.name,
-      status: gluer<NodeStatusEnum>(NodeStatusEnum.mount),
+      status: gluer<NodeStatusEnum>(NodeStatusEnum.init),
       deleted: false,
       instance: insRef.current,
       pushChild: (f: FNode) => {
@@ -65,24 +65,19 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
       return;
     }
     node.detach();
-    // 走异步，避免副作用告警
-    node.status.race(() => Promise.resolve(NodeStatusEnum.unmount)).then(() => {
-      unsubscribe([node.status]);
-    });
+    node.status.race(NodeStatusEnum.unmount);
+    unsubscribe([node.status]);
     // 卸载过后，解绑所有监听
     unsubscribe([node.instance.model]);
     // 补充执行函数
     callback?.();
   };
 
-  const pushChild = (changeStatus = true) => {
+  const pushChild = () => {
     parentNode?.pushChild(node);
+    node.status.race(NodeStatusEnum.mount);
     // 每次挂载 node 过后，都往上寻找需要该节点的 context node，并执行触发 rerender 的动作
-    console.log('backtrackForContextNode', node.name);
     nodeHelper.backtrackForContextNode(node);
-    if (changeStatus) {
-      node.status.race(() => Promise.resolve(NodeStatusEnum.mount));
-    }
     dealWithSameNameNode(node.name);
   };
 
@@ -183,17 +178,16 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     };
   }, [state]);
 
-  useDerivedState(() => {
-    pushChild();
-  }, () => {
-    // 已经是卸载状态的节点，不做挂载操作
+  useEffect(() => {
     if (node.status() === NodeStatusEnum.unmount) return;
-    node.detach();
-    node.status.silent(NodeStatusEnum.unmount);
+    if (node.status() === NodeStatusEnum.mount) {
+      node.detach();
+      node.status.silent(NodeStatusEnum.unmount);
+    }
     pushChild();
   }, [parentNode]);
 
-  useDerivedState(() => {
+  useEffect(() => {
     // state 控制显示/隐藏
     if (!(state?.visible)) {
       // 可能会把所有 node.instance.model 上的监听都解绑
@@ -214,7 +208,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     };
   }, []);
 
-  return [state, node, node.instance];
+  return [state, node, node?.instance];
 };
 
 export default useNode;

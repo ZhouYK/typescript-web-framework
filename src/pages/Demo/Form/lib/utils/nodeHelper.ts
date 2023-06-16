@@ -193,12 +193,10 @@ class NodeHelper {
     const path = [curNode.name];
     while (parent) {
       const tmpPath = JSON.stringify(path);
+      // eslint-disable-next-line no-loop-func
       parent?.searchingPath?.forEach((value, key) => {
         if (value.has(tmpPath)) {
-          // 避免副作用警告
-          Promise.resolve().then(() => {
-            key?.();
-          });
+          key?.(tmpPath);
         }
       });
       path.unshift(parent.name);

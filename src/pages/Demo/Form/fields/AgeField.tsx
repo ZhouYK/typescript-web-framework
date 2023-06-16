@@ -1,5 +1,4 @@
 import Field from '@/pages/Demo/Form/lib/Field';
-// import useCreateField from '@/pages/Demo/Form/lib/hooks/useCreateField';
 import useField from '@/pages/Demo/Form/lib/hooks/useField';
 import { FieldInstance } from '@/pages/Demo/Form/lib/interface';
 import { InputNumber } from 'antd';
@@ -12,7 +11,6 @@ interface Props {
 const AgeField: FC<Props> = (props) => {
   const { name } = props;
   const [nameField] = useField<string>('name');
-  // const [field] = useCreateField<number>();
   const fieldRef = useRef<FieldInstance<number>>();
   return (
     <Field

@@ -9,7 +9,6 @@ interface TextProps {
   n: number;
 }
 export const Text: FC<TextProps> = (props) => {
-  console.log('text', props.text, props.n);
   return (
     <span>{props.text}</span>
   );

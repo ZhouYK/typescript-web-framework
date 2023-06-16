@@ -1,11 +1,11 @@
 import {
-  FieldInstance, FormInstance, FPath, NodeType, UseInstanceOptions,
+  FieldInstance, FNode, FormInstance, FPath, NodeType, UseInstanceOptions,
 } from '@/pages/Demo/Form/lib/interface';
 import NodeContext from '@/pages/Demo/Form/lib/NodeProvider/NodeContext';
 import nodeHelper from '@/pages/Demo/Form/lib/utils/nodeHelper';
-import { subscribe, useDerivedState } from 'femo';
+import { subscribe, useDerivedState, useLight } from 'femo';
 import {
-  useCallback, useContext, useEffect, useState,
+  useCallback, useContext, useEffect, useRef, useState,
 } from 'react';
 
 // 所有的搜索都必须在一个 context 下进行.
@@ -14,11 +14,18 @@ import {
 const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?: NodeType): [FieldInstance<V> | FormInstance<V> | null] => {
   const { context, watch = true } = options || {};
   const node = useContext(NodeContext);
-  const [, updateState] = useState(null);
 
-  const refresh = useCallback(() => {
-    console.log('执行');
-    updateState({});
+  const [, setState] = useState(null);
+  const [refreshFlag, updateState] = useState('');
+  const targetRef = useRef<FNode>(null);
+
+  const refresh = useCallback((str: string) => {
+    updateState((prevState) => {
+      if (prevState === str) {
+        setState({});
+      }
+      return str;
+    });
   }, []);
 
   const { tmpPath } = nodeHelper.pathToArr(path || '');
@@ -30,28 +37,40 @@ const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?:
 
   const contextNode = context || formNode;
 
-  const [target] = useDerivedState(() => {
+  const findTarget = () => {
+    let tmpTarget = null;
     // 没有 path，则返回当前所属的 node
-    if (!path) return nodeHelper.isForm(node.type) ? null : node;
-    if (!path || !path.length) {
-      if (type === node.type) return node;
-      return null;
+    if (!path) {
+      tmpTarget = nodeHelper.isForm(node.type) ? null : node;
+    } else if (!path || !path.length) {
+      if (type === node.type) {
+        tmpTarget = node;
+      }
+    } else {
+      tmpTarget = nodeHelper.findNode(contextNode, path, type);
     }
-    return nodeHelper.findNode(contextNode, path, type);
-  }, [contextNode, pathString]);
+    // 没有找到目标节点才会去记录
+    if (!tmpTarget) {
+      if (!(contextNode?.searchingPath)) {
+        contextNode.searchingPath = new Map();
+      }
+      let strSet = contextNode.searchingPath.get(refresh);
+      if (!strSet) {
+        strSet = new Set();
+        contextNode.searchingPath.set(refresh, strSet);
+      }
+      strSet.add(pathString);
+    }
+    targetRef.current = tmpTarget;
+  };
 
-  // 没有找到目标节点才会去记录
-  if (!target) {
-    if (!(contextNode?.searchingPath)) {
-      contextNode.searchingPath = new Map();
-    }
-    let strSet = contextNode.searchingPath.get(refresh);
-    if (!strSet) {
-      strSet = new Set();
-      contextNode.searchingPath.set(refresh, strSet);
-    }
-    strSet.add(pathString);
-  }
+  useLight(() => {
+    findTarget();
+  }, [refreshFlag]);
+
+  useEffect(() => {
+    findTarget();
+  }, [contextNode, pathString]);
 
   useEffect(() => {
     const curSet = contextNode?.searchingPath?.get(refresh);
@@ -61,27 +80,31 @@ const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?:
   }, [pathString, contextNode]);
 
   useEffect(() => {
-    if (target && watch) {
-      const sub_1 = subscribe([target?.instance?.model], () => {
-        updateState({});
+    if (targetRef.current && watch) {
+      const sub_1 = subscribe([targetRef.current?.instance?.model], () => {
+        setState({});
       }, false);
-      const sub_2 = subscribe([target?.status], () => {
-        updateState({});
+      const sub_2 = subscribe([targetRef.current?.status], () => {
+        setState({});
       }, false);
       return () => {
         sub_1();
         sub_2();
       };
     }
-    return null;
-  }, [target, watch, target?.instance?.model, target?.status]);
+    return () => ({});
+  }, [targetRef.current, watch, targetRef.current?.instance?.model, targetRef.current?.status]);
 
   useEffect(() => {
     return () => {
-      contextNode?.searchingPath?.delete(refresh);
+      const strSet = contextNode?.searchingPath?.get(refresh);
+      strSet?.delete(refreshFlag);
+      if (!strSet?.size) {
+        contextNode?.searchingPath?.delete(refresh);
+      }
     };
-  }, []);
-  return [target?.instance];
+  }, [refreshFlag]);
+  return [targetRef.current?.instance];
 };
 
 export default useInstance;

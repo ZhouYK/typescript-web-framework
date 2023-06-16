@@ -54,9 +54,10 @@ export type NodeType = 'form' | 'field';
 export type FPath = string | string[];
 export enum NodeStatusEnum {
   mount = 'mount',
-  unmount = 'unmount'
+  unmount = 'unmount',
+  init = 'init'
 }
-export type NodeStatus = NodeStatusEnum.mount | NodeStatusEnum.unmount;
+export type NodeStatus = NodeStatusEnum.mount | NodeStatusEnum.unmount | NodeStatusEnum.init;
 export interface FNode<P = any> {
   type: NodeType;
   // 如果没有 name，则该节点及后续的子节点将会无效（不会出现在表单的任何处理之中，比如获取值，校验，查找节点等）。该节点的兄弟节点不受影响
@@ -64,7 +65,7 @@ export interface FNode<P = any> {
   name: string;
   status: FemoModel<NodeStatus>; // 节点状态: mount 在节点链表中；umount 不在节点链表中（与组件的挂载/卸载没有对应关系，有可能组件卸载了，但是节点还在链表）
   deleted: boolean; // 标记删除（软删），可恢复
-  searchingPath?: Map<() => void, Set<string>>;
+  searchingPath?: Map<(str: string) => void, Set<string>>;
   instance: NodeInstance<P>;
   parent?: FNode<P> | null;
   sibling?: FNode<P> | null;

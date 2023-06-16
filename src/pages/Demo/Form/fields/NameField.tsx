@@ -9,10 +9,8 @@ interface Props {
 
 const NameField: FC<Props> = (props) => {
   const { name } = props;
-
   const [ageField] = useField<number>('age');
-
-  console.log('ageField?.value', ageField?.value);
+  console.log('name field 里获取到的 age field', ageField);
   return (
     <Field
       name={name || 'name'}
