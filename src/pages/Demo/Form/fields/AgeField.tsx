@@ -12,6 +12,7 @@ const AgeField: FC<Props> = (props) => {
   const { name } = props;
   const [nameField] = useField<string>('name');
   const fieldRef = useRef<FieldInstance<number>>();
+  console.log('nameField?.value', nameField?.value);
   return (
     <Field
       // field={field}

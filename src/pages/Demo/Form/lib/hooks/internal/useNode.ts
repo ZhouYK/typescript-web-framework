@@ -10,10 +10,9 @@ import {
 import {
   FieldInstance, FieldState, FNode, FormState, NodeInstance, NodeStateMap, NodeStatusEnum, NodeType,
 } from '../../interface';
-
+import hooksHelper from '../helper';
 // initState 中 name 必填 TODO 需要做校验
 const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: NodeType): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>, NodeInstance<NodeStateMap<V>[typeof type]>] => {
-  const [, refresh] = useState(null);
   const listenersRef = useRef([]);
   const reducerRef = useRef(null);
   reducerRef.current = (st: typeof initState) => {
@@ -58,19 +57,23 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   });
 
   // 节点卸载只能走这个方法
-  const nodeDetach = (callback?: () => void) => {
+  const nodeDetach = (shouldOff = true) => {
     // 只要保留状态，那么节点就只做软删除，不做卸载
     if (node.instance.preserve) {
       node.deleted = true;
       return;
     }
     node.detach();
+    if (shouldOff) {
+      // 卸载过后，解绑所有监听
+      unsubscribe([node.instance.model]);
+    }
+
+    // 先通知
     node.status.race(NodeStatusEnum.unmount);
-    unsubscribe([node.status]);
-    // 卸载过后，解绑所有监听
-    unsubscribe([node.instance.model]);
-    // 补充执行函数
-    callback?.();
+    if (shouldOff) {
+      unsubscribe([node.status]);
+    }
   };
 
   const pushChild = () => {
@@ -130,11 +133,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   }, [...Object.values(initState || {})]);
 
   useDerivedState(() => {
-    // todo model.silent 更新的属性如果出现在 node 中，也需要同步
-    node.name = state.name;
-    // 保持 instance 的引用不变很重要
-    // 这里 state 中不能有名为 model 和 validate 的属性，因为这个是 instance 的保留属性名
-    Object.assign(node.instance, state);
+    hooksHelper.mergeStateToInstance(node, state);
     node.instance.validate = async () => {
       const formNode = nodeHelper.findNearlyParentFormNode(node);
       const errors: Promise<any>[] = [];
@@ -182,7 +181,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     if (node.status() === NodeStatusEnum.unmount) return;
     if (node.status() === NodeStatusEnum.mount) {
       node.detach();
-      node.status.silent(NodeStatusEnum.unmount);
+      node.status.race(NodeStatusEnum.unmount);
     }
     pushChild();
   }, [parentNode]);
@@ -192,11 +191,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     if (!(state?.visible)) {
       // 可能会把所有 node.instance.model 上的监听都解绑
       // 需要保持当前 useNode 里面有监听
-      nodeDetach(() => {
-        node.instance.model.onChange(() => {
-          refresh({});
-        });
-      });
+      nodeDetach(false);
       return;
     }
     nodePush();

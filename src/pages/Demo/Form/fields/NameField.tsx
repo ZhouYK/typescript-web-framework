@@ -10,11 +10,11 @@ interface Props {
 const NameField: FC<Props> = (props) => {
   const { name } = props;
   const [ageField] = useField<number>('age');
-  console.log('name field 里获取到的 age field', ageField);
   return (
     <Field
       name={name || 'name'}
       label='名字'
+      visible={!(ageField?.value) || ageField?.value <= 10}
     >
       <Input placeholder='请输入名字' />
     </Field>

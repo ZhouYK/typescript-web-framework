@@ -1,5 +1,5 @@
 import {
-  FieldInstance, FNode, FormInstance, FPath, NodeType, UseInstanceOptions,
+  FieldInstance, FNode, FormInstance, FPath, NodeStatusEnum, NodeType, UseInstanceOptions,
 } from '@/pages/Demo/Form/lib/interface';
 import NodeContext from '@/pages/Demo/Form/lib/NodeProvider/NodeContext';
 import nodeHelper from '@/pages/Demo/Form/lib/utils/nodeHelper';
@@ -7,6 +7,7 @@ import { subscribe, useDerivedState, useLight } from 'femo';
 import {
   useCallback, useContext, useEffect, useRef, useState,
 } from 'react';
+import hooksHelper from '../helper';
 
 // 所有的搜索都必须在一个 context 下进行.
 // 如果传了 context ，则以传入为准；
@@ -92,7 +93,7 @@ const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?:
         sub_2();
       };
     }
-    return () => ({});
+    return undefined;
   }, [targetRef.current, watch, targetRef.current?.instance?.model, targetRef.current?.status]);
 
   useEffect(() => {
@@ -104,6 +105,8 @@ const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?:
       }
     };
   }, [refreshFlag]);
+
+  hooksHelper.mergeStateToInstance(targetRef.current, targetRef.current?.instance?.model());
   return [targetRef.current?.instance];
 };
 

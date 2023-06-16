@@ -52,6 +52,12 @@ export interface FormProps<V = any> extends FormState<V>{
 
 export type NodeType = 'form' | 'field';
 export type FPath = string | string[];
+
+export enum NodeStatusChangeFromEnum {
+  visible = 'visible',
+  component_umount = 'component_unmount'
+}
+
 export enum NodeStatusEnum {
   mount = 'mount',
   unmount = 'unmount',
