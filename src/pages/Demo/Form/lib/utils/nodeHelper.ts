@@ -132,59 +132,46 @@ class NodeHelper {
   // todo 添加验证
   getValues = (node: FNode<FieldState | FormState>) => {
     const result: { [index: string]: any } = {};
-    let tmp = result;
-    let cur = node;
+    const traverse = (n: FNode<FieldState | FormState>, upperObj: Record<string, any>) => {
+      if (this.isForm(n.type)) {
+        if (n.sibling) {
+          traverse(n.sibling, upperObj);
+        }
+        if (n.child) {
+          traverse(n.child, upperObj);
+        }
+        return;
+      }
 
-    if (!cur.child) {
-      if (this.isForm(cur.type)) {
-        return result;
+      if (n.child) {
+        upperObj[n.name] = {};
+        traverse(n.child, upperObj[n.name]);
+      } else {
+        upperObj[n.name] = n.instance.model().value;
       }
-      tmp[cur.name] = cur.instance.model().value;
-      return result;
-    }
 
-    if (!this.isForm(cur.type)) {
-      tmp[cur.name] = {};
-      tmp = tmp[cur.name];
-    }
-    cur = cur.child;
-    while (cur) {
-      if (this.isForm(cur.type)) {
-        cur = cur.sibling;
-        continue;
+      if (n.sibling) {
+        traverse(n.sibling, upperObj);
       }
-      if (cur.child) {
-        tmp[cur.name] = {};
-        tmp = tmp[cur.name];
-        cur = cur.child;
-        continue;
-      }
-      tmp[cur.name] = cur.instance.model().value;
-      if (cur.sibling) {
-        cur = cur.sibling;
-        continue;
-      }
-      cur = null;
-    }
+    };
+
+    traverse(node, result);
     return result;
   }
 
   // 遍历节点
   inspect = (node: FNode<FieldState | FormState>, callback: (n: FNode<FieldState | FormState>) => boolean) => {
-    let cur = node;
-    let flag = true;
-    while (flag && cur) {
-      flag = callback(cur);
-      if (cur.child) {
-        cur = cur.child;
-        continue;
+    const traverse = (n: FNode<FieldState | FormState>) => {
+      const flag = callback(n);
+      if (flag && n.child) {
+        traverse(n.child);
       }
-      if (cur.sibling) {
-        cur = cur.sibling;
-        continue;
+
+      if (flag && n.sibling) {
+        traverse(n.sibling);
       }
-      cur = null;
-    }
+    };
+    traverse(node);
   }
 
   // 回溯节点，直到找到目标上下文节点
