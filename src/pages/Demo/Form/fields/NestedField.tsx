@@ -9,7 +9,13 @@ interface Props {
 }
 
 const NestedComponent = () => {
-  return <section><AgeField name='sub-age' /><NameField name='sub-name'/></section>;
+  return (
+    <section style={{ padding: '24px' }}>
+      <section>嵌套字段</section>
+      <NameField name='sub-name' ageFieldPath={['test', 'sub-age']}/>
+      <AgeField name='sub-age' nameFieldPath={['test', 'sub-name']} />
+    </section>
+  );
 };
 
 const NestedField: FC<Props> = () => {

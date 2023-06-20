@@ -4,12 +4,12 @@ import React, { FC } from 'react';
 
 interface Props {
   children: any;
-  node: FNode;
+  nodes: FNode[];
 }
 
 const NodeProvider: FC<Props> = (props) => {
   return (
-    <NodeContext.Provider value={props.node}>
+    <NodeContext.Provider value={props.nodes}>
       {props.children}
     </NodeContext.Provider>
   );

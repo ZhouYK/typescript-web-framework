@@ -196,7 +196,7 @@ class NodeHelper {
       // eslint-disable-next-line no-loop-func
       parent?.searchingPath?.forEach((value, key) => {
         if (value.has(tmpPath)) {
-          key?.(tmpPath);
+          key?.(curNode, tmpPath);
         }
       });
       path.unshift(parent.name);

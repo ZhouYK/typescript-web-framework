@@ -1,9 +1,9 @@
 import {
-  FieldInstance, FNode, FormInstance, FPath, NodeStatusEnum, NodeType, UseInstanceOptions,
+  FieldInstance, FNode, FormInstance, FPath, NodeType, UseInstanceOptions,
 } from '@/pages/Demo/Form/lib/interface';
 import NodeContext from '@/pages/Demo/Form/lib/NodeProvider/NodeContext';
 import nodeHelper from '@/pages/Demo/Form/lib/utils/nodeHelper';
-import { subscribe, useDerivedState, useLight } from 'femo';
+import { FemoModel, subscribe, useDerivedState } from 'femo';
 import {
   useCallback, useContext, useEffect, useRef, useState,
 } from 'react';
@@ -14,31 +14,36 @@ import hooksHelper from '../helper';
 // 如果没传，统一规定在一个 formNode context 查询，不论所查的 field 还是 form
 const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?: NodeType): [FieldInstance<V> | FormInstance<V> | null] => {
   const { context, watch = true } = options || {};
-  const node = useContext(NodeContext);
+  const targetModelRef = useRef<FemoModel<FNode>>(null);
+
+  const nodes = useContext(NodeContext);
+  const [node] = useDerivedState(() => {
+    return nodes?.[0];
+  }, [nodes]);
 
   const [, setState] = useState(null);
-  const [refreshFlag, updateState] = useState('');
-  const targetRef = useRef<FNode>(null);
-
-  const refresh = useCallback((str: string) => {
-    updateState((prevState) => {
-      if (prevState === str) {
-        setState({});
-      }
-      return str;
-    });
-  }, []);
 
   const { tmpPath } = nodeHelper.pathToArr(path || '');
   const pathString = JSON.stringify(tmpPath);
 
   const [formNode] = useDerivedState(() => {
-    return nodeHelper.findNearlyParentFormNode(node, type === 'form');
-  }, [node]);
+    return nodes.find((n) => {
+      return n.type === 'form';
+    });
+  }, [nodes]);
 
   const contextNode = context || formNode;
 
-  const findTarget = () => {
+  const refresh = useCallback((node: FNode, str: string) => {
+    const strSet = contextNode?.searchingPath?.get(refresh);
+    strSet?.delete(str);
+    if (!strSet?.size) {
+      contextNode?.searchingPath?.delete(refresh);
+    }
+    targetModelRef.current?.(node);
+  }, []);
+
+  const [target, targetModel] = useDerivedState(() => {
     let tmpTarget = null;
     // 没有 path，则返回当前所属的 node
     if (!path) {
@@ -62,30 +67,23 @@ const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?:
       }
       strSet.add(pathString);
     }
-    targetRef.current = tmpTarget;
-  };
-
-  useLight(() => {
-    findTarget();
-  }, [refreshFlag]);
-
-  useEffect(() => {
-    findTarget();
+    return tmpTarget;
   }, [contextNode, pathString]);
+  targetModelRef.current = targetModel;
 
   useEffect(() => {
     const curSet = contextNode?.searchingPath?.get(refresh);
     return () => {
       curSet?.delete(pathString);
     };
-  }, [pathString, contextNode]);
+  }, [contextNode, pathString]);
 
   useEffect(() => {
-    if (targetRef.current && watch) {
-      const sub_1 = subscribe([targetRef.current?.instance?.model], () => {
+    if (target && watch) {
+      const sub_1 = subscribe([target?.instance?.model], () => {
         setState({});
       }, false);
-      const sub_2 = subscribe([targetRef.current?.status], () => {
+      const sub_2 = subscribe([target?.status], () => {
         setState({});
       }, false);
       return () => {
@@ -94,20 +92,10 @@ const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?:
       };
     }
     return undefined;
-  }, [targetRef.current, watch, targetRef.current?.instance?.model, targetRef.current?.status]);
+  }, [target, watch]);
 
-  useEffect(() => {
-    return () => {
-      const strSet = contextNode?.searchingPath?.get(refresh);
-      strSet?.delete(refreshFlag);
-      if (!strSet?.size) {
-        contextNode?.searchingPath?.delete(refresh);
-      }
-    };
-  }, [refreshFlag]);
-
-  hooksHelper.mergeStateToInstance(targetRef.current, targetRef.current?.instance?.model());
-  return [targetRef.current?.instance];
+  hooksHelper.mergeStateToInstance(target, target?.instance?.model());
+  return [target?.instance];
 };
 
 export default useInstance;

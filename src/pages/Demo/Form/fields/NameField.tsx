@@ -5,11 +5,12 @@ import React, { FC } from 'react';
 
 interface Props {
   name?: string;
+  ageFieldPath?: string[];
 }
 
 const NameField: FC<Props> = (props) => {
-  const { name } = props;
-  const [ageField] = useField<number>('age');
+  const { name, ageFieldPath } = props;
+  const [ageField] = useField<number>(ageFieldPath || 'age');
   return (
     <Field
       name={name || 'name'}

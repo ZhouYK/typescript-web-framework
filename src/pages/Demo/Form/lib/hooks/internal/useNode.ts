@@ -31,7 +31,10 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   });
   const insRef = useRef(instance);
 
-  const parentNode = useContext(NodeContext);
+  const parentNodes = useContext(NodeContext);
+  const [parentNode] = useDerivedState(() => {
+    return parentNodes?.[0];
+  }, [parentNodes]);
 
   const findSameNameSiblingNode = (n: string) => nodeHelper.findNode(parentNode, n);
 
@@ -81,6 +84,21 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     node.status.race(NodeStatusEnum.mount);
     // 每次挂载 node 过后，都往上寻找需要该节点的 context node，并执行触发 rerender 的动作
     nodeHelper.backtrackForContextNode(node);
+    let index = 0;
+    let parent = parentNodes[index];
+    const path = [node.name];
+    while (parent) {
+      const tmpPath = JSON.stringify(path);
+      // eslint-disable-next-line no-loop-func
+      parent?.searchingPath?.forEach((value, key) => {
+        if (value.has(tmpPath)) {
+          key?.(node, tmpPath);
+        }
+      });
+      path.unshift(parent.name);
+      index += 1;
+      parent = parentNodes[index];
+    }
     dealWithSameNameNode(node.name);
   };
 

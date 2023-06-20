@@ -1,5 +1,6 @@
 import FormItemContext from '@/pages/Demo/Form/lib/FormItemProvider/FormItemContext';
 import NodeContext from '@/pages/Demo/Form/lib/NodeProvider/NodeContext';
+import { useDerivedState } from 'femo';
 import React, {
   FC, SyntheticEvent, useCallback, useContext, useRef,
 } from 'react';
@@ -17,7 +18,12 @@ const FormItem: FC<Props> = (props) => {
   const propsRef = useRef(props);
   propsRef.current = props;
   const fieldState = useContext(FormItemContext);
-  const fieldNode = useContext(NodeContext);
+  const fieldNodes = useContext(NodeContext);
+
+  const [fieldNode] = useDerivedState(() => {
+    return fieldNodes?.[0];
+  }, [fieldNodes]);
+
   const fieldNodeRef = useRef(fieldNode);
   fieldNodeRef.current = fieldNode;
 

@@ -6,11 +6,12 @@ import React, { FC, useRef } from 'react';
 
 interface Props {
   name?: string;
+  nameFieldPath?: string[];
 }
 
 const AgeField: FC<Props> = (props) => {
-  const { name } = props;
-  const [nameField] = useField<string>('name');
+  const { name, nameFieldPath } = props;
+  const [nameField] = useField<string>(nameFieldPath || 'name');
   const fieldRef = useRef<FieldInstance<number>>();
   console.log('nameField?.value', nameField?.value);
   return (
