@@ -43,8 +43,8 @@ const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?:
     targetModelRef.current?.(node);
   }, []);
 
-  const [target, targetModel] = useDerivedState(() => {
-    let tmpTarget = null;
+  const [target, targetModel] = useDerivedState((preState) => {
+    let tmpTarget = preState;
     // 没有 path，则返回当前所属的 node
     if (!path) {
       tmpTarget = nodeHelper.isForm(node.type) ? null : node;

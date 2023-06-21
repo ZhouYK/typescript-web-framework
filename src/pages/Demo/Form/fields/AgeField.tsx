@@ -7,10 +7,11 @@ import React, { FC, useRef } from 'react';
 interface Props {
   name?: string;
   nameFieldPath?: string[];
+  label?: any;
 }
 
 const AgeField: FC<Props> = (props) => {
-  const { name, nameFieldPath } = props;
+  const { name, nameFieldPath, label } = props;
   const [nameField] = useField<string>(nameFieldPath || 'name');
   const fieldRef = useRef<FieldInstance<number>>();
   console.log('nameField?.value', nameField?.value);
@@ -21,7 +22,7 @@ const AgeField: FC<Props> = (props) => {
       visible={nameField?.value !== '张三丰'}
       preserve
       name={name || 'age'}
-      label='年龄'
+      label={ label || '年龄' }
       validator={(v) => {
         console.log('v', v);
         if (v > 10) {

@@ -59,31 +59,18 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     };
   });
 
-  // 节点卸载只能走这个方法
-  const nodeDetach = (shouldOff = true) => {
-    // 只要保留状态，那么节点就只做软删除，不做卸载
-    if (node.instance.preserve) {
-      node.deleted = true;
-      return;
-    }
-    node.detach();
-    if (shouldOff) {
-      // 卸载过后，解绑所有监听
-      unsubscribe([node.instance.model]);
-    }
-
-    // 先通知
-    node.status.race(NodeStatusEnum.unmount);
-    if (shouldOff) {
-      unsubscribe([node.status]);
-    }
-  };
+  // 每个调用了 node.detach 的地方都应该调用一次该方法
+  const resetSameNameNodeListeners = useCallback(() => {
+    listenersRef.current.forEach((fn) => {
+      fn?.();
+    });
+    listenersRef.current = [];
+  }, []);
 
   const pushChild = () => {
     parentNode?.pushChild(node);
     node.status.race(NodeStatusEnum.mount);
     // 每次挂载 node 过后，都往上寻找需要该节点的 context node，并执行触发 rerender 的动作
-    nodeHelper.backtrackForContextNode(node);
     let index = 0;
     let parent = parentNodes[index];
     const path = [node.name];
@@ -100,6 +87,31 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
       parent = parentNodes[index];
     }
     dealWithSameNameNode(node.name);
+  };
+
+  const nodeDetach = () => {
+    node.detach();
+    resetSameNameNodeListeners();
+  };
+
+  // （visible 引起的） 或者 （组件本身卸载引起的） 节点卸载只能走这个方法
+  const visibleOrUnmountNodeDetach = (shouldOff = true) => {
+    // 只要保留状态，那么节点就只做软删除，不做卸载
+    if (node.instance.preserve) {
+      node.deleted = true;
+      return;
+    }
+    nodeDetach();
+    if (shouldOff) {
+      // 卸载过后，解绑所有监听
+      unsubscribe([node.instance.model]);
+    }
+
+    // 先通知
+    node.status.race(NodeStatusEnum.unmount);
+    if (shouldOff) {
+      unsubscribe([node.status]);
+    }
   };
 
   const nodePush = () => {
@@ -127,10 +139,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   const dealWithSameNameNode = (n: string) => {
     const sameNameNode = findSameNameSiblingNode(n);
     if (sameNameNode && !Object.is(sameNameNode, node)) {
-      listenersRef.current.forEach((fn) => {
-        fn?.();
-      });
-      listenersRef.current = [];
+      resetSameNameNodeListeners();
       // 同步状态
       node.instance.model(sameNameNode.instance.model());
       const listener_1 = node.instance.model.onChange((state) => {
@@ -198,7 +207,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   useEffect(() => {
     if (node.status() === NodeStatusEnum.unmount) return;
     if (node.status() === NodeStatusEnum.mount) {
-      node.detach();
+      nodeDetach();
       node.status.race(NodeStatusEnum.unmount);
     }
     pushChild();
@@ -209,7 +218,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     if (!(state?.visible)) {
       // 可能会把所有 node.instance.model 上的监听都解绑
       // 需要保持当前 useNode 里面有监听
-      nodeDetach(false);
+      visibleOrUnmountNodeDetach(false);
       return;
     }
     nodePush();
@@ -217,7 +226,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
 
   useEffect(() => {
     return () => {
-      nodeDetach();
+      visibleOrUnmountNodeDetach();
     };
   }, []);
 
