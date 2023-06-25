@@ -8,11 +8,12 @@ import {
   useCallback, useContext, useEffect, useRef, useState,
 } from 'react';
 import {
-  FieldInstance, FieldState, FNode, FormState, NodeInstance, NodeStateMap, NodeStatusEnum, NodeType,
+  FieldInstance, FieldState, FNode, FormState, NodeInstance, NodeStateMap, NodeStatusEnum, NodeType, SearchAction,
 } from '../../interface';
 import hooksHelper from '../helper';
 // initState 中 name 必填 TODO 需要做校验
 const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: NodeType): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>, NodeInstance<NodeStateMap<V>[typeof type]>] => {
+  const firstRenderRef = useRef(true);
   const listenersRef = useRef([]);
   const reducerRef = useRef(null);
   reducerRef.current = (st: typeof initState) => {
@@ -67,10 +68,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     listenersRef.current = [];
   }, []);
 
-  const pushChild = () => {
-    parentNode?.pushChild(node);
-    node.status.race(NodeStatusEnum.mount);
-    // 每次挂载 node 过后，都往上寻找需要该节点的 context node，并执行触发 rerender 的动作
+  const noticeSubscriber = (action: SearchAction) => {
     let index = 0;
     let parent = parentNodes[index];
     const path = [node.name];
@@ -79,13 +77,20 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
       // eslint-disable-next-line no-loop-func
       parent?.searchingPath?.forEach((value, key) => {
         if (value.has(tmpPath)) {
-          key?.(node, tmpPath);
+          key?.(node, tmpPath, action);
         }
       });
       path.unshift(parent.name);
       index += 1;
       parent = parentNodes[index];
     }
+  };
+
+  const pushChild = () => {
+    parentNode?.pushChild(node);
+    node.status.race(NodeStatusEnum.mount);
+    // 每次挂载 node 过后，都往上寻找需要该节点的 context node，并执行触发 rerender 的动作
+    noticeSubscriber(SearchAction.node_position_change);
     dealWithSameNameNode(node.name);
   };
 
@@ -223,6 +228,14 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     }
     nodePush();
   }, [state?.visible]);
+
+  useEffect(() => {
+    if (firstRenderRef.current) {
+      firstRenderRef.current = false;
+      return;
+    }
+    noticeSubscriber(SearchAction.node_name_change);
+  }, [state?.name]);
 
   useEffect(() => {
     return () => {

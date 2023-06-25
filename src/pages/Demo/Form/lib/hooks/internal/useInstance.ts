@@ -1,5 +1,5 @@
 import {
-  FieldInstance, FNode, FormInstance, FPath, NodeType, UseInstanceOptions,
+  FieldInstance, FNode, FormInstance, FPath, NodeType, SearchAction, UseInstanceOptions,
 } from '@/pages/Demo/Form/lib/interface';
 import NodeContext from '@/pages/Demo/Form/lib/NodeProvider/NodeContext';
 import nodeHelper from '@/pages/Demo/Form/lib/utils/nodeHelper';
@@ -21,10 +21,12 @@ const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?:
     return nodes?.[0];
   }, [nodes]);
 
+  const [reFindNode, setReFindNode] = useState(null);
   const [, setState] = useState(null);
 
-  const { tmpPath } = nodeHelper.pathToArr(path || '');
-  const pathString = JSON.stringify(tmpPath);
+  const [pathString] = useDerivedState(() => {
+    return JSON.stringify(nodeHelper.pathToArr(path || '')?.tmpPath || '');
+  }, [path]);
 
   const [formNode] = useDerivedState(() => {
     return nodes.find((n) => {
@@ -34,13 +36,18 @@ const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?:
 
   const contextNode = context || formNode;
 
-  const refresh = useCallback((node: FNode, str: string) => {
-    const strSet = contextNode?.searchingPath?.get(refresh);
-    strSet?.delete(str);
-    if (!strSet?.size) {
-      contextNode?.searchingPath?.delete(refresh);
+  const refresh = useCallback((node: FNode, _str: string, action: SearchAction) => {
+    switch (action) {
+      case SearchAction.node_position_change: {
+        targetModelRef.current?.(node);
+      }
+        break;
+      case SearchAction.node_name_change: {
+        setReFindNode({});
+      }
+        break;
+      default:
     }
-    targetModelRef.current?.(node);
   }, []);
 
   const [target, targetModel] = useDerivedState((preState) => {
@@ -68,7 +75,7 @@ const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?:
       strSet.add(pathString);
     }
     return tmpTarget;
-  }, [contextNode, pathString]);
+  }, [contextNode, pathString, reFindNode]);
   targetModelRef.current = targetModel;
 
   useEffect(() => {
