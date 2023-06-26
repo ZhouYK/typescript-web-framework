@@ -43,6 +43,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     // 如果找到了同层的同名节点，则复用
     const reuseNode = findSameNameSiblingNode(initState.name);
     if (reuseNode) {
+      reuseNode.deleted = false;
       return reuseNode;
     }
     return {
@@ -102,6 +103,9 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   // （visible 引起的） 或者 （组件本身卸载引起的） 节点卸载只能走这个方法
   const visibleOrUnmountNodeDetach = (shouldOff = true) => {
     // 只要保留状态，那么节点就只做软删除，不做卸载
+    // 卸载时 preserve 决定了 node 是否从链表中删除
+    // 为什么这么设计？
+    // 主要考虑到（preserve 为 true 时，保留节点状态与保留节点在链表以及 preserve 为 false 时，初始化节点状态与从链表中删除节点）语义上一致性很强
     if (node.instance.preserve) {
       node.deleted = true;
       return;
@@ -128,6 +132,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     // 下面的情况属于 情况 2
     if (node.status() === NodeStatusEnum.unmount) {
       if (!node.instance.preserve) {
+        // TODO 这里重置的状态可能需要调整
         node.instance.model((state) => ({
           ...state,
           value: undefined,
@@ -202,7 +207,9 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
 
       return Promise.all(errors).then((errs) => {
         if (errs.every((er) => !er)) {
-          return nodeHelper.getValues(node);
+          return nodeHelper.getValues(node, (n) => {
+            return n.deleted;
+          });
         }
         return Promise.reject(errs);
       });

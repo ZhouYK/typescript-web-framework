@@ -130,32 +130,40 @@ class NodeHelper {
 
   // 根据节点获取：节点以及其子节点的结构化数据
   // todo 添加验证
-  getValues = (node: FNode<FieldState | FormState>) => {
-    const result: { [index: string]: any } = {};
-    const traverse = (n: FNode<FieldState | FormState>, upperObj: Record<string, any>) => {
+  getValues = (node: FNode<FieldState | FormState>, skip?: (n: FNode<FieldState | FormState>) => boolean) => {
+    let result: { [index: string]: any };
+    const traverse = (n: FNode<FieldState | FormState>, upperObj?: Record<string, any>) => {
+      if (!n) return;
       if (this.isForm(n.type)) {
-        if (n.sibling) {
+        if (upperObj || (skip && skip(n))) {
           traverse(n.sibling, upperObj);
+          return;
         }
-        if (n.child) {
-          traverse(n.child, upperObj);
-        }
+        upperObj = {};
+        result = upperObj;
+        traverse(n.child, upperObj);
         return;
       }
 
+      if (skip && skip(n)) {
+        traverse(n.sibling, upperObj);
+        return;
+      }
+      // 没有值，说明没有找到合适的节点
+      if (!result) {
+        upperObj = {};
+        result = upperObj;
+      }
       if (n.child) {
         upperObj[n.name] = {};
-        traverse(n.child, upperObj[n.name]);
       } else {
         upperObj[n.name] = n.instance.model().value;
       }
-
-      if (n.sibling) {
-        traverse(n.sibling, upperObj);
-      }
+      traverse(n.child, upperObj[n.name]);
+      traverse(n.sibling, upperObj);
     };
 
-    traverse(node, result);
+    traverse(node);
     return result;
   }
 
@@ -172,23 +180,6 @@ class NodeHelper {
       }
     };
     traverse(node);
-  }
-
-  // 回溯节点，直到找到目标上下文节点
-  backtrackForContextNode = (curNode: FNode<FieldState | FormState>) => {
-    let parent = curNode?.parent;
-    const path = [curNode.name];
-    while (parent) {
-      const tmpPath = JSON.stringify(path);
-      // eslint-disable-next-line no-loop-func
-      parent?.searchingPath?.forEach((value, key) => {
-        if (value.has(tmpPath)) {
-          key?.(curNode, tmpPath);
-        }
-      });
-      path.unshift(parent.name);
-      parent = parent.parent;
-    }
   }
 }
 
