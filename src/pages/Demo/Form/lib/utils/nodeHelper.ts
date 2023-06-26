@@ -1,9 +1,16 @@
 import {
-  FieldState,
-  FNode, FormState, FPath, NodeType,
+  FieldState, FNode, FormState, FPath, NodeType, NodeValueType,
 } from '@/pages/Demo/Form/lib/interface';
 
 class NodeHelper {
+  regex = {
+    number: /^[0-9]+$/,
+  }
+
+  isNumber = (n: string) => {
+    return this.regex.number.test(`${n}`);
+  }
+
   isForm = (type: NodeType) => {
     return type === 'form';
   }
@@ -132,6 +139,17 @@ class NodeHelper {
   // todo 添加验证
   getValues = (node: FNode<FieldState | FormState>, skip?: (n: FNode<FieldState | FormState>) => boolean) => {
     let result: { [index: string]: any };
+
+    const getValueTemplate = (n: FNode<FieldState | FormState>) => {
+      switch (n.valueType) {
+        case NodeValueType.object:
+          return {};
+        case NodeValueType.array:
+          return [];
+        default:
+      }
+      return n.instance.model().value;
+    };
     const traverse = (n: FNode<FieldState | FormState>, upperObj?: Record<string, any>) => {
       if (!n) return;
       if (this.isForm(n.type)) {
@@ -139,7 +157,9 @@ class NodeHelper {
           traverse(n.sibling, upperObj);
           return;
         }
-        upperObj = {};
+
+        upperObj = getValueTemplate(n);
+
         result = upperObj;
         traverse(n.child, upperObj);
         return;
@@ -154,11 +174,7 @@ class NodeHelper {
         upperObj = {};
         result = upperObj;
       }
-      if (n.child) {
-        upperObj[n.name] = {};
-      } else {
-        upperObj[n.name] = n.instance.model().value;
-      }
+      upperObj[n.name] = getValueTemplate(n);
       traverse(n.child, upperObj[n.name]);
       traverse(n.sibling, upperObj);
     };

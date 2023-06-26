@@ -25,6 +25,15 @@ function filterFieldState<V = any>(props: FieldProps<V>): FieldState<V> {
 
 const Field: FC<FieldProps> = forwardRef<FieldInstance, FieldProps>((props, ref) => {
   const { children } = props;
+  const count = React.Children.count(children);
+  let element = children;
+  if (count > 1 || count <= 0) {
+    element = (
+      <>
+        {children}
+      </>
+    );
+  }
   const [fieldState, fieldNode, instance] = useNode(filterFieldState(props), 'field');
 
   const contextNodes = useContext(NodeContext);
@@ -48,7 +57,7 @@ const Field: FC<FieldProps> = forwardRef<FieldInstance, FieldProps>((props, ref)
       <FormItemProvider fieldState={fieldState}>
         <FormItem>
           {
-            children
+            element
           }
         </FormItem>
       </FormItemProvider>

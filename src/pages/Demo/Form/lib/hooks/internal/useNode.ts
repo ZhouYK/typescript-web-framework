@@ -8,7 +8,7 @@ import {
   useCallback, useContext, useEffect, useRef, useState,
 } from 'react';
 import {
-  FieldInstance, FieldState, FNode, FormState, NodeInstance, NodeStateMap, NodeStatusEnum, NodeType, SearchAction,
+  FieldInstance, FieldState, FNode, FormState, NodeInstance, NodeStateMap, NodeStatusEnum, NodeType, NodeValueType, SearchAction,
 } from '../../interface';
 import hooksHelper from '../helper';
 // initState 中 name 必填 TODO 需要做校验
@@ -39,6 +39,25 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
 
   const findSameNameSiblingNode = (n: string) => nodeHelper.findNode(parentNode, n);
 
+  const setNodeValueType = (parentNode: FNode, child: FNode) => {
+    switch (parentNode?.valueType) {
+      case NodeValueType.init:
+        if (nodeHelper.isNumber(child.name)) {
+          parentNode.valueType = NodeValueType.array;
+        } else {
+          parentNode.valueType = NodeValueType.object;
+        }
+        break;
+      case NodeValueType.array:
+        if (!nodeHelper.isNumber(child.name)) {
+          parentNode.valueType = NodeValueType.object;
+        }
+        break;
+      case NodeValueType.object:
+      default:
+    }
+  };
+
   const [node] = useState<FNode<NodeStateMap<V>[typeof type]>>(() => {
     // 如果找到了同层的同名节点，则复用
     const reuseNode = findSameNameSiblingNode(initState.name);
@@ -51,12 +70,20 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
       name: initState.name,
       status: gluer<NodeStatusEnum>(NodeStatusEnum.init),
       deleted: false,
+      valueType: NodeValueType.init,
       instance: insRef.current,
       pushChild: (f: FNode) => {
         nodeHelper.chainChildNode(f, node);
+        setNodeValueType(node, f);
       },
       detach: () => {
         nodeHelper.cutNode(node);
+        // 从链表脱落过后，节点的 valueType 回到初始状态
+        node.valueType = NodeValueType.init;
+        // 链表脱落过后，需要检查父节点的 valueType
+        if (!node.parent.child) {
+          node.parent.valueType = NodeValueType.init;
+        }
       },
     };
   });
@@ -241,6 +268,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
       firstRenderRef.current = false;
       return;
     }
+    setNodeValueType(node.parent, node);
     noticeSubscriber(SearchAction.node_name_change);
   }, [state?.name]);
 

@@ -70,8 +70,15 @@ export enum SearchAction {
   node_name_change = 'node_name_change',
 }
 
+export enum NodeValueType {
+  init = 0,
+  object = 1,
+  array = 2,
+}
+
 export interface FNode<P = any> {
   type: NodeType;
+  valueType: NodeValueType;
   // 如果没有 name，则该节点及后续的子节点将会无效（不会出现在表单的任何处理之中，比如获取值，校验，查找节点等）。该节点的兄弟节点不受影响
   // 同一层级 name 应该保持唯一性，跨层级不用管
   name: string;
