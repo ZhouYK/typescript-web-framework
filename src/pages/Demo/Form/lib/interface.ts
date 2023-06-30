@@ -4,7 +4,7 @@ export type NodeModel<V = any> = GluerReturn<V>
 
 export interface FieldState<V = any> {
   label?: any;
-  name: string;
+  name?: string;
   value?: V;
   visible?: boolean; // 是否显示字段，默认为 true
   preserve?: boolean; // 是否保存字段状态，默认为 false
@@ -16,7 +16,7 @@ export interface FieldState<V = any> {
 
 export interface FormState<V = any> {
   errors?: any[];
-  name: string;
+  name?: string;
   visible?: boolean; // 是否显示表单，默认为 true
   preserve?: boolean; // 是否保存表单状态，默认为false
   value?: V;
@@ -26,7 +26,7 @@ export type NodeInstance<P, V = any> = {
   model: NodeModel<P>;
   validate: () => Promise<V>;
   value?: V;
-  name: string;
+  name?: string;
 } & {
   [k in keyof P]: P[k];
 }
@@ -100,7 +100,7 @@ export interface NodeStateMap<V> {
   field: FieldState<V>;
 }
 
-export interface UseInstanceOptions {
+export interface UseFieldInstanceOptions {
   context?: FNode;
   watch?: boolean;
 }

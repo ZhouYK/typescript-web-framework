@@ -5,6 +5,18 @@ import {
 class NodeHelper {
   regex = {
     number: /^[0-9]+$/,
+    empty: /^.+$/,
+  }
+
+  isAnonymous = (n: any) => {
+    if (
+      Object.is(n, null)
+      || Object.is(n, undefined)
+      || Object.is(n, NaN)
+    ) {
+      return true;
+    }
+    return !this.regex.empty.test(n);
   }
 
   isNumber = (n: string) => {
@@ -46,7 +58,8 @@ class NodeHelper {
 
   // 删除节点
   // 只有在节点树中的节点，才谈得上删除
-  // todo 有个问题：节点删除了过后，其他地方通过 useField 获取到节点，并做了监听的，如何处理？
+  // 有个问题：节点删除了过后，其他地方通过 useField 获取到节点，并做了监听的，如何处理？
+  // 23-06-28: 节点删除过后，如果节点可能再次被链接进入链表，则不解绑监听；如果不可能再次被链接，则解绑监听
   cutNode = (inputNode: FNode) => {
     // 如果 inputNode 没有父节点，就不存在兄弟节点
     // 只处理 child 指针
@@ -91,30 +104,71 @@ class NodeHelper {
     };
   }
 
-  // 根据路径和起始节点（查找时不包含该节点）查找节点
-  findNode = (node: FNode, path: FPath, type?: NodeType): FNode | undefined => {
-    if (!path || !node) return undefined;
-    const { length, tmpPath } = this.pathToArr(path);
+  getFirstChildNotAnonymousToDown = (n: FNode): FNode | null => {
+    if (!n) return n;
+    if (!this.isAnonymous(n.name)) return n;
+    return this.getFirstChildNotAnonymousToDown(n.child);
+  }
 
-    let result: FNode | undefined;
-    let cur = node.child;
-    let dep = 0;
-    // todo  没有cur.name的 node 需要有处理策略
-    while (cur && cur.name && dep < length) {
-      const name = tmpPath[dep];
-      // 同一层级只会找第一个，同一层级 name 应该保持唯一性
-      if (name === cur.name) {
-        dep += 1;
-        if (dep === length && ((!type) || cur.type === type)) {
-          result = cur;
-        }
-        cur = cur.child;
-      } else if (cur.sibling) {
-        cur = cur.sibling;
-      } else {
-        cur = null;
-      }
+  getFirstChildNotAnonymousToUp = (n: FNode): FNode | null => {
+    if (!n) return n;
+    if (!this.isAnonymous(n.name)) return n;
+    return this.getFirstChildNotAnonymousToUp(n.parent);
+  }
+
+  traverseAnonymousNode = (node: FNode, callback: (n: FNode) => boolean): boolean => {
+    if (!node) return false;
+    if (this.isAnonymous(node.name)) {
+      return this.traverseAnonymousNode(node.child, callback);
     }
+    if (callback(node)) return true;
+    return this.traverseAnonymousNode(node.sibling, callback);
+  }
+
+  // 根据路径和起始节点（查找时不包含该节点）查找节点
+  // 不查找 form 节点及其后代
+  // form 节点作为一个封闭的区块存在（可以把 form 想象成一个进程），就像一个封闭的表单字段运行的上下文。
+  // 所以在按路径查找或者取值时，都不能跨表单。
+  // form 节点可以匿名，但是匿名节点的特性判断优先级小于 form 节点的特性
+  findFieldNodes = (node: FNode, path: FPath): FNode[] => {
+    const result: FNode[] = [];
+    if (!path || !node) return result;
+    const { length, tmpPath } = this.pathToArr(path);
+    const cur = node.child;
+
+    const traverse = (node: FNode, depth: number) => {
+      if (!node || depth >= length) return;
+      if (this.isForm(node.type)) {
+        // 跳过 form 节点，寻找其兄弟节点
+        traverse(node.sibling, depth);
+        return;
+      }
+
+      if (this.isAnonymous(node.name)) {
+        traverse(node.child, depth);
+        traverse(node.sibling, depth);
+        return;
+      }
+
+      const name = tmpPath[depth];
+      if (name === node.name) {
+        // 找到了最终的目标之一
+        if (depth === length - 1) {
+          result.push(node);
+          // 继续在兄弟节点找
+          traverse(node.sibling, depth);
+          return;
+        }
+        // 在儿子节点找
+        traverse(node.child, depth + 1);
+        // 继续在兄弟节点找
+        traverse(node.sibling, depth);
+        return;
+      }
+      // 没找到，继续在兄弟找
+      traverse(node.sibling, depth);
+    };
+    traverse(cur, 0);
     return result;
   }
 
@@ -136,6 +190,8 @@ class NodeHelper {
   }
 
   // 根据节点获取：节点以及其子节点的结构化数据
+  // 不查找 form 节点及其子节点
+  // 同 findNode 对 form 节点的解释
   // todo 添加验证
   getValues = (node: FNode<FieldState | FormState>, skip?: (n: FNode<FieldState | FormState>) => boolean) => {
     let result: { [index: string]: any };
@@ -173,6 +229,13 @@ class NodeHelper {
       if (!result) {
         upperObj = {};
         result = upperObj;
+      }
+
+      // 匿名字段直接透传
+      if (this.isAnonymous(n.name)) {
+        traverse(n.child, upperObj);
+        traverse(n.sibling, upperObj);
+        return;
       }
       upperObj[n.name] = getValueTemplate(n);
       traverse(n.child, upperObj[n.name]);

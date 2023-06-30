@@ -23,6 +23,7 @@ const NestedField: FC<Props> = () => {
   return (
     <Field
       name='test'
+      label='我是外部嵌套的'
     >
       <NestedComponent />
     </Field>

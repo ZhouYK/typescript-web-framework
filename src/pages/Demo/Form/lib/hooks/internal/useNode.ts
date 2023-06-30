@@ -11,7 +11,7 @@ import {
   FieldInstance, FieldState, FNode, FormState, NodeInstance, NodeStateMap, NodeStatusEnum, NodeType, NodeValueType, SearchAction,
 } from '../../interface';
 import hooksHelper from '../helper';
-// initState 中 name 必填 TODO 需要做校验
+
 const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: NodeType): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>, NodeInstance<NodeStateMap<V>[typeof type]>] => {
   const firstRenderRef = useRef(true);
   const listenersRef = useRef([]);
@@ -37,21 +37,58 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     return parentNodes?.[0];
   }, [parentNodes]);
 
-  const findSameNameSiblingNode = (n: string) => nodeHelper.findNode(parentNode, n);
+  const [sameNameSiblingNodeParentNode] = useDerivedState(() => {
+    const target = parentNodes.find((n) => {
+      return !nodeHelper.isAnonymous(n.name);
+    });
+    return target || parentNodes[parentNodes.length - 1];
+  }, [parentNodes]);
 
-  const setNodeValueType = (parentNode: FNode, child: FNode) => {
-    switch (parentNode?.valueType) {
-      case NodeValueType.init:
+  // 这里查找同层同名的节点，在加入匿名节点后可能会出现，同名节点不在同一个物理层。
+  // 这个时候就可能出现查找的时候节点还没有挂载的情况，出现这种情况一定是：两个节点都在挂载中，挂载完成时间会有先后，那么肯定有一个节点挂载的时候，能找到另一个的。
+  // 还需要注意，这里的 parentNode 应该先上寻找第一个非匿名节点或者全是匿名节点的情况下，找最顶层节点。
+  const findSameNameSiblingNode = (n: string) => nodeHelper.findFieldNodes(sameNameSiblingNodeParentNode, n);
+
+  const setNodeValueType = (pn: FNode, child: FNode) => {
+    // form 节点的值不参加判断
+    // 获取值那 form 节点不参与生成
+    if (nodeHelper.isForm(child.type)) return;
+    switch (pn?.valueType) {
+      case NodeValueType.init: {
         if (nodeHelper.isNumber(child.name)) {
-          parentNode.valueType = NodeValueType.array;
+          pn.valueType = NodeValueType.array;
+        } else if (nodeHelper.isAnonymous(child.name)) {
+          // 匿名字段用字段的类型来判断父节点类型
+          switch (child.valueType) {
+            case NodeValueType.object:
+              pn.valueType = NodeValueType.object;
+              break;
+            case NodeValueType.array:
+              pn.valueType = NodeValueType.array;
+              break;
+            case NodeValueType.init:
+            default:
+          }
         } else {
-          parentNode.valueType = NodeValueType.object;
+          pn.valueType = NodeValueType.object;
         }
+      }
         break;
-      case NodeValueType.array:
-        if (!nodeHelper.isNumber(child.name)) {
-          parentNode.valueType = NodeValueType.object;
+      case NodeValueType.array: {
+        // 匿名字段用字段的类型来判断父节点类型
+        if (nodeHelper.isAnonymous(child.name)) {
+          switch (child.valueType) {
+            case NodeValueType.object:
+              pn.valueType = NodeValueType.object;
+              break;
+            case NodeValueType.init:
+            case NodeValueType.array:
+            default:
+          }
+        } else if (!nodeHelper.isNumber(child.name)) {
+          pn.valueType = NodeValueType.object;
         }
+      }
         break;
       case NodeValueType.object:
       default:
@@ -59,12 +96,6 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   };
 
   const [node] = useState<FNode<NodeStateMap<V>[typeof type]>>(() => {
-    // 如果找到了同层的同名节点，则复用
-    const reuseNode = findSameNameSiblingNode(initState.name);
-    if (reuseNode) {
-      reuseNode.deleted = false;
-      return reuseNode;
-    }
     return {
       type,
       name: initState.name,
@@ -77,12 +108,13 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
         setNodeValueType(node, f);
       },
       detach: () => {
+        const { parent } = node;
         nodeHelper.cutNode(node);
         // 从链表脱落过后，节点的 valueType 回到初始状态
         node.valueType = NodeValueType.init;
         // 链表脱落过后，需要检查父节点的 valueType
-        if (!node.parent.child) {
-          node.parent.valueType = NodeValueType.init;
+        if (parent && !parent?.child) {
+          parent.valueType = NodeValueType.init;
         }
       },
     };
@@ -99,8 +131,18 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   const noticeSubscriber = (action: SearchAction) => {
     let index = 0;
     let parent = parentNodes[index];
+    // 匿名节点不会有任何关系
+    if (nodeHelper.isAnonymous(node.name)) {
+      return;
+    }
     const path = [node.name];
     while (parent) {
+      // 非表单匿名字段需要跳过
+      if (nodeHelper.isAnonymous(parent.name) && !nodeHelper.isForm(parent.type)) {
+        index += 1;
+        parent = parentNodes[index];
+        continue;
+      }
       const tmpPath = JSON.stringify(path);
       // eslint-disable-next-line no-loop-func
       parent?.searchingPath?.forEach((value, key) => {
@@ -109,6 +151,10 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
         }
       });
       path.unshift(parent.name);
+      // form 节点处理完成后就不再追溯了
+      if (nodeHelper.isForm(parent?.type)) {
+        break;
+      }
       index += 1;
       parent = parentNodes[index];
     }
@@ -119,11 +165,14 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     node.status.race(NodeStatusEnum.mount);
     // 每次挂载 node 过后，都往上寻找需要该节点的 context node，并执行触发 rerender 的动作
     noticeSubscriber(SearchAction.node_position_change);
+    if (nodeHelper.isAnonymous(node.name)) return;
     dealWithSameNameNode(node.name);
   };
 
   const nodeDetach = () => {
     node.detach();
+    // 先通知
+    node.status.race(NodeStatusEnum.unmount);
     resetSameNameNodeListeners();
   };
 
@@ -142,9 +191,6 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
       // 卸载过后，解绑所有监听
       unsubscribe([node.instance.model]);
     }
-
-    // 先通知
-    node.status.race(NodeStatusEnum.unmount);
     if (shouldOff) {
       unsubscribe([node.status]);
     }
@@ -174,8 +220,9 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   };
 
   const dealWithSameNameNode = (n: string) => {
-    const sameNameNode = findSameNameSiblingNode(n);
-    if (sameNameNode && !Object.is(sameNameNode, node)) {
+    const sameNameNodes = findSameNameSiblingNode(n);
+    if (sameNameNodes.length > 1 || (sameNameNodes.length === 1 && !Object.is(sameNameNodes[0], node))) {
+      const sameNameNode = sameNameNodes.find((t) => !Object.is(t, node));
       resetSameNameNodeListeners();
       // 同步状态
       node.instance.model(sameNameNode.instance.model());
@@ -185,7 +232,13 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
       const listener_2 = sameNameNode.instance.model.onChange((state) => {
         node.instance.model(state);
       });
-      listenersRef.current.push(listener_1, listener_2);
+      const listener_3 = sameNameNode.status.onChange((nodeStatus) => {
+        if (nodeStatus === NodeStatusEnum.unmount) {
+          dealWithSameNameNode(node.name);
+        }
+      });
+
+      listenersRef.current.push(listener_1, listener_2, listener_3);
     }
   };
 
@@ -195,6 +248,8 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
       ...initState,
     };
   }, [...Object.values(initState || {})]);
+
+  hooksHelper.propCheck(state, type);
 
   useDerivedState(() => {
     hooksHelper.mergeStateToInstance(node, state);
@@ -247,7 +302,6 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     if (node.status() === NodeStatusEnum.unmount) return;
     if (node.status() === NodeStatusEnum.mount) {
       nodeDetach();
-      node.status.race(NodeStatusEnum.unmount);
     }
     pushChild();
   }, [parentNode]);

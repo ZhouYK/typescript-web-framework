@@ -1,5 +1,5 @@
 import {
-  FieldInstance, FNode, FormInstance, FPath, NodeType, SearchAction, UseInstanceOptions,
+  FieldInstance, FNode, FPath, SearchAction, UseFieldInstanceOptions,
 } from '@/pages/Demo/Form/lib/interface';
 import NodeContext from '@/pages/Demo/Form/lib/NodeProvider/NodeContext';
 import nodeHelper from '@/pages/Demo/Form/lib/utils/nodeHelper';
@@ -12,7 +12,7 @@ import hooksHelper from '../helper';
 // 所有的搜索都必须在一个 context 下进行.
 // 如果传了 context ，则以传入为准；
 // 如果没传，统一规定在一个 formNode context 查询，不论所查的 field 还是 form
-const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?: NodeType): [FieldInstance<V> | FormInstance<V> | null] => {
+const useFieldInstance = <V = any>(path?: FPath, options?: UseFieldInstanceOptions): [FieldInstance<V> | null, FNode<FieldInstance<V>> | null] => {
   const { context, watch = true } = options || {};
   const targetModelRef = useRef<FemoModel<FNode>>(null);
 
@@ -50,17 +50,15 @@ const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?:
     }
   }, []);
 
-  const [target, targetModel] = useDerivedState((preState) => {
+  const [target, targetModel] = useDerivedState<FNode>((preState) => {
     let tmpTarget = preState;
     // 没有 path，则返回当前所属的 node
     if (!path) {
       tmpTarget = nodeHelper.isForm(node.type) ? null : node;
-    } else if (!path || !path.length) {
-      if (type === node.type) {
-        tmpTarget = node;
-      }
     } else {
-      tmpTarget = nodeHelper.findNode(contextNode, path, type);
+      // 可能会有多个同名节点，取第一个
+      // 效果会是一样的，因为同名节点会互相监听、互相同步状态
+      [tmpTarget] = nodeHelper.findFieldNodes(contextNode, path);
     }
     // 没有找到目标节点才会去记录
     if (!tmpTarget) {
@@ -102,7 +100,7 @@ const useInstance = <V = any>(path?: FPath, options?: UseInstanceOptions, type?:
   }, [target, watch]);
 
   hooksHelper.mergeStateToInstance(target, target?.instance?.model());
-  return [target?.instance];
+  return [target?.instance, target];
 };
 
-export default useInstance;
+export default useFieldInstance;
