@@ -22,6 +22,10 @@ export interface FormState<V = any> {
   value?: V;
 }
 
+export interface FormContextValue<V = any> {
+  state: FormState<V>;
+  node: FNode<FormState<V>>
+}
 export type NodeInstance<P, V = any> = {
   model: NodeModel<P>;
   validate: () => Promise<V>;

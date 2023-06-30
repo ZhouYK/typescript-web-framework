@@ -3,13 +3,11 @@ import Test, { Text } from '@/pages/Demo/Form/components/Test';
 import AnonymousField from '@/pages/Demo/Form/fields/AnonymousField';
 import ArrayField from '@/pages/Demo/Form/fields/ArrayField';
 import NestedField from '@/pages/Demo/Form/fields/NestedField';
-import Field from '@/pages/Demo/Form/lib/Field';
 import Form from '@/pages/Demo/Form/lib/Form';
-// import useCreateForm from '@/pages/Demo/Form/lib/hooks/useCreateForm';
 import { FormInstance } from '@/pages/Demo/Form/lib/interface';
 import { Button } from '@arco-design/web-react';
 import React, {
-  FC, useEffect, useRef, useState,
+  FC, useRef, useState,
 } from 'react';
 import NameField from '@/pages/Demo/Form/fields/NameField';
 

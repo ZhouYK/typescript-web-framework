@@ -1,6 +1,8 @@
 import FormProvider from '@/pages/Demo/Form/lib/FormProvider';
 import useNode from '@/pages/Demo/Form/lib/hooks/internal/useNode';
-import { FormInstance, FormProps } from '@/pages/Demo/Form/lib/interface';
+import {
+  FormInstance, FormProps,
+} from '@/pages/Demo/Form/lib/interface';
 import NodeProvider from '@/pages/Demo/Form/lib/NodeProvider';
 import NodeContext from '@/pages/Demo/Form/lib/NodeProvider/NodeContext';
 import nodeHelper from '@/pages/Demo/Form/lib/utils/nodeHelper';
@@ -36,7 +38,7 @@ const Form: FC<FormProps> = forwardRef<FormInstance, FormProps>((props, ref) => 
   }, []);
   return (
     <NodeProvider nodes={nodes}>
-      <FormProvider formState={formState}>
+      <FormProvider state={formState} node={formNode}>
         <form>
           { children }
         </form>
