@@ -6,7 +6,7 @@ import NodeProvider from '@/pages/Demo/Form/lib/NodeProvider';
 import NodeContext from '@/pages/Demo/Form/lib/NodeProvider/NodeContext';
 import { useDerivedState } from 'femo';
 import React, {
-  FC, forwardRef, useContext, useImperativeHandle,
+  FC, forwardRef, useContext, useImperativeHandle, useRef,
 } from 'react';
 import { defaultState } from '../config';
 
@@ -24,17 +24,15 @@ function filterFieldState<V = any>(props: FieldProps<V>): FieldState<V> {
 }
 
 const Field: FC<FieldProps> = forwardRef<FieldInstance, FieldProps>((props, ref) => {
-  const { children } = props;
-  const count = React.Children.count(children);
-  let element = children;
-  if (count > 1 || count <= 0) {
-    element = (
-      <>
-        {children}
-      </>
-    );
-  }
-  const [fieldState, fieldNode, instance] = useNode(filterFieldState(props), 'field');
+  const { children, onFieldChange } = props;
+
+  const [fieldState, fieldNode] = useNode(filterFieldState(props), 'field', {
+    onFieldChange,
+  });
+
+  // 缓存 fieldState
+  const fieldStateRef = useRef(fieldState);
+  fieldStateRef.current = fieldState;
 
   const contextNodes = useContext(NodeContext);
 
@@ -46,8 +44,9 @@ const Field: FC<FieldProps> = forwardRef<FieldInstance, FieldProps>((props, ref)
   }, [fieldNode, contextNodes]);
 
   useImperativeHandle(ref, () => {
-    return instance;
+    return fieldNode?.instance;
   });
+
   // 不可见则卸载组件
   if (!(fieldState.visible)) {
     return null;
@@ -55,9 +54,11 @@ const Field: FC<FieldProps> = forwardRef<FieldInstance, FieldProps>((props, ref)
   return (
     <NodeProvider nodes={nodes}>
       <FormItemProvider fieldState={fieldState}>
-        <FormItem>
+        <FormItem
+          onFieldChange={onFieldChange}
+        >
           {
-            element
+            children
           }
         </FormItem>
       </FormItemProvider>

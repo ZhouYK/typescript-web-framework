@@ -40,13 +40,13 @@ const WuSong: FC<Props> = (_props) => {
         ref={formRef}>
         {!hide && <NameField/>}
         <AgeField />
-        <AnonymousField label='匿名字段 1' />
-        <AnonymousField label='匿名字段 2' />
-        <NestedField/>
-        <ArrayField />
-        <Test>
-          <Text n={n} text='hello' />
-        </Test>
+        {/* <AnonymousField label='匿名字段 1' /> */}
+        {/* <AnonymousField label='匿名字段 2' /> */}
+        {/* <NestedField/> */}
+        {/* <ArrayField /> */}
+        {/* <Test> */}
+        {/*   <Text n={n} text='hello' /> */}
+        {/* </Test> */}
         <Button onClick={onClick}>提交</Button>
       </Form>
     </>

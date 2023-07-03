@@ -14,7 +14,7 @@ import { defaultState } from '../config';
 
 const Form: FC<FormProps> = forwardRef<FormInstance, FormProps>((props, ref) => {
   const { children, ...rest } = props;
-  const [formState, formNode, instance] = useNode({
+  const [formState, formNode] = useNode({
     ...defaultState,
     ...rest,
   }, 'form');
@@ -28,7 +28,7 @@ const Form: FC<FormProps> = forwardRef<FormInstance, FormProps>((props, ref) => 
   }, [formNode, contextNodes]);
 
   useImperativeHandle(ref, () => {
-    return instance;
+    return formNode.instance;
   });
   useEffect(() => {
     console.log('formNode', formNode);

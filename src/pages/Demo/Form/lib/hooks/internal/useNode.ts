@@ -8,20 +8,18 @@ import {
   useCallback, useContext, useEffect, useRef, useState,
 } from 'react';
 import {
-  FieldInstance, FieldState, FNode, FormState, NodeInstance, NodeStateMap, NodeStatusEnum, NodeType, NodeValueType, SearchAction,
+  FieldInstance, FieldState, FNode, FormItemProps, FormState, NodeStateMap, NodeStatusEnum, NodeType, NodeValueType, SearchAction,
 } from '../../interface';
 import hooksHelper from '../helper';
 
-const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: NodeType): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>, NodeInstance<NodeStateMap<V>[typeof type]>] => {
+interface UseNodeOptions {
+  onFieldChange?: FormItemProps['onFieldChange'];
+}
+
+const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: NodeType, options?: UseNodeOptions): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>] => {
   const firstRenderRef = useRef(true);
   const listenersRef = useRef([]);
   const reducerRef = useRef(null);
-  reducerRef.current = (st: typeof initState) => {
-    return {
-      ...st,
-      ...initState, // 外部传入的属性，控制 model
-    };
-  };
 
   const reducer = useCallback((s: typeof initState) => {
     return reducerRef.current(s);
@@ -31,6 +29,24 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     return instanceHelper.createInstance(initState, reducer);
   });
   const insRef = useRef(instance);
+
+  const stateShouldReCalcRef = useRef({});
+
+  reducerRef.current = (st: typeof initState) => {
+    // 如果 state 没有变化，则不合并
+    if (Object.is(st, insRef.current?.model())) return st;
+    // 如果外部有控制权，则这里不做覆盖
+    if (options?.onFieldChange) {
+      stateShouldReCalcRef.current = {};
+      return {
+        ...st,
+      };
+    }
+    return {
+      ...st,
+      ...initState, // 外部传入的属性，控制 model
+    };
+  };
 
   const parentNodes = useContext(NodeContext);
   const [parentNode] = useDerivedState(() => {
@@ -242,12 +258,14 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     }
   };
 
+  // 这里 deps 变化需要通知 model 的监听者
+  // femo@3.0.2 已支持
   const [state] = useDerivedStateWithModel(node.instance.model, (st) => {
     return {
       ...st,
       ...initState,
     };
-  }, [...Object.values(initState || {})]);
+  }, [...Object.values(initState || {}), stateShouldReCalcRef.current]);
 
   hooksHelper.propCheck(state, type);
 
@@ -332,7 +350,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     };
   }, []);
 
-  return [state, node, node?.instance];
+  return [state, node];
 };
 
 export default useNode;

@@ -43,9 +43,12 @@ export interface FieldInstance<V = any> extends NodeInstance<FieldState<V>, V>, 
 
 type ValidateStatus = 'validating' | 'error' | 'warning' | 'success' | 'default';
 
-export interface FieldProps<V = any> extends FieldState<V> {
+export interface FormItemProps<V = any> {
   children: any;
-  onFieldChange?: (value: V, field: FieldInstance<V>) => void;
+  onFieldChange?: (state: FieldState<V>, prevState: FieldState<V>, field: FieldInstance<V>) => void;
+}
+
+export interface FieldProps<V = any> extends FieldState<V>, FormItemProps<V> {
   [index: string]: any;
 }
 

@@ -12,9 +12,9 @@ interface Props {
 
 const AgeField: FC<Props> = (props) => {
   const { name, nameFieldPath, label } = props;
-  const [nameField, model] = useField<string>(nameFieldPath || 'name');
+  const [nameField] = useField<string>(nameFieldPath || 'name');
   const fieldRef = useRef<FieldInstance<number>>();
-  console.log('nameField in AgeField', model);
+
   return (
     <Field
       // field={field}
