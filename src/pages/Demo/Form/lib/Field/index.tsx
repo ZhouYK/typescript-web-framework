@@ -26,9 +26,7 @@ function filterFieldState<V = any>(props: FieldProps<V>): FieldState<V> {
 const Field: FC<FieldProps> = forwardRef<FieldInstance, FieldProps>((props, ref) => {
   const { children, onFieldChange } = props;
 
-  const [fieldState, fieldNode] = useNode(filterFieldState(props), 'field', {
-    onFieldChange,
-  });
+  const [fieldState, fieldNode] = useNode(filterFieldState(props), 'field');
 
   // 缓存 fieldState
   const fieldStateRef = useRef(fieldState);

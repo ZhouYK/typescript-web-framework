@@ -8,15 +8,11 @@ import {
   useCallback, useContext, useEffect, useRef, useState,
 } from 'react';
 import {
-  FieldInstance, FieldState, FNode, FormItemProps, FormState, NodeStateMap, NodeStatusEnum, NodeType, NodeValueType, SearchAction,
+  FieldInstance, FieldState, FNode, FormState, NodeStateMap, NodeStatusEnum, NodeType, NodeValueType, SearchAction,
 } from '../../interface';
 import hooksHelper from '../helper';
 
-interface UseNodeOptions {
-  onFieldChange?: FormItemProps['onFieldChange'];
-}
-
-const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: NodeType, options?: UseNodeOptions): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>] => {
+const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: NodeType): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>] => {
   const firstRenderRef = useRef(true);
   const listenersRef = useRef([]);
   const reducerRef = useRef(null);
@@ -35,17 +31,9 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   reducerRef.current = (st: typeof initState) => {
     // 如果 state 没有变化，则不合并
     if (Object.is(st, insRef.current?.model())) return st;
-    // 如果外部有控制权，则这里不做覆盖
-    if (options?.onFieldChange) {
-      stateShouldReCalcRef.current = {};
-      return {
-        ...st,
-      };
-    }
-    return {
-      ...st,
-      ...initState, // 外部传入的属性，控制 model
-    };
+    // 所有的受控都收敛到到 useDerivedStateWithModel
+    stateShouldReCalcRef.current = {};
+    return st;
   };
 
   const parentNodes = useContext(NodeContext);
