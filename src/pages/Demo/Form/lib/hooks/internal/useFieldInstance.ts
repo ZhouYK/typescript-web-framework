@@ -39,7 +39,7 @@ const useFieldInstance = <V = any>(path?: FPath, options?: UseFieldInstanceOptio
   const refresh = useCallback((node: FNode, _str: string, action: SearchAction) => {
     switch (action) {
       case SearchAction.node_position_change: {
-        targetModelRef.current?.(node);
+        targetModelRef.current(node);
       }
         break;
       case SearchAction.node_name_change: {
@@ -75,6 +75,7 @@ const useFieldInstance = <V = any>(path?: FPath, options?: UseFieldInstanceOptio
     return tmpTarget;
   }, [contextNode, pathString, reFindNode]);
   targetModelRef.current = targetModel;
+  console.log('target', target);
 
   useEffect(() => {
     const curSet = contextNode?.searchingPath?.get(refresh);

@@ -39,7 +39,7 @@ const WuSong: FC<Props> = (_props) => {
         // form={form}
         ref={formRef}>
         {!hide && <NameField/>}
-        <AgeField />
+        {/* <AgeField /> */}
         {/* <AnonymousField label='匿名字段 1' /> */}
         {/* <AnonymousField label='匿名字段 2' /> */}
         {/* <NestedField/> */}
