@@ -100,6 +100,8 @@ const useFieldInstance = <V = any>(path?: FPath, options?: UseFieldInstanceOptio
     return undefined;
   }, [target, watch]);
 
+  console.log('书信');
+
   hooksHelper.mergeStateToInstance(target, target?.instance?.model());
   return [target?.instance, target];
 };

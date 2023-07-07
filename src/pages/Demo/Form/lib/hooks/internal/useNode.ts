@@ -5,7 +5,7 @@ import {
   gluer, unsubscribe, useDerivedState, useDerivedStateWithModel,
 } from 'femo';
 import {
-  useCallback, useContext, useEffect, useRef, useState,
+  useCallback, useContext, useEffect, useLayoutEffect, useRef, useState,
 } from 'react';
 import {
   FieldInstance, FieldState, FNode, FormState, NodeStateMap, NodeStatusEnum, NodeType, NodeValueType, SearchAction,
@@ -26,13 +26,20 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   });
   const insRef = useRef(instance);
 
-  const stateShouldReCalcRef = useRef({});
+  const isFromPositiveRevertRef = useRef(false);
+
+  const fromPositiveRef = useRef({});
 
   reducerRef.current = (st: typeof initState) => {
     // 如果 state 没有变化，则不合并
     if (Object.is(st, insRef.current?.model())) return st;
     // 所有的受控都收敛到到 useDerivedStateWithModel
-    stateShouldReCalcRef.current = {};
+    // 这里可能会尝试去更新所有属性，不管是以什么方式更新的什么属性（受控或者不受控）
+    // 就叫做乐观更新
+    // 如果不是来自 反转乐观更新 的变化才去做标记，为了避免死循环
+    if (!isFromPositiveRevertRef.current) {
+      fromPositiveRef.current = {};
+    }
     return st;
   };
 
@@ -253,7 +260,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
       ...st,
       ...initState,
     };
-  }, [...Object.values(initState || {}), stateShouldReCalcRef.current]);
+  }, [...Object.values(initState || {})]);
 
   hooksHelper.propCheck(state, type);
 
@@ -303,6 +310,18 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
       });
     };
   }, [state]);
+
+  // 每次引起 fromPositiveRef.current 变化，则会是在一次 render 中
+  useLayoutEffect(() => {
+    isFromPositiveRevertRef.current = true;
+    node.instance.model.race((state) => {
+      return {
+        ...state,
+        ...initState,
+      };
+    });
+    isFromPositiveRevertRef.current = false;
+  }, [fromPositiveRef.current]);
 
   useEffect(() => {
     if (node.status() === NodeStatusEnum.unmount) return;
