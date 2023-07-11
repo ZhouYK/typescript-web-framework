@@ -75,7 +75,6 @@ const useFieldInstance = <V = any>(path?: FPath, options?: UseFieldInstanceOptio
     return tmpTarget;
   }, [contextNode, pathString, reFindNode]);
   targetModelRef.current = targetModel;
-  console.log('target', target);
 
   useEffect(() => {
     const curSet = contextNode?.searchingPath?.get(refresh);
@@ -99,8 +98,6 @@ const useFieldInstance = <V = any>(path?: FPath, options?: UseFieldInstanceOptio
     }
     return undefined;
   }, [target, watch]);
-
-  console.log('书信');
 
   hooksHelper.mergeStateToInstance(target, target?.instance?.model());
   return [target?.instance, target];

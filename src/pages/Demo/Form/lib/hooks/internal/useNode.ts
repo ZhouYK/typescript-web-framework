@@ -13,6 +13,18 @@ import {
 import hooksHelper from '../helper';
 
 const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: NodeType): [NodeStateMap<V>[typeof type], FNode<NodeStateMap<V>[typeof type]>] => {
+  // 受控 props 更新 model 时需要发出更新通知的 key，避免降低使用时的心智负担，因为 props 中可能会出现 函数、对象 的直接量，导致每次 render 都会去更新 model并发出通知， 从而导致一些不预测的问题
+  // 只有 needSyncPropKeys 中出现的 key 更新了值才会去触发 model 的通知，而其他的 props 更新则会是静默更新
+  const {
+    // @ts-ignore
+    label,
+    value,
+    visible,
+    preserve,
+    name,
+    ...restInitState
+  } = initState;
+
   const firstRenderRef = useRef(true);
   const listenersRef = useRef([]);
   const reducerRef = useRef(null);
@@ -260,7 +272,17 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
       ...st,
       ...initState,
     };
-  }, [...Object.values(initState || {})]);
+  }, [label, name, value, visible, preserve]);
+
+  // 这里非关键属性更新，不做通知
+  useEffect(() => {
+    node.instance.model.silent((state) => {
+      return {
+        ...state,
+        ...restInitState,
+      };
+    });
+  }, [...(Object.values(restInitState || {}))]);
 
   hooksHelper.propCheck(state, type);
 
