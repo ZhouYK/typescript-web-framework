@@ -67,9 +67,9 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     return target || parentNodes[parentNodes.length - 1];
   }, [parentNodes]);
 
-  // 这里查找同层同名的节点，在加入匿名节点后可能会出现，同名节点不在同一个物理层。
+  // 这里查找同层同名的节点，在加入匿名节点后可能会出现：同名节点不在同一个物理层。
   // 这个时候就可能出现查找的时候节点还没有挂载的情况，出现这种情况一定是：两个节点都在挂载中，挂载完成时间会有先后，那么肯定有一个节点挂载的时候，能找到另一个的。
-  // 还需要注意，这里的 parentNode 应该先上寻找第一个非匿名节点或者全是匿名节点的情况下，找最顶层节点。
+  // 还需要注意，这里的 parentNode 应该向上寻找第一个非匿名节点或者全是匿名节点的情况下找最顶层节点。
   const findSameNameSiblingNode = (n: string) => nodeHelper.findFieldNodes(sameNameSiblingNodeParentNode, n);
 
   const setNodeValueType = (pn: FNode, child: FNode) => {
