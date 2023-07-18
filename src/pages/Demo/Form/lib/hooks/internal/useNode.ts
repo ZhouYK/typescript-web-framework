@@ -3,7 +3,7 @@ import NodeContext from '@/pages/Demo/Form/lib/NodeProvider/NodeContext';
 import instanceHelper from '@/pages/Demo/Form/lib/utils/instanceHelper';
 import nodeHelper from '@/pages/Demo/Form/lib/utils/nodeHelper';
 import {
-  gluer, unsubscribe, useDerivedState, useDerivedStateWithModel,
+  gluer, unsubscribe, useDerivedState, useDerivedStateWithModel, runtimeVar,
 } from 'femo';
 import {
   useCallback, useContext, useEffect, useRef, useState,
@@ -32,10 +32,6 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   const controlledKeysRef = useRef<Set<string>>();
   controlledKeysRef.current = new Set(Object.keys(initState));
 
-  const [positiveUpdateFlag] = useState(() => {
-    return `______positive${Date.now()}UpdateFlag______`;
-  });
-
   const firstRenderRef = useRef(true);
   const listenersRef = useRef([]);
   const reducerRef = useRef(null);
@@ -52,16 +48,12 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   reducerRef.current = (st: typeof initState) => {
     const curState = insRef.current?.model();
     // 如果 state 没有变化，则不合并
-    if (Object.is(st, curState)) return st;
-
     // 如果来源于 useDerivedStateWithModel 更新（受控属性更新），则直接返回。
     // 因为这个就是最终的值
-    // @ts-ignore
-    if (st?.[positiveUpdateFlag]) {
-      // @ts-ignore
-      delete st[positiveUpdateFlag];
+    if (Object.is(st, curState) || runtimeVar.runtimeFromDerived) {
       return st;
     }
+
     // 其他的更新
     let isAllControlled = true;
     const tmpSt = { ...st };
@@ -328,7 +320,6 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     return {
       ...st,
       ...initState,
-      [positiveUpdateFlag]: true, // 标记，会在 reducer 中删除
     };
   }, [label, name, value, visible, preserve]);
 

@@ -29,6 +29,7 @@ const HeaderControl = (props: RouteComponentProps): ReactElement => {
     }
     return breadcrumbs;
   }, [currentRoadMap]);
+  console.log('breadcrumbData', breadcrumbData);
 
   return currentRoadMap?.hasHeader ? <CusHeader breadcrumbNameMap={breadcrumbData} { ...props } /> : null;
 };

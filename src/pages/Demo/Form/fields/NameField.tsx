@@ -1,7 +1,9 @@
 import Field from '@/pages/Demo/Form/lib/Field';
 import useField from '@/pages/Demo/Form/lib/hooks/useField';
 import { Input } from 'antd';
-import React, { FC, useState } from 'react';
+import React, {
+  FC, useEffect, useRef, useState,
+} from 'react';
 
 interface Props {
   name?: string;
@@ -13,8 +15,10 @@ const NameField: FC<Props> = (props) => {
   // const [ageField] = useField<number>(ageFieldPath || 'age');
   const [nameField] = useField<string>('name');
   const [value, setValue] = useState();
-  console.log('nameField', nameField);
   // console.log('ageField', ageField);
+
+  console.log('nameField', nameField);
+
   return (
     <Field
       value={value}
