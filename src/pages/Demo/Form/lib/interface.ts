@@ -14,10 +14,12 @@ export interface FieldState<V = any> extends OpenState<V> {
   errors?: any[];
   validateStatus?: ValidateStatus;
   validator?: (value: V, field: FieldInstance<V>, form: FormInstance<any>) => string;
+  [index: string]: any;
 }
 
 export interface FormState<V = any> extends Omit<OpenState<V>, 'label'>{
   errors?: any[];
+  [index: string]: any;
 }
 
 export interface FormContextValue<V = any> {
@@ -41,12 +43,13 @@ export interface FieldInstance<V = any> extends NodeInstance<FieldState<V>, V>, 
 
 type ValidateStatus = 'validating' | 'error' | 'warning' | 'success' | 'default';
 
-export interface FormItemProps<V = any> {
+export interface FormItemProps {
   children: any;
-  onFieldChange?: (state: FieldState<V>, prevState: FieldState<V>, field: FieldInstance<V>) => void;
+  onChange: <A = any>(arg: A) => void;
 }
 
-export interface FieldProps<V = any> extends FieldState<V>, FormItemProps<V> {
+export interface FieldProps<V = any> extends FieldState<V> {
+  onFieldChange?: (state: FieldState<V>, prevState: FieldState<V>, field: FieldInstance<V>) => void;
   [index: string]: any;
 }
 

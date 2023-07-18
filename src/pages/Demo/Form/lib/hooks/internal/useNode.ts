@@ -1,3 +1,4 @@
+import { defaultState } from '@/pages/Demo/Form/lib/config';
 import NodeContext from '@/pages/Demo/Form/lib/NodeProvider/NodeContext';
 import instanceHelper from '@/pages/Demo/Form/lib/utils/instanceHelper';
 import nodeHelper from '@/pages/Demo/Form/lib/utils/nodeHelper';
@@ -5,7 +6,7 @@ import {
   gluer, unsubscribe, useDerivedState, useDerivedStateWithModel,
 } from 'femo';
 import {
-  useCallback, useContext, useEffect, useLayoutEffect, useRef, useState,
+  useCallback, useContext, useEffect, useRef, useState,
 } from 'react';
 import {
   FieldInstance, FieldState, FNode, FormState, NodeStateMap, NodeStatusEnum, NodeType, NodeValueType, SearchAction,
@@ -25,6 +26,16 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     ...restInitState
   } = initState;
 
+  const initStateRef = useRef(initState);
+  initStateRef.current = initState;
+
+  const controlledKeysRef = useRef<Set<string>>();
+  controlledKeysRef.current = new Set(Object.keys(initState));
+
+  const [positiveUpdateFlag] = useState(() => {
+    return `______positive${Date.now()}UpdateFlag______`;
+  });
+
   const firstRenderRef = useRef(true);
   const listenersRef = useRef([]);
   const reducerRef = useRef(null);
@@ -34,25 +45,71 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
   }, []);
 
   const [instance] = useState(() => {
-    return instanceHelper.createInstance(initState, reducer);
+    return instanceHelper.createInstance({ ...defaultState, ...initState }, reducer);
   });
   const insRef = useRef(instance);
 
-  const isFromPositiveRevertRef = useRef(false);
-
-  const fromPositiveRef = useRef({});
-
   reducerRef.current = (st: typeof initState) => {
+    const curState = insRef.current?.model();
     // 如果 state 没有变化，则不合并
-    if (Object.is(st, insRef.current?.model())) return st;
-    // 所有的受控都收敛到到 useDerivedStateWithModel
-    // 这里可能会尝试去更新所有属性，不管是以什么方式更新的什么属性（受控或者不受控）
-    // 就叫做乐观更新
-    // 如果不是来自 反转乐观更新 的变化才去做标记，为了避免死循环
-    if (!isFromPositiveRevertRef.current) {
-      fromPositiveRef.current = {};
+    if (Object.is(st, curState)) return st;
+
+    // 如果来源于 useDerivedStateWithModel 更新（受控属性更新），则直接返回。
+    // 因为这个就是最终的值
+    // @ts-ignore
+    if (st?.[positiveUpdateFlag]) {
+      // @ts-ignore
+      delete st[positiveUpdateFlag];
+      return st;
     }
-    return st;
+    // 其他的更新
+    let isAllControlled = true;
+    const tmpSt = { ...st };
+    // 其他的更新，需要将受控属性的更新无效化
+    Object.keys(curState || {}).forEach((key) => {
+      const curValue = curState[key];
+      // 下一个 state 里面有 key
+      if (key in st) {
+        delete tmpSt[key];
+        const nextValue = st[key];
+        // 下一个 state 里面对应的值不相等
+        if (!Object.is(curValue, nextValue)) {
+          // key 是受控属性
+          if (controlledKeysRef.current.has(key)) {
+            // 受控属性不能改变
+            st[key] = initStateRef.current[key];
+          } else if (isAllControlled) {
+            // key 不是受控属性
+            isAllControlled = false;
+          }
+        }
+        return;
+      }
+      // 下一个 state 里面没有 key
+      // key 是受控属性
+      if (controlledKeysRef.current.has(key)) {
+        st[key] = initStateRef.current[key];
+      } else if (isAllControlled) {
+        // key 不是受控属性
+        isAllControlled = false;
+      }
+    });
+
+    // 与 curState 比较完过后，st 里面可能还有多余的属性
+    Object.keys(tmpSt).forEach((key) => {
+      // 多余的属性是受控的，则不改变
+      if (controlledKeysRef.current.has(key)) {
+        st[key] = initStateRef.current[key];
+      } else if (isAllControlled) {
+        // key 不是受控属性
+        isAllControlled = false;
+      }
+    });
+
+    if (!isAllControlled) {
+      return st;
+    }
+    return curState;
   };
 
   const parentNodes = useContext(NodeContext);
@@ -271,6 +328,7 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
     return {
       ...st,
       ...initState,
+      [positiveUpdateFlag]: true, // 标记，会在 reducer 中删除
     };
   }, [label, name, value, visible, preserve]);
 
@@ -332,18 +390,6 @@ const useNode = <V>(initState: Partial<FieldState<V> | FormState<V>>, type: Node
       });
     };
   }, [state]);
-
-  // 每次引起 fromPositiveRef.current 变化，则会是在一次 render 中
-  useLayoutEffect(() => {
-    isFromPositiveRevertRef.current = true;
-    node.instance.model.race((state) => {
-      return {
-        ...state,
-        ...initState,
-      };
-    });
-    isFromPositiveRevertRef.current = false;
-  }, [fromPositiveRef.current]);
 
   useEffect(() => {
     if (node.status() === NodeStatusEnum.unmount) return;
