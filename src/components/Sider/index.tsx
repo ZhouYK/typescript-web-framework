@@ -1,11 +1,9 @@
-import history from '@/AppRoot/history';
 import { RoadMap, RoadMapType } from '@/config/interface';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu } from '@arco-design/web-react';
 import { useDerivedState } from 'femo';
 import React, { ReactElement, useCallback, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { CurContext, EXTERN_KEY_PREFIX, Props } from './interface';
-
-import style from './style.less';
 
 const { SubMenu } = Menu;
 const MenuItem = Menu.Item;
@@ -28,20 +26,23 @@ const LeftSider = (props: Props): ReactElement => {
     cachedElements: [],
   }));
 
+  const history = useHistory();
+
   const renderMenus = (menus: RoadMap[]): ReactElement[] => menus.map((item): ReactElement => {
     let elements = null;
     if (item.type === RoadMapType.living) {
       const IconComponent = item.icon || EmptyIcon;
       if (item.hasLivingRoadInSubRoads) {
         elements = (
-          <SubMenu title={item.name} key={item.completePath} icon={<IconComponent />}>
+          <SubMenu title={ <span><IconComponent /> item.name</span>} key={item.completePath}>
             {renderMenus(item.subRoads)}
           </SubMenu>
         );
         // 跳转到非系统内的页面的链接，渲染一个 a 标签
       } else if (item.externUrl) {
         elements = (
-          <MenuItem icon={<IconComponent />} key={`${EXTERN_KEY_PREFIX}-${item.externUrl}`}>
+          <MenuItem key={`${EXTERN_KEY_PREFIX}-${item.externUrl}`}>
+            <IconComponent />
             <a href={item.externUrl} rel="noopener noreferrer" {...item.externProps || {}}>
               {item.name}
             </a>
@@ -55,8 +56,8 @@ const LeftSider = (props: Props): ReactElement => {
             }}
             key={item.completePath}
             title={item.name}
-            icon={<IconComponent />}
           >
+            <IconComponent />
             {item.name}
           </MenuItem>
         );
@@ -137,23 +138,16 @@ const LeftSider = (props: Props): ReactElement => {
 
   return (
     <Sider
-      className={style.misSider}
       collapsible={colapisble(sider)}
       collapsed={collapsed}
       onCollapse={onCollapse}
     >
-      <header className='mis-logo' onClick={backHome}>
-        <section className='mis-logo-png' />
-        <section className='mis-logo-placeholder' />
-        <span className='mis-logo-text'>MIS</span>
-      </header>
+      <div>logo</div>
       <Menu
         openKeys={openKeys}
         selectedKeys={selectedKeys}
         onClick={handleItemClick}
-        onOpenChange={handleSubMenuOpenChange}
-        mode="inline"
-        theme='dark'
+        onClickSubMenu={handleSubMenuOpenChange}
       >
         {curContext.cachedElements}
       </Menu>

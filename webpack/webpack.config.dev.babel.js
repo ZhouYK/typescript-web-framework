@@ -119,6 +119,12 @@ const config = {
         // proxyReq.setHeader('cookie', '');
       },
     },
+    client: {
+      overlay: false,
+      logging: 'error',
+      webSocketTransport: 'ws',
+    },
+    webSocketServer: 'ws',
     open: true,
   },
   plugins: [
@@ -127,6 +133,6 @@ const config = {
     }),
     ...commonConfig.plugins,
   ],
-  stats: 'summary',
+  stats: 'errors-warnings',
 };
 export default config;

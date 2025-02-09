@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { message } from 'antd';
+import { Message } from '@arco-design/web-react';
 import { objectToQuery } from '@/tools/util';
 import { ApiResult, CustomConfig, ApiCode } from './interface';
 
@@ -48,7 +48,7 @@ const customRequest = <T>(config: CustomConfig): Promise<ApiResult<T>> => {
 
     if (showHttpError) {
       const msg = window.navigator.onLine ? `系统出现问题，请稍后重试(code: ${code})` : `网络连接中断，请检查网络(code: ${code})`;
-      message.error(msg);
+      Message.error(msg);
     }
     return Promise.reject({
       code,
@@ -74,7 +74,7 @@ const customRequest = <T>(config: CustomConfig): Promise<ApiResult<T>> => {
         if (!errMsg && typeof dataStr === 'string') {
           errMsg = dataStr;
         }
-        message.error(errMsg || '接口未知错误');
+        Message.error(errMsg || '接口未知错误');
       }
       return Promise.reject(data);
     }
@@ -102,7 +102,7 @@ const customRequestFile = (config: CustomConfig): Promise<AxiosResponse<Blob>> =
 
     if (showHttpError) {
       const msg = window.navigator.onLine ? `系统出现问题，请稍后重试(code: ${code})` : `网络连接中断，请检查网络(code: ${code})`;
-      message.error(msg);
+      Message.error(msg);
     }
     return Promise.reject(error);
   });

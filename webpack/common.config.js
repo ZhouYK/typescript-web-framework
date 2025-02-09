@@ -4,8 +4,7 @@ import ESLintWebpackPlugin from 'eslint-webpack-plugin';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import reactRefreshBabel from 'react-refresh/babel';
 import reactRefreshTs from 'react-refresh-typescript';
-import FriendlyErrorsWebpackPlugin from '@nuxtjs/friendly-errors-webpack-plugin';
-import webpack from 'webpack';
+import ArcoWebpackPlugin from '@arco-plugins/webpack-react';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 export const contentPath = path.resolve(__dirname, '../dist');
@@ -104,14 +103,7 @@ const plugins = [
     emitWarning: true,
     failOnError: true,
   }),
-  new FriendlyErrorsWebpackPlugin(),
-  new webpack.container.ModuleFederationPlugin({
-    name: 'federation_test',
-    filename: 'js/myRemote.js',
-    exposes: {
-      './hello': '@/federationTest',
-    },
-  }),
+  new ArcoWebpackPlugin(),
   isDevelopment && new ReactRefreshWebpackPlugin({
     overlay: false,
   }),
@@ -164,18 +156,6 @@ const config = {
           name: 'style',
           chunks: 'all',
           test: /\.(css|less)$/,
-          enforce: true,
-        },
-        base: {
-          test: /[\\/]node_modules[\\/]((?!antd|@ant-design).)+[\\/]/,
-          name: 'base',
-          chunks: 'all',
-          enforce: true,
-        },
-        ui: {
-          test: /[\\/]node_modules[\\/](antd|@ant-design)[\\/]/,
-          name: 'uis',
-          chunks: 'all',
           enforce: true,
         },
       },

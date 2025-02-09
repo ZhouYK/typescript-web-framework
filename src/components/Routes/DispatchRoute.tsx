@@ -13,16 +13,18 @@ const DispatchRoute = (): ReactElement => {
           key={road.path}
           exact={false}
           path={road.path}
-          render={(routeProps: RouteComponentProps): ReactElement => (
-            <UndertakeRoute road={road} index={index} {...routeProps} />
-          )}
+          render={(routeProps: RouteComponentProps): ReactElement => {
+            return (
+              <UndertakeRoute road={road} index={index} {...routeProps} />
+            );
+          }}
         />
   ));
 
   const flatRoutes = useFlatRoads();
   // 后续UndertakeRoute中不会再校验road中第一层的权限
   const [routeElements] = useDerivedState(() => renderRoutes(flatRoutes), [flatRoutes]);
-
+  console.log('刷新');
   return (
     <Crash>
       <Switch>{routeElements}</Switch>

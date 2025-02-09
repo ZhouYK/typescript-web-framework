@@ -1,5 +1,5 @@
 import { RoadMap, RoadMapType } from '@/config/interface';
-import { gluer, useModel } from 'femo';
+import { glue, useModel } from 'femo';
 import roads from './roads';
 
 const completeFn = (roads: RoadMap[], p?: string[], parent?: RoadMap) => {
@@ -49,7 +49,7 @@ const completeFn = (roads: RoadMap[], p?: string[], parent?: RoadMap) => {
 // 扁平的RoadMap，是roadMap的缓存
 // 不要直接更新这个flatRoadMap
 // 请更新roadMap来达到更新flagRoadMap的目的
-const flatRoadMap = gluer<RoadMap[]>(completeFn(Object.values(roads())));
+const flatRoadMap = glue<RoadMap[]>(completeFn(Object.values(roads())));
 flatRoadMap.watch([roads], (result) => completeFn(Object.values(result[0])));
 
 const useFlatRoads = () => {

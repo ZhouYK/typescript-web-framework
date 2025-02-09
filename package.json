@@ -23,7 +23,7 @@
   "scripts": {
     "lint": "lint-staged",
     "test": "jest --no-cache",
-    "start": "NODE_OPTIONS=--max_old_space_size=4096 NODE_ENV=development PORT=8989 webpack serve --hot --progress --config ./webpack/webpack.config.dev.babel.js",
+    "start": "NODE_OPTIONS='--openssl-legacy-provider --max-old-space-size=4096' NODE_ENV=development PORT=8989 webpack serve --hot --progress --config ./webpack/webpack.config.dev.babel.js",
     "build": "NODE_ENV=production webpack --env local --profile --progress --config  ./webpack/webpack.config.babel.js",
     "build:prod": "cross-env NODE_ENV=production webpack --env prod --config  ./webpack/webpack.config.babel.js",
     "build:stage": "cross-env NODE_ENV=production webpack --env stage --config  ./webpack/webpack.config.babel.js",
@@ -64,22 +64,17 @@
     "ie >= 9"
   ],
   "dependencies": {
-    "@ant-design/icons": "4.7.0",
-    "@arco-design/web-react": "2.40.2",
-    "ace-builds": "1.6.0",
-    "antd": "4.23.1",
+    "@arco-design/web-react": "2.65.0",
     "axios": "0.21.1",
     "classnames": "2.2.6",
-    "femo": "3.0.9",
+    "femo": "3.2.4",
     "localforage": "1.9.0",
     "react": "18.2.0",
-    "react-ace": "10.1.0",
     "react-dom": "18.2.0",
-    "react-perfect-scrollbar": "1.5.8",
-    "react-router-dom": "5.3.3",
-    "ua-parser-js": "0.7.24"
+    "react-router-dom": "5.3.3"
   },
   "devDependencies": {
+    "@arco-plugins/webpack-react": "1.4.9",
     "@babel/cli": "7.16.0",
     "@babel/core": "7.16.0",
     "@babel/plugin-transform-runtime": "7.13.10",
@@ -87,8 +82,7 @@
     "@babel/preset-react": "7.16.0",
     "@babel/register": "7.11.5",
     "@babel/runtime-corejs3": "7.13.10",
-    "@nuxtjs/friendly-errors-webpack-plugin": "2.1.0",
-    "@pmmmwh/react-refresh-webpack-plugin": "0.4.3",
+    "@pmmmwh/react-refresh-webpack-plugin": "0.5.15",
     "@svgr/webpack": "5.4.0",
     "@types/classnames": "2.2.10",
     "@types/react": "18.0.20",
@@ -130,8 +124,8 @@
     "ts-loader": "9.1.1",
     "type-fest": "1.0.2",
     "typescript": "4.8.3",
-    "webpack": "5.58.0",
-    "webpack-cli": "4.9.0",
+    "webpack": "5.94.0",
+    "webpack-cli": "4.10.0",
     "webpack-dev-server": "4.3.1"
   },
   "engines": {

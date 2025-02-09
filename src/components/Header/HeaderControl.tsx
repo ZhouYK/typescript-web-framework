@@ -3,8 +3,8 @@ import useCurrentRoad from '@/components/Routes/currentRoad/useCurrentRoad';
 import React, {
   ReactElement,
 } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { useDerivedState } from 'femo';
+import { withRouter, RouteComponentProps } from 'react-router';
 import CusHeader from './index';
 
 const HeaderControl = (props: RouteComponentProps): ReactElement => {

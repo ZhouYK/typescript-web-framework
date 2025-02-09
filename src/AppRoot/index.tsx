@@ -1,14 +1,13 @@
 import React, {
   ReactElement,
 } from 'react';
-import { Router } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import userModel from '@/models/user/model';
 import userService from '@/models/user/service';
 import Spinner from '@/components/Spinner';
 import NotFound from '@/components/NotFound';
 import { useModel } from 'femo';
 import { safeCrash } from '@/hocs';
-import history from './history';
 
 interface RootProps {
   [index: string]: any;
@@ -16,7 +15,7 @@ interface RootProps {
 
 const AppRoot = (props: RootProps): ReactElement => {
   const { children } = props;
-  const [userInfo,, { loading }] = useModel(userModel, userService.getUserInfo);
+  const [userInfo,,, { loading }] = useModel(userModel, userService.getUserInfo);
 
   if (loading) {
     return <Spinner />;
@@ -27,7 +26,8 @@ const AppRoot = (props: RootProps): ReactElement => {
   }
 
   return (
-    <Router history={history}>
+    // @ts-ignore
+    <Router basename=''>
       {children}
     </Router>
   );

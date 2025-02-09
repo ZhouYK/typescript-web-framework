@@ -1,7 +1,7 @@
 // import { render } from 'react-dom';
 import { createRoot } from 'react-dom/client';
-import { ConfigProvider } from 'antd';
-import zh from 'antd/lib/locale/zh_CN';
+import { ConfigProvider } from '@arco-design/web-react';
+import zh from '@arco-design/web-react/lib/locale/zh-CN';
 import AppRoot from './AppRoot';
 import App from './App';
 import './global.less';

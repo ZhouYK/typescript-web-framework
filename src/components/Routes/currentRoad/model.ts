@@ -1,4 +1,4 @@
 import { RoadMap } from '@/config/interface';
-import { gluer } from 'femo';
+import { glue } from 'femo';
 
-export default gluer<RoadMap | null>(null);
+export default glue<RoadMap | null>(null);
